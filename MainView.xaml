@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="DoublePendulum.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DoublePendulum"
+             xmlns:wft3d="WFTools3D">
+  <UserControl.Resources>
+    <ImageBrush x:Key="wood1" ImageSource="Images\wood1.jpg"/>
+    <ImageBrush x:Key="wood2" ImageSource="Images\wood2.jpg"/>
+  </UserControl.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="500"/>
+    </Grid.ColumnDefinitions>
+    <wft3d:Scene3D x:Name="scene" Margin="2"/>
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="500"/>
+      </Grid.RowDefinitions>
+      <local:Pendulum2D x:Name="pendulum2d" Margin="2"/>
+      <local:StackPanelH VerticalAlignment="Top" Margin="6">
+        <Button Content="Start" Click="OnStartStopClicked" x:Name="startStopButton" Width="60"/>
+        <ToggleButton Content="Gravity" Click="OnGravityClicked" IsChecked="true" Width="60" Margin="3,0,0,0"/>
+        <ToggleButton Content="Show Omegas" Click="OnOmegaClicked" Margin="3,0,0,0"/>
+        <Button Content="&lt;&lt;" Click="OnSlowDownClicked" Width="30" Margin="3,0,0,0"/>
+        <Button Content="&gt;&gt;" Click="OnSpeedUpClicked" Width="30" Margin="3,0,0,0"/>
+        <TextBox x:Name="textBox" IsReadOnly="true" Margin="4,0,0,0"/>
+      </local:StackPanelH>
+      <local:Poincare2D x:Name="poincare2d" Grid.Row="1" Margin="2"/>
+    </Grid>
+  </Grid>
+</UserControl>
