@@ -20,14 +20,16 @@
       </Grid.RowDefinitions>
       <local:Pendulum2D x:Name="pendulum2d" Margin="2"/>
       <local:StackPanelH VerticalAlignment="Top" Margin="6">
-        <Button Content="Start" Click="OnStartStopClicked" x:Name="startStopButton" Width="60"/>
-        <ToggleButton Content="Gravity" Click="OnGravityClicked" IsChecked="true" Width="60" Margin="3,0,0,0"/>
-        <ToggleButton Content="Show Omegas" Click="OnOmegaClicked" Margin="3,0,0,0"/>
-        <Button Content="&lt;&lt;" Click="OnSlowDownClicked" Width="30" Margin="3,0,0,0"/>
-        <Button Content="&gt;&gt;" Click="OnSpeedUpClicked" Width="30" Margin="3,0,0,0"/>
-        <TextBox x:Name="textBox" IsReadOnly="true" Margin="4,0,0,0"/>
+        <Button Content="Start" ToolTip="Start/stop the simulation" Click="OnStartStopClicked" x:Name="startStopButton" Width="60"/>
+        <ToggleButton Content="Gravity" ToolTip="Switch gravitation on/off" Click="OnGravityClicked" IsChecked="true" Width="60" Margin="3,0,0,0"/>
+        <ToggleButton Content="Show Omegas" ToolTip="Show angular velocities/accelerations" Click="OnOmegaClicked" Margin="3,0,0,0"/>
+        <Button Content="&lt;&lt;" ToolTip="Slow down simulation" Click="OnSlowDownClicked" Width="30" Margin="3,0,0,0"/>
+        <Button Content="&gt;&gt;" ToolTip="Speed up simulation" Click="OnSpeedUpClicked" Width="30" Margin="3,0,0,0"/>
+        <TextBox x:Name="textBox1" ToolTip="Total energy at start" IsReadOnly="true" Margin="4,0,0,0"/>
+        <TextBox x:Name="textBox2" ToolTip="Energy deviation" IsReadOnly="true" Margin="4,0,0,0"/>
       </local:StackPanelH>
       <local:Poincare2D x:Name="poincare2d" Grid.Row="1" Margin="2"/>
+      <Button Content="?" Grid.Row="1" Margin="3" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Zoom: LMB drag to bottom right&#x0a;Unzoom one level: LMB small drag to top left&#x0a;Unzoom all levels: LMB large drag to top left&#x0a;Start new simulation: RMB click at desired start location&#x0a;Remove last simulation: Ctrl+RMB click"/>
     </Grid>
   </Grid>
 </UserControl>

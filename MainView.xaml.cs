@@ -34,14 +34,15 @@ namespace DoublePendulum
 		{
 			InitializeComponent();
 
-			pendelator = new Simulator();
-			pendelator.Data.Init(-0.4, -0.7, 0, 0);
-			pendelator.NewPoincarePoint += NewPoincarePoint;
-			textBox.Text = string.Format("E0 = {0:G3}", Data.E0);
+			simulator = new Simulator();
+			simulator.Data.Init(-0.41, -0.842, 0, 0);
+
+			simulator.NewPoincarePoint += NewPoincarePoint;
+			UpdateText();
 
 			pendulum3d = new Pendulum3D(GetBrush(1), GetBrush(2));
 			pendulum3d.Position = new Point3D(0, 0, -1.5);
-			pendulum3d.Data = Data;
+			pendulum3d.Data = simulator.Data;
 			pendulum3d.Update();
 
 			scene.Models.Children.Add(pendulum3d);
@@ -49,36 +50,40 @@ namespace DoublePendulum
 			scene.Camera.LookAtOrigin();
 			FocusManager.SetFocusedElement(this, scene);
 
-			pendulum2d.Data = Data;
+			pendulum2d.Data = simulator.Data;
 			pendulum2d.UserDragged += UserDragged;
 
-			poincare2d.Data = Data;
-			poincare2d.MouseLeftButtonUp += Poincare2DMouseLeftButtonUp;
+			poincare2d.Data = simulator.Data;
+			poincare2d.MouseRightButtonUp += Poincare2DMouseRightButtonUp;
 
 			timer = new DispatcherTimer(DispatcherPriority.Render);
 			timer.Interval = TimeSpan.FromMilliseconds(30);
 			timer.Tick += TimerTick;
 		}
-		Simulator pendelator;
+		Simulator simulator;
 		Pendulum3D pendulum3d;
 		DispatcherTimer timer;
-
-		DataModel Data
-		{
-			get { return pendelator.Data; }
-		}
 
 		void TimerTick(object sender, EventArgs e)
 		{
 			pendulum2d.Update();
 			pendulum3d.Update();
+			if (++count % 33 == 0)
+				UpdateText();
 		}
+		ulong count;
 
 		void UserDragged(object sender, EventArgs e)
 		{
 			poincare2d.Clear();
 			pendulum3d.Update();
-			textBox.Text = string.Format("E0 = {0:G3}", Data.E0);
+			UpdateText();
+		}
+
+		void UpdateText()
+		{
+			textBox1.Text = string.Format("E0 = {0:G3}", simulator.Data.E0);
+			textBox2.Text = string.Format("dE = {0:F3}", simulator.Data.dE);
 		}
 
 		ImageBrush GetBrush(int i)
@@ -88,7 +93,7 @@ namespace DoublePendulum
 
 		void OnStartStopClicked(object sender, RoutedEventArgs e)
 		{
-			if (pendelator.IsBusy)
+			if (simulator.IsBusy)
 				Stop();
 			else
 				Start();
@@ -97,17 +102,17 @@ namespace DoublePendulum
 		void Stop()
 		{
 			timer.Stop();
-			pendelator.Stop();
+			simulator.Stop();
 			pendulum2d.IsBusy = false;
 			startStopButton.Content = "Start";
 		}
 
 		void Start()
 		{
-			timer.Start();
 			pendulum2d.IsBusy = true;
 			startStopButton.Content = "Stop";
-			pendelator.Start();
+			timer.Start();
+			simulator.Start();
 		}
 
 		void NewPoincarePoint(object sender, EventArgs e)
@@ -116,25 +121,32 @@ namespace DoublePendulum
 			poincare2d.NewPoincarePoint();
 		}
 
-		void Poincare2DMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		void Poincare2DMouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			if (pendelator.IsBusy)
+			if (simulator.IsBusy)
 			{
 				Stop();
 				return;
 			}
 
-			if (Data.Points.Count > 0)
+			if (Helpers.IsCtrlDown())
+			{
+				simulator.Data.Points.Clear();
+				poincare2d.Redraw();
+				return;
+			}
+
+			if (simulator.Data.Points.Count > 0)
 				poincare2d.PushData();
 
 			Point pt = poincare2d.GetCoordinates(e.GetPosition(poincare2d));
-			if (Data.Init(pt.X, pt.Y))
+			if (simulator.Data.Init(pt.X, pt.Y))
 				Start();
 		}
 
 		void OnGravityClicked(object sender, RoutedEventArgs e)
 		{
-			Data.Gravity = !Data.Gravity;
+			simulator.Data.Gravity = !simulator.Data.Gravity;
 		}
 
 		void OnOmegaClicked(object sender, RoutedEventArgs e)
@@ -145,12 +157,12 @@ namespace DoublePendulum
 
 		void OnSlowDownClicked(object sender, RoutedEventArgs e)
 		{
-			Data.dT *= 0.5;
+			simulator.Data.dT *= 0.5;
 		}
 
 		void OnSpeedUpClicked(object sender, RoutedEventArgs e)
 		{
-			Data.dT *= 2.0;
+			simulator.Data.dT *= 2.0;
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)

@@ -143,7 +143,7 @@ namespace DoublePendulum
 
 		#region Zooming
 
-		protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
 			CaptureMouse();
 			mouseDown = e.GetPosition(this);
@@ -159,7 +159,7 @@ namespace DoublePendulum
 				ovr.MoveTo(e.GetPosition(this));
 		}
 
-		protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
 			if (mouseDown.X > -1)
 			{
@@ -172,7 +172,7 @@ namespace DoublePendulum
 
 				if (mouseUp.X == mouseDown.X && mouseUp.Y == mouseDown.Y)
 				{
-					e.Handled = false;//--- might be handled in the main view for context menu
+					e.Handled = false;//--- might be handled in the main view
 				}
 				else if (mouseUp.X > mouseDown.X && mouseUp.Y > mouseDown.Y)
 				{
