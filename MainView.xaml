@@ -26,11 +26,26 @@
         <Button Content="&lt;&lt;" ToolTip="Slow down simulation" Click="OnSlowDownClicked" Width="30" Margin="3,0,0,0"/>
         <Button Content="&gt;&gt;" ToolTip="Speed up simulation" Click="OnSpeedUpClicked" Width="30" Margin="3,0,0,0"/>
         <TextBox x:Name="textBox1" ToolTip="Total energy at start" IsReadOnly="true" Margin="4,0,0,0"/>
-        <TextBox x:Name="textBox2" ToolTip="Energy deviation" IsReadOnly="true" Margin="4,0,0,0"/>
+        <TextBox x:Name="textBox2" ToolTip="Percentage deviation" IsReadOnly="true" Margin="4,0,0,0"/>
       </local:StackPanelH>
       <local:Poincare2D x:Name="poincare2d" Grid.Row="1" Margin="2"/>
-      <!--<Button Content="?" Grid.Row="1" Margin="3" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Zoom: LMB drag to bottom right&#x0a;Unzoom one level: LMB small drag to top left&#x0a;Unzoom all levels: LMB large drag to top left&#x0a;Start new simulation: RMB click at desired start location&#x0a;Remove last simulation: Ctrl+RMB click"/>-->
-      <local:ColorPicker x:Name="colorPicker" Grid.Row="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Click to change color of current simulation&#x0a;&#x0a;Zoom: LMB drag to bottom right&#x0a;Unzoom one level: LMB small drag to top left&#x0a;Unzoom all levels: LMB large drag to top left&#x0a;Start new simulation: RMB click at desired start location&#x0a;Remove last simulation: Ctrl+RMB click"/>
+      <local:ColorPicker x:Name="colorPicker" Grid.Row="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+      <ComboBox Grid.Row="1" Margin="3" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <ComboBoxItem Content="Quick help to the Poincare map"/>
+        <ComboBoxItem Content=""/>
+        <ComboBoxItem Content="Left mouse button:"/>
+        <ComboBoxItem Content="Drag bottom right to zoom"/>
+        <ComboBoxItem Content="Drag top left (small dist) to unzoom one level"/>
+        <ComboBoxItem Content="Drag top left (large dist) to unzoom all levels"/>
+        <ComboBoxItem Content=""/>
+        <ComboBoxItem Content="Right mouse button:"/>
+        <ComboBoxItem Content="If running, stop current simulation"/>
+        <ComboBoxItem Content="else start new simulation at mouse position"/>
+        <ComboBoxItem Content="Ctrl click to clear current simulation"/>
+        <ComboBoxItem Content=""/>
+        <ComboBoxItem Content="Use the color buttons to change"/>
+        <ComboBoxItem Content="the color of the current simulation"/>
+      </ComboBox>
     </Grid>
   </Grid>
 </UserControl>

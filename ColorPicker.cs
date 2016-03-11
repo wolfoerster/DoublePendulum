@@ -38,7 +38,9 @@ namespace DoublePendulum
 		int size = 16;
 		static SolidColorBrush[] brushes = new SolidColorBrush[] { 
 			Brushes.White, Brushes.Yellow, Brushes.Orange, Brushes.Red, 
-			Brushes.Cyan, Brushes.LawnGreen, Brushes.CornflowerBlue, Brushes.Magenta };
+			Brushes.Cyan, Brushes.LawnGreen, 
+			Brushes.CornflowerBlue, 
+			Brushes.Magenta };
 
 		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
