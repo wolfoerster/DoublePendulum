@@ -29,7 +29,8 @@
         <TextBox x:Name="textBox2" ToolTip="Energy deviation" IsReadOnly="true" Margin="4,0,0,0"/>
       </local:StackPanelH>
       <local:Poincare2D x:Name="poincare2d" Grid.Row="1" Margin="2"/>
-      <Button Content="?" Grid.Row="1" Margin="3" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Zoom: LMB drag to bottom right&#x0a;Unzoom one level: LMB small drag to top left&#x0a;Unzoom all levels: LMB large drag to top left&#x0a;Start new simulation: RMB click at desired start location&#x0a;Remove last simulation: Ctrl+RMB click"/>
+      <!--<Button Content="?" Grid.Row="1" Margin="3" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Zoom: LMB drag to bottom right&#x0a;Unzoom one level: LMB small drag to top left&#x0a;Unzoom all levels: LMB large drag to top left&#x0a;Start new simulation: RMB click at desired start location&#x0a;Remove last simulation: Ctrl+RMB click"/>-->
+      <local:ColorPicker x:Name="colorPicker" Grid.Row="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Click to change color of current simulation&#x0a;&#x0a;Zoom: LMB drag to bottom right&#x0a;Unzoom one level: LMB small drag to top left&#x0a;Unzoom all levels: LMB large drag to top left&#x0a;Start new simulation: RMB click at desired start location&#x0a;Remove last simulation: Ctrl+RMB click"/>
     </Grid>
   </Grid>
 </UserControl>

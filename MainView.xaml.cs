@@ -56,6 +56,8 @@ namespace DoublePendulum
 			poincare2d.Data = simulator.Data;
 			poincare2d.MouseRightButtonUp += Poincare2DMouseRightButtonUp;
 
+			colorPicker.MouseLeftButtonUp += ColorPickerMouseLeftButtonUp;
+
 			timer = new DispatcherTimer(DispatcherPriority.Render);
 			timer.Interval = TimeSpan.FromMilliseconds(30);
 			timer.Tick += TimerTick;
@@ -142,6 +144,12 @@ namespace DoublePendulum
 			Point pt = poincare2d.GetCoordinates(e.GetPosition(poincare2d));
 			if (simulator.Data.Init(pt.X, pt.Y))
 				Start();
+		}
+
+		void ColorPickerMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			simulator.Data.Color = (sender as ColorPicker).Color;
+			poincare2d.Redraw();
 		}
 
 		void OnGravityClicked(object sender, RoutedEventArgs e)

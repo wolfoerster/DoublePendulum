@@ -229,6 +229,8 @@ namespace DoublePendulum
 			get { return nPoints; }
 		}
 
+		public Color Color = Colors.White;
+
 		#endregion Public Properties
 
 		private void FinishInit()

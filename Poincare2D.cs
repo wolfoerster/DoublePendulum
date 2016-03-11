@@ -98,37 +98,33 @@ namespace DoublePendulum
 			if (data.Points.Count == 0)
 				return;
 
-			color = colors[index % colors.Length];
 			bitmap.Lock();
 
 			foreach (var point in data.Points)
-				AddPoint(point);
+				AddPoint(point, data.Color);
 
 			bitmap.Unlock();
 		}
-		Color color;
-		Color[] colors = new Color[] { Colors.White, Colors.Yellow, Colors.Red, Colors.Green, Colors.SkyBlue, Colors.Magenta, Colors.Cyan };
 
 		public void NewPoincarePoint()
 		{
-			color = colors[dataList.Count % colors.Length];
-			AddPoint(Data.Points[Data.Points.Count - 1]);
+			AddPoint(Data.Points[Data.Points.Count - 1], Data.Color);
 		}
 
-		void AddPoint(PoincarePoint pp)
+		void AddPoint(PoincarePoint pp, Color color)
 		{
 			bitmap.Lock();
 
 			double l1 = pp.L1;
-			AddPoint(pp.Q1, l1);
+			AddPoint(pp.Q1, l1, color);
 
 			if (DoReflect)
-				AddPoint(-pp.Q1, l1);
+				AddPoint(-pp.Q1, l1, color);
 
 			bitmap.Unlock();
 		}
 
-		void AddPoint(double q, double l)
+		void AddPoint(double q, double l, Color color)
 		{
 			Point pt = pixelMapper.DataToPixel(new Point(q, l));
 			int x = (int)Math.Round(pt.X);
@@ -155,7 +151,7 @@ namespace DoublePendulum
 
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			if (mouseDown.X > -1)
+			if (mouseDown.X > -1 && ovr != null)
 				ovr.MoveTo(e.GetPosition(this));
 		}
 
