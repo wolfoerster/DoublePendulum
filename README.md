@@ -1,8 +1,6 @@
 # DoublePendulum
 A WPF 3D simulation to inspect the dynamics of a double pendulum
 
-<img src="http://xn--mariafrster-wfb.de/misc/DoublePendulum.jpg" style="width:880px;">
-
 <img src="https://googledrive.com/host/0B_1ZC4l0k6bJMkVCdmVBLTlSbGM/DoublePendulum.jpg" style="width:880px;">
 
 The double pendulum has four degrees of freedom: the angles Q1 and Q2 of masses 1 and 2 and the angular 
@@ -31,4 +29,4 @@ will start immediately.
 To stop a running simulation, click [Stop] or do a right mouse button click in the Poincare map.
 
 Before you start a new simulation, you can change the color of the previous Poincare points with the color buttons. 
-You can remove the points from the last simulation with Ctrl right click.
+You can remove the points of the last simulation with Ctrl right mouse button click.
