@@ -3,6 +3,8 @@ A WPF 3D simulation to inspect the dynamics of a double pendulum
 
 <img src="http://xn--mariafrster-wfb.de/misc/DoublePendulum.jpg" style="width:880px;">
 
+<img src="https://googledrive.com/host/0B_1ZC4l0k6bJMkVCdmVBLTlSbGM/DoublePendulum.jpg" style="width:880px;">
+
 The double pendulum has four degrees of freedom: the angles Q1 and Q2 of masses 1 and 2 and the angular 
 momentums L1 and L2. The angular momentums are related to the angular velocities W1 and W2 of masses 1 and 2.
 
