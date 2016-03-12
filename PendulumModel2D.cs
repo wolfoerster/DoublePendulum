@@ -25,9 +25,9 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	class Pendulum2D : Canvas
+	class PendulumModel2D : Canvas
 	{
-		public Pendulum2D()
+		public PendulumModel2D()
 		{
 			ShowOmegas = false;
 			SizeChanged += MySizeChanged;
@@ -93,7 +93,7 @@ namespace DoublePendulum
 
 		#region Public Properties
 
-		public DataModel Data { get; set; }
+		public PendulumData Data { get; set; }
 
 		public bool ShowOmegas { get; set; }
 

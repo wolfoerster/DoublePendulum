@@ -218,7 +218,7 @@ namespace DoublePendulum
 				return "";
 			}
 
-			long elapsed = watch.ElapsedMilliseconds;
+			elapsed = watch.ElapsedMilliseconds;
 			if (elapsed < 3)
 				return "";
 
@@ -232,6 +232,12 @@ namespace DoublePendulum
 
 			return string.Format("Average: {0:F0} ms, Actual: {1} ms", average, elapsed);
 		}
+
+		public long Elapsed
+		{
+			get { return elapsed; }
+		}
+		long elapsed;
 
 		public double Average
 		{

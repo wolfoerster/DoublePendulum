@@ -61,11 +61,12 @@
     <Compile Include="MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PoincarePoint.cs" />
     <Compile Include="Simulator.cs" />
-    <Compile Include="DataModel.cs" />
-    <Compile Include="Pendulum2D.cs" />
-    <Compile Include="Pendulum3D.cs" />
-    <Compile Include="Poincare2D.cs" />
+    <Compile Include="PendulumData.cs" />
+    <Compile Include="PendulumModel2D.cs" />
+    <Compile Include="PendulumModel3D.cs" />
+    <Compile Include="PoincareMap.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
@@ -107,7 +108,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

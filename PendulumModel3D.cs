@@ -23,9 +23,9 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	public class Pendulum3D : Object3D
+	public class PendulumModel3D : Object3D
 	{
-		public Pendulum3D(Brush brush1, Brush brush2)
+		public PendulumModel3D(Brush brush1, Brush brush2)
 		{
 			MaterialGroup material = new MaterialGroup();
 			material.Children.Add(new DiffuseMaterial(brush1));
@@ -49,7 +49,7 @@ namespace DoublePendulum
 		/// <summary>
 		/// 
 		/// </summary>
-		public DataModel Data { get; set; }
+		public PendulumData Data { get; set; }
 
 		/// <summary>
 		/// 

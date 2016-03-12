@@ -40,7 +40,7 @@ namespace DoublePendulum
 			simulator.NewPoincarePoint += NewPoincarePoint;
 			UpdateText();
 
-			pendulum3d = new Pendulum3D(GetBrush(1), GetBrush(2));
+			pendulum3d = new PendulumModel3D(GetBrush(1), GetBrush(2));
 			pendulum3d.Position = new Point3D(0, 0, -1.5);
 			pendulum3d.Data = simulator.Data;
 			pendulum3d.Update();
@@ -63,17 +63,30 @@ namespace DoublePendulum
 			timer.Tick += TimerTick;
 		}
 		Simulator simulator;
-		Pendulum3D pendulum3d;
+		PendulumModel3D pendulum3d;
 		DispatcherTimer timer;
 
 		void TimerTick(object sender, EventArgs e)
 		{
 			pendulum2d.Update();
 			pendulum3d.Update();
-			if (++count % 33 == 0)
+
+			string msg = checker.GetResult(true);
+			long diff = simulator.Count - count;
+			count = simulator.Count;
+			long cpms = (1000 * diff) / checker.Elapsed;
+
+			DateTime t1 = DateTime.Now;
+			if ((t1 - t0).TotalSeconds > 1)
+			{
+				t0 = t1;
 				UpdateText();
+				Application.Current.MainWindow.Title = string.Format("Double Pendulum ({0}, {1} cpms)", msg, cpms);
+			}
 		}
-		ulong count;
+		long count;
+		DateTime t0;
+		PerformanceChecker checker = new PerformanceChecker();
 
 		void UserDragged(object sender, EventArgs e)
 		{
@@ -114,6 +127,7 @@ namespace DoublePendulum
 			pendulum2d.IsBusy = true;
 			startStopButton.Content = "Stop";
 			timer.Start();
+			checker.Reset();
 			simulator.Start();
 		}
 
@@ -139,9 +153,9 @@ namespace DoublePendulum
 			}
 
 			if (simulator.Data.Points.Count > 0)
-				poincare2d.PushData();
+				poincare2d.CloneData();
 
-			Point pt = poincare2d.GetCoordinates(e.GetPosition(poincare2d));
+			Point pt = poincare2d.PixelToData(e.GetPosition(poincare2d));
 			if (simulator.Data.Init(pt.X, pt.Y))
 				Start();
 		}

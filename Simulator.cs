@@ -16,6 +16,7 @@
 //******************************************************************************************
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using WFTools3D;
 
 namespace DoublePendulum
@@ -34,16 +35,16 @@ namespace DoublePendulum
 			worker.DoWork += Worker_DoWork;
 			worker.ProgressChanged += Worker_ProgressChanged;
 
-			data = new DataModel();
+			data = new PendulumData();
 			data.NewPoincarePoint += Data_NewPoincarePoint;
 		}
-		DataModel data;
+		PendulumData data;
 		BackgroundWorker worker;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public DataModel Data
+		public PendulumData Data
 		{
 			get { return data; }
 		}
@@ -97,18 +98,11 @@ namespace DoublePendulum
 		/// </summary>
 		void Worker_DoWork(object sender, DoWorkEventArgs e)
 		{
-			int count = 0;
-			data.InitMove();
-
+			count = 0;
 			while (true)
 			{
+				count++;
 				data.Move(1000);
-
-				if (++count > 4000)//check energy and update computing time every second (nearly)
-				{
-					count = 0;
-					data.CheckMove();
-				}
 
 				if (worker.CancellationPending == true)
 				{
@@ -117,5 +111,11 @@ namespace DoublePendulum
 				}
 			}
 		}
+
+		public long Count
+		{
+			get { return count; }
+		}
+		long count;
 	}
 }

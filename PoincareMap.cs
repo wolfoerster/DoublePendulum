@@ -26,9 +26,9 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	public class Poincare2D : Border
+	public class PoincareMap : Border
 	{
-		public Poincare2D()
+		public PoincareMap()
 		{
 			Background = Brushes.Black;
 			Child = image = new Image();
@@ -37,15 +37,23 @@ namespace DoublePendulum
 			RenderOptions.SetEdgeMode(image, EdgeMode.Aliased);
 		}
 		Image image;
-		List<DataModel> dataList = new List<DataModel>();
+		List<PendulumData> dataList = new List<PendulumData>();
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public DataModel Data { get; set; }
+		public PendulumData Data { get; set; }
 
 		/// <summary>
-		/// If true, points are reflected across the l1 axis.
+		/// 
+		/// </summary>
+		public void CloneData()
+		{
+			dataList.Add(Data.Clone());
+		}
+
+		/// <summary>
+		/// If true, points are reflected across the L1 axis.
 		/// </summary>
 		public bool DoReflect = true;
 
@@ -64,17 +72,6 @@ namespace DoublePendulum
 		WriteableBitmap bitmap;
 		PixelMapper pixelMapper = new PixelMapper();
 
-		public void Redraw()
-		{
-			bitmap.Lock();
-			bitmap.Clear();
-
-			for (int i = -1; i < dataList.Count; i++)
-				ShowData(i);
-
-			bitmap.Unlock();
-		}
-
 		public void Clear()
 		{
 			pixelMapper.Init(this);
@@ -82,19 +79,20 @@ namespace DoublePendulum
 			bitmap.Clear();
 		}
 
-		public void PushData()
+		public void Redraw()
 		{
-			dataList.Add(Data.Clone());
+			bitmap.Lock();
+			bitmap.Clear();
+
+			foreach (var data in dataList)
+				ShowData(data);
+
+			ShowData(Data);
+			bitmap.Unlock();
 		}
 
-		void ShowData(int index)
+		void ShowData(PendulumData data)
 		{
-			DataModel data = Data;
-			if (index < 0)
-				index = dataList.Count;
-			else
-				data = dataList[index];
-
 			if (data.Points.Count == 0)
 				return;
 
@@ -114,12 +112,14 @@ namespace DoublePendulum
 		void AddPoint(PoincarePoint pp, Color color)
 		{
 			bitmap.Lock();
-
-			double l1 = pp.L1;
-			AddPoint(pp.Q1, l1, color);
+			AddPoint(pp.Q1, pp.L1, color);
 
 			if (DoReflect)
-				AddPoint(-pp.Q1, l1, color);
+			{
+				AddPoint(-pp.Q1, pp.L1, color);
+				//AddPoint(pp.Q1, -pp.L1, color);
+				//AddPoint(-pp.Q1, -pp.L1, color);
+			}
 
 			bitmap.Unlock();
 		}
@@ -132,7 +132,7 @@ namespace DoublePendulum
 			bitmap.DrawRectangle(x, y, x + 1, y + 1, color);
 		}
 
-		public Point GetCoordinates(Point pt)
+		public Point PixelToData(Point pt)
 		{
 			return pixelMapper.PixelToData(pt);
 		}
@@ -172,7 +172,7 @@ namespace DoublePendulum
 				}
 				else if (mouseUp.X > mouseDown.X && mouseUp.Y > mouseDown.Y)
 				{
-					pixelMapper.Zoom(this, pixelMapper.PixelToData(mouseDown), pixelMapper.PixelToData(mouseUp));
+					pixelMapper.Zoom(this, mouseDown, mouseUp);
 					Redraw();
 				}
 				else
@@ -215,17 +215,24 @@ namespace DoublePendulum
 			List<LinearTransform> tx = new List<LinearTransform>();
 			List<LinearTransform> ty = new List<LinearTransform>();
 
-			public void Init(Poincare2D p2d)
+			public void Init(PoincareMap map)
 			{
 				tx.Clear();
 				ty.Clear();
-				Zoom(p2d, new Point(-p2d.Data.Q1Max, p2d.Data.L1Max), new Point(p2d.Data.Q1Max, -p2d.Data.L1Max));
+				Zoom(map, -map.Data.Q1Max, map.Data.Q1Max, map.Data.L1Max, -map.Data.L1Max);
 			}
 
-			public void Zoom(Poincare2D p2d, Point p1, Point p2)
+			public void Zoom(PoincareMap map, Point p1, Point p2)
 			{
-				tx.Add(new LinearTransform(p1.X, p2.X, 0, p2d.ActualWidth - 1));
-				ty.Add(new LinearTransform(p1.Y, p2.Y, 0, p2d.ActualHeight - 1));
+				p1 = PixelToData(p1);
+				p2 = PixelToData(p2);
+				Zoom(map, p1.X, p2.X, p1.Y, p2.Y);
+			}
+
+			void Zoom(PoincareMap map, double x1, double x2, double y1, double y2)
+			{
+				tx.Add(new LinearTransform(x1, x2, 0, map.ActualWidth - 1));
+				ty.Add(new LinearTransform(y1, y2, 0, map.ActualHeight - 1));
 			}
 
 			public void Unzoom(bool singleStep)
