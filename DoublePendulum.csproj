@@ -56,19 +56,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ArcGeometry.cs" />
-    <Compile Include="ColorPicker.cs" />
-    <Compile Include="MainView.xaml.cs">
+    <Compile Include="src\ArcGeometry.cs" />
+    <Compile Include="src\ColorPicker.cs" />
+    <Compile Include="src\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PoincarePoint.cs" />
-    <Compile Include="Simulator.cs" />
-    <Compile Include="PendulumData.cs" />
-    <Compile Include="PendulumModel2D.cs" />
-    <Compile Include="PendulumModel3D.cs" />
-    <Compile Include="PoincareMap.cs" />
-    <Compile Include="Utils.cs" />
-    <Page Include="MainView.xaml">
+    <Compile Include="src\PoincarePoint.cs" />
+    <Compile Include="src\Simulator.cs" />
+    <Compile Include="src\PendulumData.cs" />
+    <Compile Include="src\PendulumModel2D.cs" />
+    <Compile Include="src\PendulumModel3D.cs" />
+    <Compile Include="src\PoincareMap.cs" />
+    <Page Include="src\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

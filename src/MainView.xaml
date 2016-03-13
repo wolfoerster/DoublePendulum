@@ -4,8 +4,8 @@
              xmlns:local="clr-namespace:DoublePendulum"
              xmlns:wft3d="WFTools3D">
   <UserControl.Resources>
-    <ImageBrush x:Key="wood1" ImageSource="Images\wood1.jpg"/>
-    <ImageBrush x:Key="wood2" ImageSource="Images\wood2.jpg"/>
+    <ImageBrush x:Key="wood1" ImageSource="..\Images\wood1.jpg"/>
+    <ImageBrush x:Key="wood2" ImageSource="..\Images\wood2.jpg"/>
   </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
