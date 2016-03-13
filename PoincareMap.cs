@@ -61,7 +61,7 @@ namespace DoublePendulum
 		{
 			pixelMapper.Init(this);
 
-			Point dpi = Utils.GetResolution(this);
+			Point dpi = WFUtils.GetResolution(this);
 			int width = (int)(ActualWidth * dpi.X / 96.0);
 			int height = (int)(ActualHeight * dpi.Y / 96.0);
 

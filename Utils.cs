@@ -25,7 +25,7 @@ using System.Windows.Controls.Primitives;
 using System.Diagnostics;
 using WFTools3D;
 
-namespace DoublePendulum
+namespace xDoublePendulum
 {
 	public static class Utils
 	{

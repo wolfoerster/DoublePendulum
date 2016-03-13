@@ -71,20 +71,15 @@ namespace DoublePendulum
 			pendulum2d.Update();
 			pendulum3d.Update();
 
-			string msg = checker.GetResult(true);
-			long diff = simulator.Count - count;
-			count = simulator.Count;
-			long cpms = (1000 * diff) / checker.Elapsed;
-
+			string msg = checker.GetResult(simulator.Count * 1000);
 			DateTime t1 = DateTime.Now;
 			if ((t1 - t0).TotalSeconds > 1)
 			{
 				t0 = t1;
 				UpdateText();
-				Application.Current.MainWindow.Title = string.Format("Double Pendulum ({0}, {1} cpms)", msg, cpms);
+				Application.Current.MainWindow.Title = string.Format("Double Pendulum ({0})", msg);
 			}
 		}
-		long count;
 		DateTime t0;
 		PerformanceChecker checker = new PerformanceChecker();
 
@@ -145,7 +140,7 @@ namespace DoublePendulum
 				return;
 			}
 
-			if (Helpers.IsCtrlDown())
+			if (WFUtils.IsCtrlDown())
 			{
 				simulator.Data.Points.Clear();
 				poincare2d.Redraw();
