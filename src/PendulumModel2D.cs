@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************
 // Copyright © 2016 Wolfgang Foerster (wolfoerster@gmx.de)
 //
-// This file is part of the EquationOfTime project which can be found on github.com
+// This file is part of the DoublePendulum project which can be found on github.com
 //
 // DoublePendulum is free software: you can redistribute it and/or modify it under the terms 
 // of the GNU General Public License as published by the Free Software Foundation, 
@@ -29,7 +29,7 @@ namespace DoublePendulum
 	{
 		public PendulumModel2D()
 		{
-			ShowOmegas = false;
+			ShowVelos = false;
 			SizeChanged += MySizeChanged;
 
 			axis.Fill = line1.Stroke = line2.Stroke = cold;
@@ -95,7 +95,7 @@ namespace DoublePendulum
 
 		public PendulumData Data { get; set; }
 
-		public bool ShowOmegas { get; set; }
+		public bool ShowVelos { get; set; }
 
 		public bool IsBusy { get; set; }
 
@@ -132,7 +132,7 @@ namespace DoublePendulum
 			AdjustEllipse(weight1, p1, radius);
 			AdjustEllipse(weight2, p2, radius);
 
-			radius = ShowOmegas ? radius / 3 : 0;
+			radius = ShowVelos ? radius / 3 : 0;
 			Point p3 = Center;
 			p3.X += length * Math.Sin(Data.Q1 + Data.W1);
 			p3.Y += length * Math.Cos(Data.Q1 + Data.W1);
@@ -198,7 +198,7 @@ namespace DoublePendulum
 			Rect rect = new Rect(0, 0, RenderSize.Width, RenderSize.Height);
 			dc.DrawRectangle(Brushes.Black, null, rect);
 
-			if (!ShowOmegas)
+			if (!ShowVelos)
 				return;
 
 			double thickness = line1.StrokeThickness * 0.667;
@@ -339,7 +339,7 @@ namespace DoublePendulum
 			double w1 = Data.W1;
 			double w2 = Data.W2;
 
-			if (!ShowOmegas)
+			if (!ShowVelos)
 				w1 = w2 = 0;
 
 			if (hotElli == weight1)

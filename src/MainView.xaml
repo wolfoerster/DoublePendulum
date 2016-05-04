@@ -22,7 +22,7 @@
       <wft3d:StackPanelH VerticalAlignment="Top" Margin="6">
         <Button Content="Start" ToolTip="Start/stop the simulation" Click="OnStartStopClicked" x:Name="startStopButton" Width="60"/>
         <ToggleButton Content="Gravity" ToolTip="Switch gravitation on/off" Click="OnGravityClicked" IsChecked="true" Width="60" Margin="3,0,0,0"/>
-        <ToggleButton Content="Show Omegas" ToolTip="Show angular velocities/accelerations" Click="OnOmegaClicked" Margin="3,0,0,0"/>
+        <ToggleButton Content="Show Velos" ToolTip="Show angular velocities/accelerations" Click="OnVelosClicked" Margin="3,0,0,0"/>
         <Button Content="&lt;&lt;" ToolTip="Slow down simulation" Click="OnSlowDownClicked" Width="30" Margin="3,0,0,0"/>
         <Button Content="&gt;&gt;" ToolTip="Speed up simulation" Click="OnSpeedUpClicked" Width="30" Margin="3,0,0,0"/>
         <TextBox x:Name="textBox1" ToolTip="Total energy at start" IsReadOnly="true" Margin="4,0,0,0"/>
