@@ -40,12 +40,12 @@ namespace DoublePendulum
 		List<PendulumData> dataList = new List<PendulumData>();
 
 		/// <summary>
-		/// 
+		/// Gets or sets the current simulation data.
 		/// </summary>
 		public PendulumData Data { get; set; }
 
 		/// <summary>
-		/// 
+		/// Copies the current simulation data to the data list.
 		/// </summary>
 		public void CloneData()
 		{
@@ -57,6 +57,14 @@ namespace DoublePendulum
 		/// </summary>
 		public bool DoReflect = true;
 
+		/// <summary>
+		/// If true, points for the current simulation are highlighted.
+		/// </summary>
+		public bool DoHighlight = false;
+
+		/// <summary>
+		/// Called when the size has changed.
+		/// </summary>
 		void MySizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			pixelMapper.Init(this);
@@ -85,51 +93,51 @@ namespace DoublePendulum
 			bitmap.Clear();
 
 			foreach (var data in dataList)
-				ShowData(data);
+				ShowData(data, false);
 
-			ShowData(Data);
+			ShowData(Data, DoHighlight);
+
 			bitmap.Unlock();
 		}
 
-		void ShowData(PendulumData data)
+		void ShowData(PendulumData data, bool bigPoints)
 		{
-			if (data.Points.Count == 0)
+			if (data.PoincarePoints.Count == 0)
 				return;
 
 			bitmap.Lock();
 
-			foreach (var point in data.Points)
-				AddPoint(point, data.Color);
+			foreach (var point in data.PoincarePoints)
+				AddPoint(point, data.Color, bigPoints);
 
 			bitmap.Unlock();
 		}
 
 		public void NewPoincarePoint()
 		{
-			AddPoint(Data.Points[Data.Points.Count - 1], Data.Color);
+			AddPoint(Data.PoincarePoints[Data.PoincarePoints.Count - 1], Data.Color, DoHighlight);
 		}
 
-		void AddPoint(PoincarePoint pp, Color color)
+		void AddPoint(PoincarePoint pp, Color color, bool bigPoint)
 		{
 			bitmap.Lock();
-			AddPoint(pp.Q1, pp.L1, color);
+			AddPoint(pp.Q1, pp.L1, color, bigPoint);
 
 			if (DoReflect)
-			{
-				AddPoint(-pp.Q1, pp.L1, color);
-				//AddPoint(pp.Q1, -pp.L1, color);
-				//AddPoint(-pp.Q1, -pp.L1, color);
-			}
+				AddPoint(-pp.Q1, pp.L1, color, bigPoint);
 
 			bitmap.Unlock();
 		}
 
-		void AddPoint(double q, double l, Color color)
+		void AddPoint(double q, double l, Color color, bool bigPoint)
 		{
 			Point pt = pixelMapper.DataToPixel(new Point(q, l));
 			int x = (int)Math.Round(pt.X);
 			int y = (int)Math.Round(pt.Y);
-			bitmap.DrawRectangle(x, y, x + 1, y + 1, color);
+			if (bigPoint)
+				bitmap.FillRectangle(x - 1, y - 1, x + 2, y + 2, color);
+			else
+				bitmap.DrawRectangle(x, y, x + 1, y + 1, color);
 		}
 
 		public Point PixelToData(Point pt)

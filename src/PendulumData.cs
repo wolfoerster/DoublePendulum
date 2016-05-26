@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************************
 using System;
+using System.IO;
 using System.Windows.Media;
 using System.Collections.Generic;
 using WFTools3D;
@@ -25,7 +26,7 @@ namespace DoublePendulum
 	{
 		#region Public Properties
 
-		public List<PoincarePoint> Points = new List<PoincarePoint>();
+		public List<PoincarePoint> PoincarePoints = new List<PoincarePoint>();
 
 		public event EventHandler NewPoincarePoint;
 
@@ -161,7 +162,7 @@ namespace DoublePendulum
 		public PendulumData Clone()
 		{
 			PendulumData data = MemberwiseClone() as PendulumData;
-			data.Points = new List<PoincarePoint>(Points);
+			data.PoincarePoints = new List<PoincarePoint>(PoincarePoints);
 			return data;
 		}
 
@@ -178,7 +179,7 @@ namespace DoublePendulum
 			l20 = w2 + w1 * cos;
 
 			E0 = CalculateEnergy();
-			Points.Clear();
+			PoincarePoints.Clear();
 		}
 		double q10, q20, w10, w20, q2old;
 
@@ -192,7 +193,7 @@ namespace DoublePendulum
 		{
 			//--- E0 is already set!
 			de = 0;
-			Points.Clear();
+			PoincarePoints.Clear();
 
 			q1 = q10 = q01;
 			q2 = q20 = 0;//--- Poincare condition!
@@ -292,7 +293,7 @@ namespace DoublePendulum
 				{
 					//--- move back in time to when q2 was 0
 					double t = -Math.Abs(q2 * dt / (q2 - q2old));
-					Points.Add(new PoincarePoint(q1 + w1 * t, w1 + a1 * t, w2 + a2 * t));
+					PoincarePoints.Add(new PoincarePoint(q1 + w1 * t, w1 + a1 * t, w2 + a2 * t));
 					if (NewPoincarePoint != null)
 						NewPoincarePoint(this, new EventArgs());
 				}
@@ -330,5 +331,102 @@ namespace DoublePendulum
 			}
 		}
 		int count;
+
+		public bool Read(string fileName)
+		{
+			try
+			{
+				using (var reader = new BinaryReader(File.OpenRead(fileName)))
+				{
+					byte version = reader.ReadByte();//Offset 0
+					if (version < 101 || version > 104)
+						return false;
+
+					byte inuse = reader.ReadByte();//1
+					byte[] station = new byte[2];
+					station = reader.ReadBytes(2);//2
+
+					int number = reader.ReadInt32();//4
+					if (number < 0 || number > 999)
+						return false;
+
+					int nPoints = reader.ReadInt32();//8
+					if (nPoints < 0 || nPoints > 99999)
+						return false;
+
+					int nMaxPoints = reader.ReadInt32();//12
+					int duration = reader.ReadInt32();//16
+					q10 = reader.ReadDouble();//20
+					q20 = reader.ReadDouble();//28
+					w10 = reader.ReadDouble();//36
+					w20 = reader.ReadDouble();//44
+					l10 = reader.ReadDouble();//52
+					l20 = reader.ReadDouble();//60
+					q1 = reader.ReadDouble();//68
+					q2 = reader.ReadDouble();//76
+					w1 = reader.ReadDouble();//84
+					w2 = reader.ReadDouble();//92
+					a1 = reader.ReadDouble();//100
+					a2 = reader.ReadDouble();//108
+					double timegone = reader.ReadDouble();//116
+					q2max = reader.ReadDouble();//124
+					e0 = reader.ReadDouble();//132
+					de = reader.ReadDouble();//140
+					dt = reader.ReadDouble();//148
+					q1max = reader.ReadDouble();//156
+					q2old = reader.ReadDouble();//164
+					l1max = reader.ReadDouble();//172
+					l2max = reader.ReadDouble();//180
+					byte red = reader.ReadByte();//188
+					byte green = reader.ReadByte();//189
+					byte blue = reader.ReadByte();//190
+					byte alpha = reader.ReadByte();//191
+					byte flags = reader.ReadByte();//192
+					int offset = 193;
+
+					if (version >= 104)
+					{
+						double rxmin = reader.ReadDouble();//193
+						double rxmax = reader.ReadDouble();//201
+						double rymin = reader.ReadDouble();//209
+						double rymax = reader.ReadDouble();//217
+						offset = 225;
+					}
+					//else
+					//{
+					//	rxmin = rymin = -1;
+					//	rxmax = rymax = +1;
+					//}
+
+					FileInfo info = new FileInfo(fileName);
+					long remaining = info.Length - offset;
+					double nTotal = remaining / 24.0;//soviele sind wirklich drin!
+					if (nTotal != nPoints)
+						nTotal = nPoints;
+
+					PoincarePoints = new List<PoincarePoint>(nPoints);
+					for (int i = 0; i < nPoints; i++)
+					{
+						double q = reader.ReadDouble();
+						double w = reader.ReadDouble();
+						double v = reader.ReadDouble();
+
+						if (q < -q1max || q > q1max)
+							continue;//kann nicht sein!
+
+						PoincarePoints.Add(new PoincarePoint(q, w, v));
+					}
+
+					//--- do some adjustments
+					E0 = e0;
+					Color = Color.FromRgb(red, green, blue);
+				}
+				return true;
+			}
+			catch
+			{
+			}
+			return false;
+		}
 	}
 }

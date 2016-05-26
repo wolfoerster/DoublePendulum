@@ -11,8 +11,18 @@
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="500"/>
+      <ColumnDefinition Width="70"/>
     </Grid.ColumnDefinitions>
-    <wft3d:Scene3D x:Name="scene" Margin="2"/>
+    <Grid>
+      <wft3d:Scene3D x:Name="scene" Margin="2"/>
+      <wft3d:StackPanelH VerticalAlignment="Top" Margin="6">
+        <ToggleButton x:Name="tb0" Content="Pendulum" ToolTip="Show Pendulum" Click="OnViewClicked" IsChecked="true" Width="66"/>
+        <ToggleButton x:Name="tb1" Content="Q1, L1, Q2" ToolTip="Show Q1, L1, Q2" Click="OnViewClicked" Width="66" Margin="3,0,0,0"/>
+        <ToggleButton x:Name="tb2" Content="Q1, L1, L2" ToolTip="Show Q1, L1, L2" Click="OnViewClicked" Width="66" Margin="3,0,0,0"/>
+        <ToggleButton x:Name="tb3" Content="Q2, L2, Q1" ToolTip="Show Q2, L2, Q1" Click="OnViewClicked" Width="66" Margin="3,0,0,0"/>
+        <ToggleButton x:Name="tb4" Content="Q2, L2, L1" ToolTip="Show Q2, L2, L1" Click="OnViewClicked" Width="66" Margin="3,0,0,0"/>
+      </wft3d:StackPanelH>
+    </Grid>
     <Grid Grid.Column="1">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
@@ -46,6 +56,9 @@
         <ComboBoxItem Content="Use the color buttons to change"/>
         <ComboBoxItem Content="the color of the current simulation"/>
       </ComboBox>
+      <ToggleButton Content="RЯ" ToolTip="Switch reflection on/off" Click="OnReflectClicked" IsChecked="true" Grid.Row="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+      <ToggleButton Content="HiLi" ToolTip="Highlight current simulation" Click="OnHighlightClicked" IsChecked="false" Grid.Row="1" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
     </Grid>
+    <ListBox x:Name="energyList" Grid.Column="2" BorderThickness="0" SelectionChanged="EnergyListSelectionChanged"/>
   </Grid>
 </UserControl>
