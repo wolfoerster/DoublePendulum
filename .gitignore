@@ -1,7 +1,11 @@
 # VS2012 files and folders
 *.suo
 *.user
-bin/
+bin/*.exe
+bin/*.dll
+bin/*.pdb
+bin/*.config
+bin/*.manifest
 obj/
 
 # Windows image file caches
