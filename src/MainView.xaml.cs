@@ -77,7 +77,16 @@ namespace DoublePendulum
 
 			InitializeDirectories();
 		}
-		Simulator simulator;
+
+        protected override Size ArrangeOverride(Size arrangeBounds)
+        {
+            var halfHeight = arrangeBounds.Height * 0.5;
+            grid1.ColumnDefinitions[1].Width = new GridLength(halfHeight);
+            grid2.RowDefinitions[1].Height = new GridLength(halfHeight);
+            return base.ArrangeOverride(arrangeBounds);
+        }
+
+        Simulator simulator;
 		PendulumModel3D pendulum3d;
 		Trajectory trajectory;
 		Primitive3D xyPlane;
@@ -286,6 +295,7 @@ namespace DoublePendulum
 
 		void ShowDirectory(string dir)
 		{
+            PoincareMap.Logit("ShowDir {0}", dir);
 			if (simulator.IsBusy)
 				Stop();
 
@@ -293,7 +303,8 @@ namespace DoublePendulum
 			string[] names = Directory.GetFiles(dir, "e*.*");
 			foreach (string name in names)
 			{
-				if (simulator.Data.Read(name))
+                PoincareMap.Logit("Read {0}", name);
+                if (simulator.Data.Read(name))
 				{
 					if (firstTime)
 					{
@@ -305,10 +316,12 @@ namespace DoublePendulum
 				}
 			}
 
-			poincare2d.Redraw();
+            PoincareMap.Logit("Redraw");
+            poincare2d.Redraw();
 			trajectory.Clear();
-		}
+            PoincareMap.Logit("done");
+        }
 
-		#endregion Directories
-	}
+        #endregion Directories
+    }
 }

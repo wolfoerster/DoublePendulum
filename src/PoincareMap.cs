@@ -239,8 +239,11 @@ namespace DoublePendulum
 
 			void Zoom(PoincareMap map, double x1, double x2, double y1, double y2)
 			{
+                //Logit("{0:F3} {1:F3} {2} {3}", x1, x2, 0, map.ActualWidth - 1);
 				tx.Add(new LinearTransform(x1, x2, 0, map.ActualWidth - 1));
-				ty.Add(new LinearTransform(y1, y2, 0, map.ActualHeight - 1));
+
+                //Logit("{0:F3} {1:F3} {2} {3}", y1, y2, 0, map.ActualHeight - 1);
+                ty.Add(new LinearTransform(y1, y2, 0, map.ActualHeight - 1));
 			}
 
 			public void Unzoom(bool singleStep)
@@ -254,19 +257,64 @@ namespace DoublePendulum
 				}
 			}
 
-			public Point DataToPixel(Point pt)
+			public Point DataToPixel(Point data)
 			{
 				int i = tx.Count - 1;
-				return new Point(tx[i].Transform(pt.X), ty[i].Transform(pt.Y));
+                var pt = new Point(tx[i].Transform(data.X), ty[i].Transform(data.Y));
+                //Logit("{0:F3} -> {1}, {2:F3} -> {3}", data.X, pt.X, data.Y, pt.Y);
+                return pt;
 			}
 
 			public Point PixelToData(Point pt)
 			{
 				int i = tx.Count - 1;
-				return new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
+                var data = new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
+                //Logit("{0} -> {1:F3}, {2} -> {3:F3}", pt.X, data.X, pt.Y, data.Y);
+                return data;
 			}
 		}
 
-		#endregion Zooming
-	}
+        #endregion Zooming
+
+        /// <summary>
+        /// Do some logging output.
+        /// </summary>
+        static public void Logit(string format, params object[] args)
+        {
+#if false
+            try
+            {
+                string path = System.IO.Path.GetTempPath() + "AAA.log";
+
+                if (format == null)
+                {
+                    if (System.IO.File.Exists(path))
+                        System.IO.File.Delete(path);
+                    return;
+                }
+
+                string message;
+                if (args == null || args.Length == 0)
+                    message = format;
+                else
+                    message = string.Format(format, args);
+
+                using (System.IO.StreamWriter sw = System.IO.File.AppendText(path))
+                {
+                    DateTime now = DateTime.Now;
+                    sw.Write(now.ToString("dd-MMM-yy") + " ");
+                    sw.Write(now.ToString("HH:mm:ss") + string.Format(".{0:D3} ", now.Millisecond));
+
+                    if (string.IsNullOrWhiteSpace(message))
+                        sw.WriteLine("\"" + message + "\"");
+                    else
+                        sw.WriteLine(message);
+                }
+            }
+            catch
+            {
+            }
+#endif
+        }
+    }
 }
