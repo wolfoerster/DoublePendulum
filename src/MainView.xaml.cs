@@ -59,7 +59,7 @@ namespace DoublePendulum
 			trajectory = new Trajectory(simulator.Data);
 
 			scene.Camera.Position = new Point3D(4, -2, 3);
-			scene.Camera.LookAtOrigin();
+			scene.Camera.LookAt(new Point3D(0, 0, -0.5));
 			scene.Camera.Scale = 0.1;
 			FocusManager.SetFocusedElement(this, scene);
 
