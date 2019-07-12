@@ -80,9 +80,11 @@ namespace DoublePendulum
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
+#if false
             var halfHeight = arrangeBounds.Height * 0.5;
             grid1.ColumnDefinitions[1].Width = new GridLength(halfHeight);
             grid2.RowDefinitions[1].Height = new GridLength(halfHeight);
+#endif
             return base.ArrangeOverride(arrangeBounds);
         }
 
@@ -257,7 +259,7 @@ namespace DoublePendulum
 				OnStartStopClicked(null, null);
 		}
 
-		#region Directories
+#region Directories
 
 		void InitializeDirectories()
 		{
@@ -322,6 +324,6 @@ namespace DoublePendulum
             PoincareMap.Logit("done");
         }
 
-        #endregion Directories
+#endregion Directories
     }
 }

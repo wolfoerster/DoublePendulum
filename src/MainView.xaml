@@ -10,7 +10,7 @@
   <Grid x:Name="grid1">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="99"/>
+      <ColumnDefinition Width="390"/>
       <ColumnDefinition Width="70"/>
     </Grid.ColumnDefinitions>
     <Grid>
@@ -26,7 +26,7 @@
     <Grid Grid.Column="1" x:Name="grid2">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
-        <RowDefinition Height="99"/>
+        <RowDefinition Height="390"/>
       </Grid.RowDefinitions>
       <local:PendulumModel2D x:Name="pendulum2d" Margin="2"/>
       <wft3d:StackPanelH VerticalAlignment="Top" Margin="6">
