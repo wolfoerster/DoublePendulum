@@ -18,31 +18,31 @@ using System;
 
 namespace DoublePendulum
 {
-	public class PoincarePoint
-	{
-		/// <summary>
-		/// Poincare condition: q2 = 0 and w2 > 0.
-		/// </summary>
-		public PoincarePoint(double q1, double w1, double w2)
-		{
-			Q1 = q1;
-			W1 = w1;
-			W2 = w2;
+    public class PoincarePoint
+    {
+        /// <summary>
+        /// Poincare condition: q2 = 0 and w2 > 0.
+        /// </summary>
+        public PoincarePoint(double q1, double w1, double w2)
+        {
+            Q1 = q1;
+            W1 = w1;
+            W2 = w2;
 
-			double cos = Math.Cos(q1);
-			L1 = 2 * W1 + W2 * cos;
-			L2 = W2 + W1 * cos;
-		}
+            double cos = Math.Cos(q1);
+            L1 = 2 * W1 + W2 * cos;
+            L2 = W2 + W1 * cos;
+        }
 
-		public double Q1 { get; private set; }
-		public double W1 { get; private set; }
-		public double W2 { get; private set; }
-		public double L1 { get; private set; }
-		public double L2 { get; private set; }
+        public double Q1 { get; private set; }
+        public double W1 { get; private set; }
+        public double W2 { get; private set; }
+        public double L1 { get; private set; }
+        public double L2 { get; private set; }
 
-		public override string ToString()
-		{
-			return string.Format("{0},{1},{2}", Q1.ToString("G3"), W1.ToString("G3"), W2.ToString("G3"));
-		}
-	}
+        public override string ToString()
+        {
+            return string.Format("{0},{1},{2}", Q1.ToString("G3"), W1.ToString("G3"), W2.ToString("G3"));
+        }
+    }
 }

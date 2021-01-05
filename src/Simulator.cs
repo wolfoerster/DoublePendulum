@@ -21,101 +21,101 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	public class Simulator
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public Simulator()
-		{
-			worker = new BackgroundWorker();
-			worker.WorkerReportsProgress = true;
-			worker.WorkerSupportsCancellation = true;
+    public class Simulator
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public Simulator()
+        {
+            worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
 
-			worker.DoWork += Worker_DoWork;
-			worker.ProgressChanged += Worker_ProgressChanged;
+            worker.DoWork += Worker_DoWork;
+            worker.ProgressChanged += Worker_ProgressChanged;
 
-			data = new PendulumData();
-			data.NewPoincarePoint += Data_NewPoincarePoint;
-		}
-		PendulumData data;
-		BackgroundWorker worker;
+            data = new PendulumData();
+            data.NewPoincarePoint += Data_NewPoincarePoint;
+        }
+        PendulumData data;
+        BackgroundWorker worker;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public PendulumData Data
-		{
-			get { return data; }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public PendulumData Data
+        {
+            get { return data; }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public event EventHandler NewPoincarePoint;
+        /// <summary>
+        /// 
+        /// </summary>
+        public event EventHandler NewPoincarePoint;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			if (NewPoincarePoint != null)
-				NewPoincarePoint(this, new EventArgs());
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (NewPoincarePoint != null)
+                NewPoincarePoint(this, new EventArgs());
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void Data_NewPoincarePoint(object sender, EventArgs e)
-		{
-			worker.ReportProgress(0);
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        void Data_NewPoincarePoint(object sender, EventArgs e)
+        {
+            worker.ReportProgress(0);
+        }
 
-		public bool Start()
-		{
-			worker.RunWorkerAsync();
-			return true;
-		}
+        public bool Start()
+        {
+            worker.RunWorkerAsync();
+            return true;
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Stop()
-		{
-			worker.CancelAsync();
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Stop()
+        {
+            worker.CancelAsync();
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public bool IsBusy
-		{
-			get { return worker.IsBusy; }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsBusy
+        {
+            get { return worker.IsBusy; }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		void Worker_DoWork(object sender, DoWorkEventArgs e)
-		{
-			count = 0;
-			while (true)
-			{
-				count++;
-				data.Move(1000);
+        /// <summary>
+        /// 
+        /// </summary>
+        void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            count = 0;
+            while (true)
+            {
+                count++;
+                data.Move(1000);
 
-				if (worker.CancellationPending == true)
-				{
-					e.Cancel = true;
-					break;
-				}
-			}
-		}
+                if (worker.CancellationPending == true)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+            }
+        }
 
-		public long Count
-		{
-			get { return count; }
-		}
-		long count;
-	}
+        public long Count
+        {
+            get { return count; }
+        }
+        long count;
+    }
 }

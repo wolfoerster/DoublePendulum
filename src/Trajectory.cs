@@ -24,229 +24,229 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	public class Trajectory : Primitive3D
-	{
-		protected override MeshGeometry3D CreateMesh()
-		{
-			return null;
-		}
+    public class Trajectory : Primitive3D
+    {
+        protected override MeshGeometry3D CreateMesh()
+        {
+            return null;
+        }
 
-		public Trajectory(PendulumData data)
-			: base(8)
-		{
-			Data = data;
+        public Trajectory(PendulumData data)
+            : base(8)
+        {
+            Data = data;
 
-			//--- setup the material brush
-			LinearGradientBrush brush = new LinearGradientBrush(new GradientStopCollection
-			{
-				new GradientStop(Colors.Red, 0),
-				new GradientStop(Colors.Green, 0.1),
-				new GradientStop(Colors.Blue, 0.2),
-				new GradientStop(Colors.Goldenrod, 0.3),
-				new GradientStop(Colors.Cyan, 0.4),
-				new GradientStop(Colors.Magenta, 0.5),
-				new GradientStop(Colors.Yellow, 0.6),
-				new GradientStop(Colors.Firebrick, 0.7),
-				new GradientStop(Colors.LimeGreen, 0.8),
-				new GradientStop(Colors.LightBlue, 0.9),
-				new GradientStop(Colors.Orange, 1)
-			}, 0);
-			brush.Freeze();
-			DiffuseMaterial.Brush = brush;
+            //--- setup the material brush
+            LinearGradientBrush brush = new LinearGradientBrush(new GradientStopCollection
+            {
+                new GradientStop(Colors.Red, 0),
+                new GradientStop(Colors.Green, 0.1),
+                new GradientStop(Colors.Blue, 0.2),
+                new GradientStop(Colors.Goldenrod, 0.3),
+                new GradientStop(Colors.Cyan, 0.4),
+                new GradientStop(Colors.Magenta, 0.5),
+                new GradientStop(Colors.Yellow, 0.6),
+                new GradientStop(Colors.Firebrick, 0.7),
+                new GradientStop(Colors.LimeGreen, 0.8),
+                new GradientStop(Colors.LightBlue, 0.9),
+                new GradientStop(Colors.Orange, 1)
+            }, 0);
+            brush.Freeze();
+            DiffuseMaterial.Brush = brush;
 
-			//--- setup the cross section of the tube
-			double radius = 0.01;
-			for (int id = 0; id < divisions; id++)
-			{
-				double phi = id * MathUtils.PIx2 / divisions;
-				Section.Add(new Point(radius * Math.Cos(phi), radius * Math.Sin(phi)));
-			}
-		}
-		PendulumData Data;
-		List<Point> Section = new List<Point>();
-		List<Point3D> Points = new List<Point3D>();
-		LinearTransform3D T = new LinearTransform3D();
+            //--- setup the cross section of the tube
+            double radius = 0.01;
+            for (int id = 0; id < divisions; id++)
+            {
+                double phi = id * MathUtils.PIx2 / divisions;
+                Section.Add(new Point(radius * Math.Cos(phi), radius * Math.Sin(phi)));
+            }
+        }
+        PendulumData Data;
+        List<Point> Section = new List<Point>();
+        List<Point3D> Points = new List<Point3D>();
+        LinearTransform3D T = new LinearTransform3D();
 
-		public int Mode
-		{
-			get { return mode; }
-			set { mode = value; Clear(); }
-		}
-		private int mode;
+        public int Mode
+        {
+            get { return mode; }
+            set { mode = value; Clear(); }
+        }
+        private int mode;
 
-		/// <summary>
-		/// Clear everything and initialize transformations.
-		/// </summary>
-		public void Clear()
-		{
-			Points.Clear();
-			positions.Clear();
-			normals.Clear();
-			textureCoordinates.Clear();
-			triangleIndices.Clear();
-			startPathIndex = 0;
-			Mesh = new MeshGeometry3D();
+        /// <summary>
+        /// Clear everything and initialize transformations.
+        /// </summary>
+        public void Clear()
+        {
+            Points.Clear();
+            positions.Clear();
+            normals.Clear();
+            textureCoordinates.Clear();
+            triangleIndices.Clear();
+            startPathIndex = 0;
+            Mesh = new MeshGeometry3D();
 
-			switch (mode)
-			{
-				case 1: T.Init(Data.Q1Max, Data.L1Max, Data.Q2Max); break;
-				case 2: T.Init(Data.Q1Max, Data.L1Max, Data.L2Max); break;
-				case 3: T.Init(Data.Q2Max, Data.L2Max, Data.Q1Max); break;
-				case 4: T.Init(Data.Q2Max, Data.L2Max, Data.L1Max); break;
-			}
-		}
-		int startPathIndex = 0;
-		List<Point3D> positions = new List<Point3D>();
-		List<Vector3D> normals = new List<Vector3D>();
-		List<Point> textureCoordinates = new List<Point>();
-		List<int> triangleIndices = new List<int>();
+            switch (mode)
+            {
+                case 1: T.Init(Data.Q1Max, Data.L1Max, Data.Q2Max); break;
+                case 2: T.Init(Data.Q1Max, Data.L1Max, Data.L2Max); break;
+                case 3: T.Init(Data.Q2Max, Data.L2Max, Data.Q1Max); break;
+                case 4: T.Init(Data.Q2Max, Data.L2Max, Data.L1Max); break;
+            }
+        }
+        int startPathIndex = 0;
+        List<Point3D> positions = new List<Point3D>();
+        List<Vector3D> normals = new List<Vector3D>();
+        List<Point> textureCoordinates = new List<Point>();
+        List<int> triangleIndices = new List<int>();
 
-		/// <summary>
-		/// Adds the current state and updates the mesh asynchronously.
-		/// </summary>
-		async public void Update()
-		{
-			switch (mode)
-			{
-				case 0: return;
-				case 1: Points.Add(T.Transform(Data.Q1, Data.L1, Data.Q2)); break;
-				case 2: Points.Add(T.Transform(Data.Q1, Data.L1, Data.L2)); break;
-				case 3: Points.Add(T.Transform(Data.Q2, Data.L2, Data.Q1)); break;
-				case 4: Points.Add(T.Transform(Data.Q2, Data.L2, Data.L1)); break;
-			}
+        /// <summary>
+        /// Adds the current state and updates the mesh asynchronously.
+        /// </summary>
+        async public void Update()
+        {
+            switch (mode)
+            {
+                case 0: return;
+                case 1: Points.Add(T.Transform(Data.Q1, Data.L1, Data.Q2)); break;
+                case 2: Points.Add(T.Transform(Data.Q1, Data.L1, Data.L2)); break;
+                case 3: Points.Add(T.Transform(Data.Q2, Data.L2, Data.Q1)); break;
+                case 4: Points.Add(T.Transform(Data.Q2, Data.L2, Data.L1)); break;
+            }
 
-			if (busy || Points.Count % 4 != 3)
-				return;
+            if (busy || Points.Count % 4 != 3)
+                return;
 
-			busy = true;
-			await Task.Run(() =>
-			{
-				try
-				{
-					AddTube(Points);
-				}
-				catch
-				{
-					Clear();
-				}
-			});
+            busy = true;
+            await Task.Run(() =>
+            {
+                try
+                {
+                    AddTube(Points);
+                }
+                catch
+                {
+                    Clear();
+                }
+            });
 
-			Mesh.Positions = new Point3DCollection(positions);
-			Mesh.Normals = new Vector3DCollection(normals);
-			Mesh.TextureCoordinates = new PointCollection(textureCoordinates);
-			Mesh.TriangleIndices = new Int32Collection(triangleIndices);
-			busy = false;
-		}
-		bool busy;
+            Mesh.Positions = new Point3DCollection(positions);
+            Mesh.Normals = new Vector3DCollection(normals);
+            Mesh.TextureCoordinates = new PointCollection(textureCoordinates);
+            Mesh.TriangleIndices = new Int32Collection(triangleIndices);
+            busy = false;
+        }
+        bool busy;
 
-		//--- based on MeshBuilder.AddTube() from https://github.com/helix-toolkit
-		private void AddTube(List<Point3D> path)
-		{
-			int pathCount = path.Count;
-			int sectionCount = Section.Count;
+        //--- based on MeshBuilder.AddTube() from https://github.com/helix-toolkit
+        private void AddTube(List<Point3D> path)
+        {
+            int pathCount = path.Count;
+            int sectionCount = Section.Count;
 
-			//--- if this is called for the first time, find a vector v which is perpendicular to the direction of the first path segment
-			if (startPathIndex == 0)
-				v = FindAnyPerpendicular(path[1] - path[0]);
+            //--- if this is called for the first time, find a vector v which is perpendicular to the direction of the first path segment
+            if (startPathIndex == 0)
+                v = FindAnyPerpendicular(path[1] - path[0]);
 
-			//--- calculate positions and normals
-			int stopPathIndex = pathCount - 1;
-			for (int i = startPathIndex; i < stopPathIndex; i++)
-			{
-				//--- calculate direction from previous to next point in path
-				Vector3D forward = path[i + 1] - path[i == 0 ? 0 : i - 1];
+            //--- calculate positions and normals
+            int stopPathIndex = pathCount - 1;
+            for (int i = startPathIndex; i < stopPathIndex; i++)
+            {
+                //--- calculate direction from previous to next point in path
+                Vector3D forward = path[i + 1] - path[i == 0 ? 0 : i - 1];
 
-				//--- find vector u which is perpendicular to this direction and v (note that v already is perpendicular to last direction)
-				Vector3D u = v.Cross(forward);
-				u.Normalize();
+                //--- find vector u which is perpendicular to this direction and v (note that v already is perpendicular to last direction)
+                Vector3D u = v.Cross(forward);
+                u.Normalize();
 
-				//--- recalc v
-				v = forward.Cross(u);
-				v.Normalize();
+                //--- recalc v
+                v = forward.Cross(u);
+                v.Normalize();
 
-				for (int j = 0; j < sectionCount; j++)
-				{
-					Vector3D n = Section[j].X * u + Section[j].Y * v;
-					Point3D pt = path[i] + n;
-					positions.Add(pt);
+                for (int j = 0; j < sectionCount; j++)
+                {
+                    Vector3D n = Section[j].X * u + Section[j].Y * v;
+                    Point3D pt = path[i] + n;
+                    positions.Add(pt);
 
-					n.Normalize();
-					normals.Add(n);
-				}
-			}
+                    n.Normalize();
+                    normals.Add(n);
+                }
+            }
 
-			//--- set triangle indices
-			for (int i = startPathIndex > 0 ? startPathIndex : 1; i < stopPathIndex; i++)
-			{
-				for (int j = 1; j <= sectionCount; j++)
-				{
-					int i11 = i * sectionCount + j;
-					int i10 = i11 - 1;
-					int i01 = i11 - sectionCount;
-					int i00 = i01 - 1;
-					if (j == sectionCount)//section is closed!
-					{
-						i11 -= sectionCount;
-						i01 -= sectionCount;
-					}
-					AddTriangleIndices(i00, i01, i11);
-					AddTriangleIndices(i11, i10, i00);
-				}
-			}
+            //--- set triangle indices
+            for (int i = startPathIndex > 0 ? startPathIndex : 1; i < stopPathIndex; i++)
+            {
+                for (int j = 1; j <= sectionCount; j++)
+                {
+                    int i11 = i * sectionCount + j;
+                    int i10 = i11 - 1;
+                    int i01 = i11 - sectionCount;
+                    int i00 = i01 - 1;
+                    if (j == sectionCount)//section is closed!
+                    {
+                        i11 -= sectionCount;
+                        i01 -= sectionCount;
+                    }
+                    AddTriangleIndices(i00, i01, i11);
+                    AddTriangleIndices(i11, i10, i00);
+                }
+            }
 
-			//--- recalculate all texture coordinates
-			textureCoordinates = new List<Point>();
-			for (int i = 0; i < pathCount; i++)
-			{
-				for (int j = 0; j < sectionCount; j++)
-				{
-					double tx = i / (pathCount - 1.0);
-					double ty = j / (sectionCount - 1.0);
-					textureCoordinates.Add(new Point(tx, ty));
-				}
-			}
+            //--- recalculate all texture coordinates
+            textureCoordinates = new List<Point>();
+            for (int i = 0; i < pathCount; i++)
+            {
+                for (int j = 0; j < sectionCount; j++)
+                {
+                    double tx = i / (pathCount - 1.0);
+                    double ty = j / (sectionCount - 1.0);
+                    textureCoordinates.Add(new Point(tx, ty));
+                }
+            }
 
-			startPathIndex = stopPathIndex;
-		}
-		Vector3D v;
+            startPathIndex = stopPathIndex;
+        }
+        Vector3D v;
 
-		Vector3D FindAnyPerpendicular(Vector3D direction)
-		{
-			direction.Normalize();
+        Vector3D FindAnyPerpendicular(Vector3D direction)
+        {
+            direction.Normalize();
 
-			Vector3D result = direction.Cross(Math3D.UnitX);
-			if (result.LengthSquared < 1e-3)
-				result = direction.Cross(Math3D.UnitY);
+            Vector3D result = direction.Cross(Math3D.UnitX);
+            if (result.LengthSquared < 1e-3)
+                result = direction.Cross(Math3D.UnitY);
 
-			return result;
-		}
+            return result;
+        }
 
-		void AddTriangleIndices(int i, int j, int k)
-		{
-			triangleIndices.Add(i);
-			triangleIndices.Add(j);
-			triangleIndices.Add(k);
-		}
-	}
+        void AddTriangleIndices(int i, int j, int k)
+        {
+            triangleIndices.Add(i);
+            triangleIndices.Add(j);
+            triangleIndices.Add(k);
+        }
+    }
 
-	internal class LinearTransform3D
-	{
-		public void Init(double xmax, double ymax, double zmax)
-		{
-			tx = CreateTransform(xmax, 1);
-			ty = CreateTransform(ymax, 1);
-			tz = CreateTransform(zmax, 1);
-		}
-		LinearTransform tx, ty, tz;
+    internal class LinearTransform3D
+    {
+        public void Init(double xmax, double ymax, double zmax)
+        {
+            tx = CreateTransform(xmax, 1);
+            ty = CreateTransform(ymax, 1);
+            tz = CreateTransform(zmax, 1);
+        }
+        LinearTransform tx, ty, tz;
 
-		LinearTransform CreateTransform(double dataValue, double worldValue)
-		{
-			return new LinearTransform(-dataValue, dataValue, -worldValue, worldValue);
-		}
+        LinearTransform CreateTransform(double dataValue, double worldValue)
+        {
+            return new LinearTransform(-dataValue, dataValue, -worldValue, worldValue);
+        }
 
-		public Point3D Transform(double x, double y, double z)
-		{
-			return new Point3D(tx.Transform(x), ty.Transform(y), tz.Transform(z));
-		}
-	}
+        public Point3D Transform(double x, double y, double z)
+        {
+            return new Point3D(tx.Transform(x), ty.Transform(y), tz.Transform(z));
+        }
+    }
 }

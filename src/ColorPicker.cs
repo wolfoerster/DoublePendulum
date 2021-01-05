@@ -20,37 +20,37 @@ using System.Windows.Media;
 
 namespace DoublePendulum
 {
-	public class ColorPicker : FrameworkElement
-	{
-		protected override void OnRender(DrawingContext dc)
-		{
-			int id = 0, m = 2;
+    public class ColorPicker : FrameworkElement
+    {
+        protected override void OnRender(DrawingContext dc)
+        {
+            int id = 0, m = 2;
 
-			for (int iy = 0; iy < 4; iy++)
-			{
-				for (int ix = 0, max = 4 / (iy + 1); ix < max; ix++)
-				{
-					Rect rect = new Rect(m + ix * size, m + iy * size, size - m, size - m);
-					dc.DrawRectangle(brushes[id++], null, rect);
-				}
-			}
-		}
-		int size = 16;
-		static SolidColorBrush[] brushes = new SolidColorBrush[] { 
-			Brushes.White, Brushes.Yellow, Brushes.Orange, Brushes.Red, 
-			Brushes.Cyan, Brushes.LawnGreen, 
-			Brushes.CornflowerBlue, 
-			Brushes.Magenta };
+            for (int iy = 0; iy < 4; iy++)
+            {
+                for (int ix = 0, max = 4 / (iy + 1); ix < max; ix++)
+                {
+                    Rect rect = new Rect(m + ix * size, m + iy * size, size - m, size - m);
+                    dc.DrawRectangle(brushes[id++], null, rect);
+                }
+            }
+        }
+        int size = 16;
+        static SolidColorBrush[] brushes = new SolidColorBrush[] {
+            Brushes.White, Brushes.Yellow, Brushes.Orange, Brushes.Red,
+            Brushes.Cyan, Brushes.LawnGreen,
+            Brushes.CornflowerBlue,
+            Brushes.Magenta };
 
-		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-		{
-			Point pt = e.GetPosition(this);
-			int ix = (int)(pt.X / size);
-			int iy = (int)(pt.Y / size);
-			int id = iy == 0 ? ix : iy == 1 ? ix + 4 : iy + 4;
-			Color = brushes[id].Color;
-		}
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            Point pt = e.GetPosition(this);
+            int ix = (int)(pt.X / size);
+            int iy = (int)(pt.Y / size);
+            int id = iy == 0 ? ix : iy == 1 ? ix + 4 : iy + 4;
+            Color = brushes[id].Color;
+        }
 
-		public Color Color;
-	}
+        public Color Color;
+    }
 }

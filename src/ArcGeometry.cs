@@ -20,55 +20,55 @@ using System.Windows.Media;
 
 namespace DoublePendulum
 {
-	public class ArcGeometry
-	{
-		/// <summary>
-		/// Creates the specified arc.
-		/// </summary>
-		/// <param name="center">The center in pixel.</param>
-		/// <param name="radius">The radius in pixel.</param>
-		/// <param name="startAngle">The start angle in radians.</param>
-		/// <param name="stopAngle">The stop angle in radians.</param>
-		/// <param name="segmentLength">The length of a circle segment in pixel.</param>
-		static public Geometry Create(Point center, double radius,
-			double startAngle, double stopAngle,
-			double segmentLength)
-		{
-			if (startAngle == stopAngle)
-				return Geometry.Empty;
+    public class ArcGeometry
+    {
+        /// <summary>
+        /// Creates the specified arc.
+        /// </summary>
+        /// <param name="center">The center in pixel.</param>
+        /// <param name="radius">The radius in pixel.</param>
+        /// <param name="startAngle">The start angle in radians.</param>
+        /// <param name="stopAngle">The stop angle in radians.</param>
+        /// <param name="segmentLength">The length of a circle segment in pixel.</param>
+        static public Geometry Create(Point center, double radius,
+            double startAngle, double stopAngle,
+            double segmentLength)
+        {
+            if (startAngle == stopAngle)
+                return Geometry.Empty;
 
-			StreamGeometry streamGeometry = new StreamGeometry();
+            StreamGeometry streamGeometry = new StreamGeometry();
 
-			using (StreamGeometryContext ctx = streamGeometry.Open())
-			{
-				//double phi = MathUtils.NormalizeRadians(stopAngle - startAngle);//in radians
-				double phi = stopAngle - startAngle;//in radians
-				double totalLength = Math.Abs(phi * radius);//in DIP
+            using (StreamGeometryContext ctx = streamGeometry.Open())
+            {
+                //double phi = MathUtils.NormalizeRadians(stopAngle - startAngle);//in radians
+                double phi = stopAngle - startAngle;//in radians
+                double totalLength = Math.Abs(phi * radius);//in DIP
 
-				int iSteps = (int)(totalLength / segmentLength + 1.5);
-				double dPhi = phi / iSteps;//in radians
+                int iSteps = (int)(totalLength / segmentLength + 1.5);
+                double dPhi = phi / iSteps;//in radians
 
-				ctx.BeginFigure(GetPoint(center, radius, startAngle), false, false);
+                ctx.BeginFigure(GetPoint(center, radius, startAngle), false, false);
 
-				for (int i = 0; i < iSteps; i++)
-				{
-					double angle = startAngle + (i + 1) * dPhi;
-					ctx.LineTo(GetPoint(center, radius, angle), true, false);
-				}
-			}
+                for (int i = 0; i < iSteps; i++)
+                {
+                    double angle = startAngle + (i + 1) * dPhi;
+                    ctx.LineTo(GetPoint(center, radius, angle), true, false);
+                }
+            }
 
-			return streamGeometry;
-		}
+            return streamGeometry;
+        }
 
-		/// <summary>
-		/// Gets the point which is defined by center, radius and phi. 
-		/// Per definition phi = 0 points to the right, phi = PI / 2 points to the top.
-		/// </summary>
-		private static Point GetPoint(Point center, double radius, double phi)
-		{
-			double x = radius * Math.Cos(phi);
-			double y = radius * Math.Sin(phi);
-			return new Point(center.X + x, center.Y - y);
-		}
-	}
+        /// <summary>
+        /// Gets the point which is defined by center, radius and phi. 
+        /// Per definition phi = 0 points to the right, phi = PI / 2 points to the top.
+        /// </summary>
+        private static Point GetPoint(Point center, double radius, double phi)
+        {
+            double x = radius * Math.Cos(phi);
+            double y = radius * Math.Sin(phi);
+            return new Point(center.X + x, center.Y - y);
+        }
+    }
 }
