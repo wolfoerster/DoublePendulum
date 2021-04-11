@@ -80,7 +80,7 @@ namespace DoublePendulum
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
-#if false
+#if !false
             var halfHeight = arrangeBounds.Height * 0.5;
             grid1.ColumnDefinitions[1].Width = new GridLength(halfHeight);
             grid2.RowDefinitions[1].Height = new GridLength(halfHeight);
@@ -203,7 +203,7 @@ namespace DoublePendulum
             if (simulator.Data.PoincarePoints.Count > 0)
                 poincare2d.CloneData();
 
-            Point pt = poincare2d.PixelToData(e.GetPosition(poincare2d));
+            Point pt = poincare2d.DipToData(e.GetPosition(poincare2d));
             if (simulator.Data.Init(pt.X, pt.Y))
             {
                 trajectory.Clear();
@@ -297,7 +297,6 @@ namespace DoublePendulum
 
         void ShowDirectory(string dir)
         {
-            PoincareMap.Logit("ShowDir {0}", dir);
             if (simulator.IsBusy)
                 Stop();
 
@@ -305,7 +304,6 @@ namespace DoublePendulum
             string[] names = Directory.GetFiles(dir, "e*.*");
             foreach (string name in names)
             {
-                PoincareMap.Logit("Read {0}", name);
                 if (simulator.Data.Read(name))
                 {
                     if (firstTime)
@@ -318,10 +316,8 @@ namespace DoublePendulum
                 }
             }
 
-            PoincareMap.Logit("Redraw");
             poincare2d.Redraw();
             trajectory.Clear();
-            PoincareMap.Logit("done");
         }
 
         #endregion Directories

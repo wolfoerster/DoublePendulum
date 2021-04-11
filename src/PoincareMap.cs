@@ -63,19 +63,30 @@ namespace DoublePendulum
         public bool DoHighlight = false;
 
         /// <summary>
+        /// Scaling factors for the conversion of dips to pixels.
+        /// </summary>
+        private double dpiScaleX, dpiScaleY;
+
+        public int PixelWidth => bitmap.PixelWidth;
+
+        public int PixelHeight => bitmap.PixelHeight;
+
+        /// <summary>
         /// Called when the size has changed.
         /// </summary>
         void MySizeChanged(object sender, SizeChangedEventArgs e)
         {
-            pixelMapper.Init(this);
+            Point dpi = WFUtils.GetResolution(this);
+            dpiScaleX = dpi.X / 96.0;
+            dpiScaleY = dpi.Y / 96.0;
 
-            //Point dpi = WFUtils.GetResolution(this);
-            Point dpi = new Point(96, 96);
-            int width = (int)(ActualWidth * dpi.X / 96.0);
-            int height = (int)(ActualHeight * dpi.Y / 96.0);
+            int width = (int)(ActualWidth * dpiScaleX);
+            int height = (int)(ActualHeight * dpiScaleY);
 
             bitmap = new WriteableBitmap(width, height, dpi.X, dpi.Y, PixelFormats.Pbgra32, null);
             image.Source = bitmap;
+
+            pixelMapper.Init(this);
             Redraw();
         }
         WriteableBitmap bitmap;
@@ -141,9 +152,26 @@ namespace DoublePendulum
                 bitmap.DrawRectangle(x, y, x + 1, y + 1, color);
         }
 
-        public Point PixelToData(Point pt)
+        public Point DipToData(Point pt)
         {
-            return pixelMapper.PixelToData(pt);
+            var pixel = DipToPixel(pt);
+            return pixelMapper.PixelToData(pixel);
+        }
+
+        private Point DipToPixel(Point pointInDip)
+        {
+            var pt = pointInDip;
+            pt.X *= dpiScaleX;
+            pt.Y *= dpiScaleY;
+            return pt;
+        }
+
+        private Point PixelToDip(Point pointInPixel)
+        {
+            var pt = pointInPixel;
+            pt.X /= dpiScaleX;
+            pt.Y /= dpiScaleY;
+            return pt;
         }
 
         #region Zooming
@@ -181,7 +209,9 @@ namespace DoublePendulum
                 }
                 else if (mouseUp.X > mouseDown.X && mouseUp.Y > mouseDown.Y)
                 {
-                    pixelMapper.Zoom(this, mouseDown, mouseUp);
+                    var pixelDown = DipToPixel(mouseDown);
+                    var pixelUp = DipToPixel(mouseUp);
+                    pixelMapper.Zoom(this, pixelDown, pixelUp);
                     Redraw();
                 }
                 else
@@ -231,20 +261,17 @@ namespace DoublePendulum
                 Zoom(map, -map.Data.Q1Max, map.Data.Q1Max, map.Data.L1Max, -map.Data.L1Max);
             }
 
-            public void Zoom(PoincareMap map, Point p1, Point p2)
+            public void Zoom(PoincareMap map, Point pixel1, Point pixel2)
             {
-                p1 = PixelToData(p1);
-                p2 = PixelToData(p2);
-                Zoom(map, p1.X, p2.X, p1.Y, p2.Y);
+                var data1 = PixelToData(pixel1);
+                var data2 = PixelToData(pixel2);
+                Zoom(map, data1.X, data2.X, data1.Y, data2.Y);
             }
 
-            void Zoom(PoincareMap map, double x1, double x2, double y1, double y2)
+            private void Zoom(PoincareMap map, double dataX1, double dataX2, double dataY1, double dataY2)
             {
-                //Logit("{0:F3} {1:F3} {2} {3}", x1, x2, 0, map.ActualWidth - 1);
-                tx.Add(new LinearTransform(x1, x2, 0, map.ActualWidth - 1));
-
-                //Logit("{0:F3} {1:F3} {2} {3}", y1, y2, 0, map.ActualHeight - 1);
-                ty.Add(new LinearTransform(y1, y2, 0, map.ActualHeight - 1));
+                tx.Add(new LinearTransform(dataX1, dataX2, 0, map.PixelWidth - 1));
+                ty.Add(new LinearTransform(dataY1, dataY2, 0, map.PixelHeight - 1));
             }
 
             public void Unzoom(bool singleStep)
@@ -258,64 +285,19 @@ namespace DoublePendulum
                 }
             }
 
-            public Point DataToPixel(Point data)
+            public Point DataToPixel(Point pt)
             {
                 int i = tx.Count - 1;
-                var pt = new Point(tx[i].Transform(data.X), ty[i].Transform(data.Y));
-                //Logit("{0:F3} -> {1}, {2:F3} -> {3}", data.X, pt.X, data.Y, pt.Y);
-                return pt;
+                return new Point(tx[i].Transform(pt.X), ty[i].Transform(pt.Y));
             }
 
             public Point PixelToData(Point pt)
             {
                 int i = tx.Count - 1;
-                var data = new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
-                //Logit("{0} -> {1:F3}, {2} -> {3:F3}", pt.X, data.X, pt.Y, data.Y);
-                return data;
+                return new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
             }
         }
 
         #endregion Zooming
-
-        /// <summary>
-        /// Do some logging output.
-        /// </summary>
-        static public void Logit(string format, params object[] args)
-        {
-#if false
-            try
-            {
-                string path = System.IO.Path.GetTempPath() + "AAA.log";
-
-                if (format == null)
-                {
-                    if (System.IO.File.Exists(path))
-                        System.IO.File.Delete(path);
-                    return;
-                }
-
-                string message;
-                if (args == null || args.Length == 0)
-                    message = format;
-                else
-                    message = string.Format(format, args);
-
-                using (System.IO.StreamWriter sw = System.IO.File.AppendText(path))
-                {
-                    DateTime now = DateTime.Now;
-                    sw.Write(now.ToString("dd-MMM-yy") + " ");
-                    sw.Write(now.ToString("HH:mm:ss") + string.Format(".{0:D3} ", now.Millisecond));
-
-                    if (string.IsNullOrWhiteSpace(message))
-                        sw.WriteLine("\"" + message + "\"");
-                    else
-                        sw.WriteLine(message);
-                }
-            }
-            catch
-            {
-            }
-#endif
-        }
     }
 }
