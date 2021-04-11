@@ -192,7 +192,7 @@ namespace DoublePendulum
 			if (simulator.Data.PoincarePoints.Count > 0)
 				poincare2d.CloneData();
 
-			Point pt = poincare2d.PixelToData(e.GetPosition(poincare2d));
+			Point pt = poincare2d.DipToData(e.GetPosition(poincare2d));
 			if (simulator.Data.Init(pt.X, pt.Y))
 			{
 				trajectory.Clear();

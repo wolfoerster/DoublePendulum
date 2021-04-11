@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2021 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -21,75 +21,84 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
-	{
-		public MainWindow()
-		{
-			InitializeComponent();
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private bool doMaximize;
 
-			#region Initial size and position
+        public MainWindow()
+        {
+            InitializeComponent();
 
-			Loaded += MeLoaded;
-			Closing += MeClosing;
+            Loaded += MeLoaded;
+            Closing += MeClosing;
+            RestoreSizeAndPosition();
+        }
 
-			Top = Properties.Settings.Default.Top;
-			Left = Properties.Settings.Default.Left;
-			Width = Properties.Settings.Default.Width;
-			Height = Properties.Settings.Default.Height;
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape)
+                Close();
+        }
 
-			doMaximize = false;
-			WindowState = WindowState.Normal;
+        private void MeLoaded(object sender, RoutedEventArgs e)
+        {
+            if (doMaximize) WindowState = WindowState.Maximized;
+        }
 
-			Screen screen = WFUtils.GetScreenByName(Properties.Settings.Default.ScreenName);
-			if (screen == null)
-			{
-				screen = WFUtils.GetPrimaryScreen();
-				Top = screen.WorkArea.Top;
-				Left = screen.WorkArea.Left + 90;
-				Width = screen.WorkArea.Width - 250;
-				Height = screen.WorkArea.Height;
-			}
-			else
-			{
-				doMaximize = Properties.Settings.Default.WindowState == 2;
-				if (doMaximize)
-				{
-					Top = screen.WorkArea.Top + 1;
-					Left = screen.WorkArea.Left + 1;
-					Width = screen.WorkArea.Width - 2;
-					Height = screen.WorkArea.Height - 2;
-				}
-			}
+        private void MeClosing(object sender, CancelEventArgs e)
+        {
+            StoreSizeAndPosition();
+        }
 
-			#endregion Initial size and position
-		}
-		bool doMaximize;
+        private void RestoreSizeAndPosition()
+        {
+            this.Top = Properties.Settings.Default.Top;
+            this.Left = Properties.Settings.Default.Left;
+            this.Width = Properties.Settings.Default.Width;
+            this.Height = Properties.Settings.Default.Height;
 
-		void MeLoaded(object sender, RoutedEventArgs e)
-		{
-			if (doMaximize)
-				WindowState = WindowState.Maximized;
-		}
+            this.doMaximize = false;
+            this.WindowState = WindowState.Normal;
 
-		void MeClosing(object sender, CancelEventArgs e)
-		{
-			Properties.Settings.Default.Top = Top;
-			Properties.Settings.Default.Left = Left;
-			Properties.Settings.Default.Width = Width;
-			Properties.Settings.Default.Height = Height;
-			Properties.Settings.Default.WindowState = (int)WindowState;
-			Properties.Settings.Default.ScreenName = WFUtils.GetScreenByPixel(Left, Top).Name;
-			Properties.Settings.Default.Save();
-		}
+            var name = Properties.Settings.Default.ScreenName;
+            var screen = WFUtils.GetScreenByName(name);
 
-		protected override void OnKeyDown(KeyEventArgs e)
-		{
-			base.OnKeyDown(e);
-			if (e.Key == Key.Escape)
-				Close();
-		}
-	}
+            if (screen == null)
+            {
+                var leftMargin = 80;
+                var rightMargin = 150;
+
+                screen = WFUtils.GetPrimaryScreen();
+                this.Top = screen.WorkArea.Top;
+                this.Left = screen.WorkArea.Left + leftMargin;
+                this.Width = screen.WorkArea.Width - leftMargin - rightMargin;
+                this.Height = screen.WorkArea.Height;
+            }
+            else
+            {
+                this.doMaximize = Properties.Settings.Default.WindowState == 2;
+            }
+        }
+
+        private void StoreSizeAndPosition()
+        {
+            Properties.Settings.Default.WindowState = (int)this.WindowState;
+
+            if (this.WindowState != WindowState.Normal)
+                this.WindowState = WindowState.Normal;
+
+            var screen = WFUtils.GetScreenByPixel(this.Left, this.Top);
+            Properties.Settings.Default.ScreenName = screen?.Name;
+
+            Properties.Settings.Default.Top = this.Top;
+            Properties.Settings.Default.Left = this.Left;
+            Properties.Settings.Default.Width = this.Width;
+            Properties.Settings.Default.Height = this.Height;
+            Properties.Settings.Default.Save();
+        }
+    }
 }

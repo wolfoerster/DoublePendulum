@@ -26,247 +26,278 @@ using WFTools3D;
 
 namespace DoublePendulum
 {
-	public class PoincareMap : Border
-	{
-		public PoincareMap()
-		{
-			Background = Brushes.Black;
-			Child = image = new Image();
-			image.Stretch = Stretch.None;
-			SizeChanged += MySizeChanged;
-			RenderOptions.SetEdgeMode(image, EdgeMode.Aliased);
-		}
-		Image image;
-		List<PendulumData> dataList = new List<PendulumData>();
+    public class PoincareMap : Border
+    {
+        public PoincareMap()
+        {
+            Background = Brushes.Black;
+            Child = image = new Image();
+            image.Stretch = Stretch.None;
+            SizeChanged += MySizeChanged;
+            RenderOptions.SetEdgeMode(image, EdgeMode.Aliased);
+        }
+        Image image;
+        List<PendulumData> dataList = new List<PendulumData>();
 
-		/// <summary>
-		/// Gets or sets the current simulation data.
-		/// </summary>
-		public PendulumData Data { get; set; }
+        /// <summary>
+        /// Gets or sets the current simulation data.
+        /// </summary>
+        public PendulumData Data { get; set; }
 
-		/// <summary>
-		/// Copies the current simulation data to the data list.
-		/// </summary>
-		public void CloneData()
-		{
-			dataList.Add(Data.Clone());
-		}
+        /// <summary>
+        /// Copies the current simulation data to the data list.
+        /// </summary>
+        public void CloneData()
+        {
+            dataList.Add(Data.Clone());
+        }
 
-		/// <summary>
-		/// If true, points are reflected across the L1 axis.
-		/// </summary>
-		public bool DoReflect = true;
+        /// <summary>
+        /// If true, points are reflected across the L1 axis.
+        /// </summary>
+        public bool DoReflect = true;
 
-		/// <summary>
-		/// If true, points for the current simulation are highlighted.
-		/// </summary>
-		public bool DoHighlight = false;
+        /// <summary>
+        /// If true, points for the current simulation are highlighted.
+        /// </summary>
+        public bool DoHighlight = false;
 
-		/// <summary>
-		/// Called when the size has changed.
-		/// </summary>
-		void MySizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			pixelMapper.Init(this);
+        /// <summary>
+        /// Scaling factors for the conversion of dips to pixels.
+        /// </summary>
+        private double dpiScaleX, dpiScaleY;
 
-			Point dpi = WFUtils.GetResolution(this);
-			int width = (int)(ActualWidth * dpi.X / 96.0);
-			int height = (int)(ActualHeight * dpi.Y / 96.0);
+        public int PixelWidth => bitmap.PixelWidth;
 
-			bitmap = new WriteableBitmap(width, height, dpi.X, dpi.Y, PixelFormats.Pbgra32, null);
-			image.Source = bitmap;
-			Redraw();
-		}
-		WriteableBitmap bitmap;
-		PixelMapper pixelMapper = new PixelMapper();
+        public int PixelHeight => bitmap.PixelHeight;
 
-		public void Clear()
-		{
-			pixelMapper.Init(this);
-			dataList.Clear();
-			bitmap.Clear();
-		}
+        /// <summary>
+        /// Called when the size has changed.
+        /// </summary>
+        void MySizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Point dpi = WFUtils.GetResolution(this);
+            dpiScaleX = dpi.X / 96.0;
+            dpiScaleY = dpi.Y / 96.0;
 
-		public void Redraw()
-		{
-			bitmap.Lock();
-			bitmap.Clear();
+            int width = (int)(ActualWidth * dpiScaleX);
+            int height = (int)(ActualHeight * dpiScaleY);
 
-			foreach (var data in dataList)
-				ShowData(data, false);
+            bitmap = new WriteableBitmap(width, height, dpi.X, dpi.Y, PixelFormats.Pbgra32, null);
+            image.Source = bitmap;
 
-			ShowData(Data, DoHighlight);
+            pixelMapper.Init(this);
+            Redraw();
+        }
+        WriteableBitmap bitmap;
+        PixelMapper pixelMapper = new PixelMapper();
 
-			bitmap.Unlock();
-		}
+        public void Clear()
+        {
+            pixelMapper.Init(this);
+            dataList.Clear();
+            bitmap.Clear();
+        }
 
-		void ShowData(PendulumData data, bool bigPoints)
-		{
-			if (data.PoincarePoints.Count == 0)
-				return;
+        public void Redraw()
+        {
+            bitmap.Lock();
+            bitmap.Clear();
 
-			bitmap.Lock();
+            foreach (var data in dataList)
+                ShowData(data, false);
 
-			foreach (var point in data.PoincarePoints)
-				AddPoint(point, data.Color, bigPoints);
+            ShowData(Data, DoHighlight);
 
-			bitmap.Unlock();
-		}
+            bitmap.Unlock();
+        }
 
-		public void NewPoincarePoint()
-		{
-			AddPoint(Data.PoincarePoints[Data.PoincarePoints.Count - 1], Data.Color, DoHighlight);
-		}
+        void ShowData(PendulumData data, bool bigPoints)
+        {
+            if (data.PoincarePoints.Count == 0)
+                return;
 
-		void AddPoint(PoincarePoint pp, Color color, bool bigPoint)
-		{
-			bitmap.Lock();
-			AddPoint(pp.Q1, pp.L1, color, bigPoint);
+            bitmap.Lock();
 
-			if (DoReflect)
-				AddPoint(-pp.Q1, pp.L1, color, bigPoint);
+            foreach (var point in data.PoincarePoints)
+                AddPoint(point, data.Color, bigPoints);
 
-			bitmap.Unlock();
-		}
+            bitmap.Unlock();
+        }
 
-		void AddPoint(double q, double l, Color color, bool bigPoint)
-		{
-			Point pt = pixelMapper.DataToPixel(new Point(q, l));
-			int x = (int)Math.Round(pt.X);
-			int y = (int)Math.Round(pt.Y);
-			if (bigPoint)
-				bitmap.FillRectangle(x - 1, y - 1, x + 2, y + 2, color);
-			else
-				bitmap.DrawRectangle(x, y, x + 1, y + 1, color);
-		}
+        public void NewPoincarePoint()
+        {
+            AddPoint(Data.PoincarePoints[Data.PoincarePoints.Count - 1], Data.Color, DoHighlight);
+        }
 
-		public Point PixelToData(Point pt)
-		{
-			return pixelMapper.PixelToData(pt);
-		}
+        void AddPoint(PoincarePoint pp, Color color, bool bigPoint)
+        {
+            bitmap.Lock();
+            AddPoint(pp.Q1, pp.L1, color, bigPoint);
 
-		#region Zooming
+            if (DoReflect)
+                AddPoint(-pp.Q1, pp.L1, color, bigPoint);
 
-		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-		{
-			CaptureMouse();
-			mouseDown = e.GetPosition(this);
-			ovr = new OverlayRect(this, mouseDown);
-			AdornerLayer.GetAdornerLayer(this).Add(ovr);
-		}
-		Point mouseDown = new Point(-1, 0);
-		OverlayRect ovr;
+            bitmap.Unlock();
+        }
 
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			if (mouseDown.X > -1 && ovr != null)
-				ovr.MoveTo(e.GetPosition(this));
-		}
+        void AddPoint(double q, double l, Color color, bool bigPoint)
+        {
+            Point pt = pixelMapper.DataToPixel(new Point(q, l));
+            int x = (int)Math.Round(pt.X);
+            int y = (int)Math.Round(pt.Y);
+            if (bigPoint)
+                bitmap.FillRectangle(x - 1, y - 1, x + 2, y + 2, color);
+            else
+                bitmap.DrawRectangle(x, y, x + 1, y + 1, color);
+        }
 
-		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-		{
-			if (mouseDown.X > -1)
-			{
-				AdornerLayer.GetAdornerLayer(this).Remove(ovr);
-				ovr = null;
+        public Point DipToData(Point pt)
+        {
+            var pixel = DipToPixel(pt);
+            return pixelMapper.PixelToData(pixel);
+        }
 
-				e.Handled = true;
-				ReleaseMouseCapture();
-				Point mouseUp = e.GetPosition(this);
+        private Point DipToPixel(Point pointInDip)
+        {
+            var pt = pointInDip;
+            pt.X *= dpiScaleX;
+            pt.Y *= dpiScaleY;
+            return pt;
+        }
 
-				if (mouseUp.X == mouseDown.X && mouseUp.Y == mouseDown.Y)
-				{
-					e.Handled = false;//--- might be handled in the main view
-				}
-				else if (mouseUp.X > mouseDown.X && mouseUp.Y > mouseDown.Y)
-				{
-					pixelMapper.Zoom(this, mouseDown, mouseUp);
-					Redraw();
-				}
-				else
-				{
-					pixelMapper.Unzoom((mouseDown - mouseUp).Length < 200);
-					Redraw();
-				}
+        private Point PixelToDip(Point pointInPixel)
+        {
+            var pt = pointInPixel;
+            pt.X /= dpiScaleX;
+            pt.Y /= dpiScaleY;
+            return pt;
+        }
 
-				mouseDown.X = -1;
-			}
-		}
+        #region Zooming
 
-		class OverlayRect : Adorner
-		{
-			public OverlayRect(UIElement adornedElement, Point pt)
-				: base(adornedElement)
-			{
-				p1 = p2 = pt;
-				fill = Brushes.White.Clone();
-				fill.Opacity = 0.5;
-			}
-			Brush fill;
-			Point p1, p2;
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            CaptureMouse();
+            mouseDown = e.GetPosition(this);
+            ovr = new OverlayRect(this, mouseDown);
+            AdornerLayer.GetAdornerLayer(this).Add(ovr);
+        }
+        Point mouseDown = new Point(-1, 0);
+        OverlayRect ovr;
 
-			public void MoveTo(Point pt)
-			{
-				p2 = pt;
-				InvalidateVisual();
-			}
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (mouseDown.X > -1 && ovr != null)
+                ovr.MoveTo(e.GetPosition(this));
+        }
 
-			protected override void OnRender(DrawingContext dc)
-			{
-				if (p2.X > p1.X && p2.Y > p1.Y)
-					dc.DrawRectangle(fill, null, new Rect(p1, p2));
-			}
-		}
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            if (mouseDown.X > -1)
+            {
+                AdornerLayer.GetAdornerLayer(this).Remove(ovr);
+                ovr = null;
 
-		class PixelMapper
-		{
-			List<LinearTransform> tx = new List<LinearTransform>();
-			List<LinearTransform> ty = new List<LinearTransform>();
+                e.Handled = true;
+                ReleaseMouseCapture();
+                Point mouseUp = e.GetPosition(this);
 
-			public void Init(PoincareMap map)
-			{
-				tx.Clear();
-				ty.Clear();
-				Zoom(map, -map.Data.Q1Max, map.Data.Q1Max, map.Data.L1Max, -map.Data.L1Max);
-			}
+                if (mouseUp.X == mouseDown.X && mouseUp.Y == mouseDown.Y)
+                {
+                    e.Handled = false;//--- might be handled in the main view
+                }
+                else if (mouseUp.X > mouseDown.X && mouseUp.Y > mouseDown.Y)
+                {
+                    var pixelDown = DipToPixel(mouseDown);
+                    var pixelUp = DipToPixel(mouseUp);
+                    pixelMapper.Zoom(this, pixelDown, pixelUp);
+                    Redraw();
+                }
+                else
+                {
+                    pixelMapper.Unzoom((mouseDown - mouseUp).Length < 200);
+                    Redraw();
+                }
 
-			public void Zoom(PoincareMap map, Point p1, Point p2)
-			{
-				p1 = PixelToData(p1);
-				p2 = PixelToData(p2);
-				Zoom(map, p1.X, p2.X, p1.Y, p2.Y);
-			}
+                mouseDown.X = -1;
+            }
+        }
 
-			void Zoom(PoincareMap map, double x1, double x2, double y1, double y2)
-			{
-				tx.Add(new LinearTransform(x1, x2, 0, map.ActualWidth - 1));
-				ty.Add(new LinearTransform(y1, y2, 0, map.ActualHeight - 1));
-			}
+        class OverlayRect : Adorner
+        {
+            public OverlayRect(UIElement adornedElement, Point pt)
+                : base(adornedElement)
+            {
+                p1 = p2 = pt;
+                fill = Brushes.White.Clone();
+                fill.Opacity = 0.5;
+            }
+            Brush fill;
+            Point p1, p2;
 
-			public void Unzoom(bool singleStep)
-			{
-				while (tx.Count > 1)
-				{
-					tx.RemoveAt(tx.Count - 1);
-					ty.RemoveAt(ty.Count - 1);
-					if (singleStep) 
-						break;
-				}
-			}
+            public void MoveTo(Point pt)
+            {
+                p2 = pt;
+                InvalidateVisual();
+            }
 
-			public Point DataToPixel(Point pt)
-			{
-				int i = tx.Count - 1;
-				return new Point(tx[i].Transform(pt.X), ty[i].Transform(pt.Y));
-			}
+            protected override void OnRender(DrawingContext dc)
+            {
+                if (p2.X > p1.X && p2.Y > p1.Y)
+                    dc.DrawRectangle(fill, null, new Rect(p1, p2));
+            }
+        }
 
-			public Point PixelToData(Point pt)
-			{
-				int i = tx.Count - 1;
-				return new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
-			}
-		}
+        class PixelMapper
+        {
+            List<LinearTransform> tx = new List<LinearTransform>();
+            List<LinearTransform> ty = new List<LinearTransform>();
 
-		#endregion Zooming
-	}
+            public void Init(PoincareMap map)
+            {
+                tx.Clear();
+                ty.Clear();
+                Zoom(map, -map.Data.Q1Max, map.Data.Q1Max, map.Data.L1Max, -map.Data.L1Max);
+            }
+
+            public void Zoom(PoincareMap map, Point pixel1, Point pixel2)
+            {
+                var data1 = PixelToData(pixel1);
+                var data2 = PixelToData(pixel2);
+                Zoom(map, data1.X, data2.X, data1.Y, data2.Y);
+            }
+
+            private void Zoom(PoincareMap map, double dataX1, double dataX2, double dataY1, double dataY2)
+            {
+                tx.Add(new LinearTransform(dataX1, dataX2, 0, map.PixelWidth - 1));
+                ty.Add(new LinearTransform(dataY1, dataY2, 0, map.PixelHeight - 1));
+            }
+
+            public void Unzoom(bool singleStep)
+            {
+                while (tx.Count > 1)
+                {
+                    tx.RemoveAt(tx.Count - 1);
+                    ty.RemoveAt(ty.Count - 1);
+                    if (singleStep)
+                        break;
+                }
+            }
+
+            public Point DataToPixel(Point pt)
+            {
+                int i = tx.Count - 1;
+                return new Point(tx[i].Transform(pt.X), ty[i].Transform(pt.Y));
+            }
+
+            public Point PixelToData(Point pt)
+            {
+                int i = tx.Count - 1;
+                return new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
+            }
+        }
+
+        #endregion Zooming
+    }
 }
