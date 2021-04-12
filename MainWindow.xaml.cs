@@ -26,13 +26,10 @@ namespace DoublePendulum
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool doMaximize;
-
         public MainWindow()
         {
             InitializeComponent();
 
-            Loaded += MeLoaded;
             Closing += MeClosing;
             RestoreSizeAndPosition();
         }
@@ -44,11 +41,6 @@ namespace DoublePendulum
                 Close();
         }
 
-        private void MeLoaded(object sender, RoutedEventArgs e)
-        {
-            if (doMaximize) WindowState = WindowState.Maximized;
-        }
-
         private void MeClosing(object sender, CancelEventArgs e)
         {
             StoreSizeAndPosition();
@@ -56,42 +48,27 @@ namespace DoublePendulum
 
         private void RestoreSizeAndPosition()
         {
+            var name = Properties.Settings.Default.ScreenName;
+            var screen = WFUtils.GetScreenByName(name);
+            if (screen == null)
+                return;
+
             this.Top = Properties.Settings.Default.Top;
             this.Left = Properties.Settings.Default.Left;
             this.Width = Properties.Settings.Default.Width;
             this.Height = Properties.Settings.Default.Height;
-
-            this.doMaximize = false;
-            this.WindowState = WindowState.Normal;
-
-            var name = Properties.Settings.Default.ScreenName;
-            var screen = WFUtils.GetScreenByName(name);
-
-            if (screen == null)
-            {
-                var leftMargin = 80;
-                var rightMargin = 150;
-
-                screen = WFUtils.GetPrimaryScreen();
-                this.Top = screen.WorkArea.Top;
-                this.Left = screen.WorkArea.Left + leftMargin;
-                this.Width = screen.WorkArea.Width - leftMargin - rightMargin;
-                this.Height = screen.WorkArea.Height;
-            }
-            else
-            {
-                this.doMaximize = Properties.Settings.Default.WindowState == 2;
-            }
+            this.WindowState = (WindowState)Properties.Settings.Default.WindowState;
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
         }
 
         private void StoreSizeAndPosition()
         {
             Properties.Settings.Default.WindowState = (int)this.WindowState;
-
             if (this.WindowState != WindowState.Normal)
                 this.WindowState = WindowState.Normal;
 
-            var screen = WFUtils.GetScreenByPixel(this.Left, this.Top);
+            var pt = new Point(this.Left, this.Top);
+            var screen = WFUtils.GetScreenByPixel(ToPixel(pt));
             Properties.Settings.Default.ScreenName = screen?.Name;
 
             Properties.Settings.Default.Top = this.Top;
@@ -99,6 +76,12 @@ namespace DoublePendulum
             Properties.Settings.Default.Width = this.Width;
             Properties.Settings.Default.Height = this.Height;
             Properties.Settings.Default.Save();
+        }
+
+        private Point ToPixel(Point pointInDip)
+        {
+            var source = PresentationSource.FromVisual(this);
+            return source.CompositionTarget.TransformToDevice.Transform(pointInDip);
         }
     }
 }
