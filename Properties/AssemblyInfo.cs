@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wolfgang Foerster")]
 [assembly: AssemblyProduct("DoublePendulum")]
-[assembly: AssemblyCopyright("Copyright © 2016 Wolfgang Foerster (wolfoerster@gmx.de)")]
+[assembly: AssemblyCopyright("Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -25,5 +25,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

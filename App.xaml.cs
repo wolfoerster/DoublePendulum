@@ -23,5 +23,17 @@ namespace DoublePendulum
     /// </summary>
     public partial class App : Application
     {
+        /*****
+         * Image for Readme.md posted at 'https://postimages.org/'
+         * Link:
+         * Direct link:
+         * Markdown:
+         * Alt Markdown:
+         * Thumbnail for forums:
+         * Thumbnail for website:
+         * Hotlink for forums:
+         * Hotlink for website:
+         * Removal link:
+         *****/
     }
 }

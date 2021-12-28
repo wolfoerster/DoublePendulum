@@ -30,6 +30,7 @@ namespace DoublePendulum
         {
             InitializeComponent();
 
+            Loaded += MeLoaded;
             Closing += MeClosing;
             RestoreSizeAndPosition();
         }
@@ -39,6 +40,12 @@ namespace DoublePendulum
             base.OnKeyDown(e);
             if (e.Key == Key.Escape)
                 Close();
+        }
+
+        private void MeLoaded(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.IsMaximized)
+                this.WindowState = WindowState.Maximized;
         }
 
         private void MeClosing(object sender, CancelEventArgs e)
@@ -51,7 +58,13 @@ namespace DoublePendulum
             var name = Properties.Settings.Default.ScreenName;
             var screen = WFUtils.GetScreenByName(name);
             if (screen == null)
+            {
+                this.Top = 0;
+                this.Width = 1415;
+                this.Height = 1050;
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 return;
+            }
 
             this.Top = Properties.Settings.Default.Top;
             this.Left = Properties.Settings.Default.Left;
@@ -63,12 +76,13 @@ namespace DoublePendulum
 
         private void StoreSizeAndPosition()
         {
-            Properties.Settings.Default.WindowState = (int)this.WindowState;
+            Properties.Settings.Default.IsMaximized = this.WindowState == WindowState.Maximized;
+
             if (this.WindowState != WindowState.Normal)
                 this.WindowState = WindowState.Normal;
 
             var pt = new Point(this.Left, this.Top);
-            var screen = WFUtils.GetScreenByPixel(ToPixel(pt));
+            var screen = WFUtils.GetScreenByPixel(pt.ToPixel(this));
             Properties.Settings.Default.ScreenName = screen?.Name;
 
             Properties.Settings.Default.Top = this.Top;
@@ -76,12 +90,6 @@ namespace DoublePendulum
             Properties.Settings.Default.Width = this.Width;
             Properties.Settings.Default.Height = this.Height;
             Properties.Settings.Default.Save();
-        }
-
-        private Point ToPixel(Point pointInDip)
-        {
-            var source = PresentationSource.FromVisual(this);
-            return source.CompositionTarget.TransformToDevice.Transform(pointInDip);
         }
     }
 }

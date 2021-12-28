@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoublePendulum", "DoublePendulum.csproj", "{CC618112-DAAF-419F-AF40-3A7202EAD46C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFTools3D", "..\WFTools3D\WFTools3D\WFTools3D.csproj", "{4F58D960-50F3-434F-B2B0-C9ED67151485}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,8 +17,15 @@ Global
 		{CC618112-DAAF-419F-AF40-3A7202EAD46C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC618112-DAAF-419F-AF40-3A7202EAD46C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC618112-DAAF-419F-AF40-3A7202EAD46C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F58D960-50F3-434F-B2B0-C9ED67151485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F58D960-50F3-434F-B2B0-C9ED67151485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F58D960-50F3-434F-B2B0-C9ED67151485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F58D960-50F3-434F-B2B0-C9ED67151485}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FEA90A83-F1B3-4910-9E85-D6689D1819F4}
 	EndGlobalSection
 EndGlobal
