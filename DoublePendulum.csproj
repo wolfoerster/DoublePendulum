@@ -45,12 +45,38 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.8.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+      <HintPath>packages\WriteableBitmapEx.1.6.8\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="src\ArcGeometry.cs" />
+    <Compile Include="src\ColorBox.cs" />
+    <Compile Include="src\CompareWindow.xaml.cs">
+      <DependentUpon>CompareWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\ControlCenter.xaml.cs">
+      <DependentUpon>ControlCenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\DynaScene3D.cs" />
+    <Compile Include="src\LinearTransform3D.cs" />
+    <Compile Include="src\Pendulator.cs" />
+    <Compile Include="src\PendulatorUI.xaml.cs">
+      <DependentUpon>PendulatorUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\Pendulum.cs" />
+    <Compile Include="src\Pendulum2D.cs" />
+    <Compile Include="src\Pendulum3D.cs" />
+    <Compile Include="src\Poincare2D.cs" />
+    <Compile Include="src\Poincare3D.cs" />
+    <Compile Include="src\PoincarePoint.cs" />
+    <Compile Include="src\SquarePanel.cs" />
+    <Compile Include="src\Trajectory3D.cs" />
+    <Compile Include="src\TubeBuilder.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -63,6 +89,18 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="src\CompareWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\ControlCenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\PendulatorUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -82,6 +120,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -98,9 +137,7 @@
   <ItemGroup>
     <Resource Include="App.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\WFTools3D\WFTools3D\WFTools3D.csproj">
       <Project>{4f58d960-50f3-434f-b2b0-c9ed67151485}</Project>

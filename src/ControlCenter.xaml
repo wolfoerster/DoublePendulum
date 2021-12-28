@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="DoublePendulum.ControlCenter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wft="WFTools"
+             xmlns:local="clr-namespace:DoublePendulum"
+             Background="#E0E0EE">
+  <UserControl.Resources>
+    <ImageBrush x:Key="wood1" ImageSource="..\Images\wood1.jpg"/>
+    <ImageBrush x:Key="wood2" ImageSource="..\Images\wood2.jpg"/>
+  </UserControl.Resources>
+  <local:SquarePanel>
+    <Border BorderThickness="6">
+      <Grid>
+        <local:Poincare2D local:SquarePanel.Location="0" x:Name="poincare2D" Background="Black"/>
+        <local:DynaScene3D x:Name="scene"/>
+        <StackPanel x:Name="modePanel" Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
+          <ToggleButton x:Name="mode1" Content=" Q1, L1, Q2 " Click="OnButtonSwitchMode" IsChecked="true"/>
+          <ToggleButton x:Name="mode2" Content=" Q1, L1, L2 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
+          <ToggleButton x:Name="mode3" Content=" Q2, L2, Q1 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
+          <ToggleButton x:Name="mode4" Content=" Q2, L2, L1 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
+          <ToggleButton x:Name="mirrorQ" Content=" Mirror Q " Click="OnButtonSwitchMirror"/>
+          <ToggleButton x:Name="mirrorL" Content=" Mirror L " Click="OnButtonSwitchMirror" Margin="4,0,0,0"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+    <Grid local:SquarePanel.Location="1" Margin="0,6,6,6" ShowGridLines="false">
+
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="6"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="6"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="300"/>
+        <ColumnDefinition Width="6"/>
+        <ColumnDefinition Width="80"/>
+      </Grid.ColumnDefinitions>
+
+      <Border BorderThickness="1" BorderBrush="Gray">
+        <local:Pendulum2D x:Name="pendulum2D" Width="298" Height="298" Background="LightGray" HorizontalAlignment="Left"/>
+      </Border>
+
+      <StackPanel Grid.Row="2" Orientation="Horizontal">
+        <ToggleButton x:Name="view0" Content="Poincare 2D" Click="OnButtonSwitchView" IsChecked="true"/>
+        <ToggleButton x:Name="view1" Content="Poincare 3D" Click="OnButtonSwitchView" Margin="7,0,0,0"/>
+        <ToggleButton x:Name="view2" Content="Pendulum 3D" Click="OnButtonSwitchView" Margin="7,0,0,0"/>
+        <ToggleButton x:Name="view3" Content="Trajectory " Click="OnButtonSwitchView" Margin="7,0,0,0"/>
+      </StackPanel>
+
+      <ListBox x:Name="lbUIs" Grid.Row="4" Width="300" HorizontalAlignment="Left" ItemsSource="{Binding PendulatorUIs}" SelectedItem="{Binding SelectedPendulatorUI}" HorizontalContentAlignment="Stretch">
+        <!--<ListBox.ItemContainerStyle>
+        
+        Das ist noch nicht zu Ende gedacht!
+        Wenn dieser Style drin ist wechselt der IsSelected Status permanent sobald man einmal in die Liste geklickt hat.
+        
+          <Style TargetType="ListBoxItem">
+            <Style.Triggers>
+              <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="IsSelected" Value="True"/>
+              </Trigger>
+            </Style.Triggers>
+          </Style>
+        </ListBox.ItemContainerStyle>-->
+      </ListBox>
+
+      <Grid Grid.RowSpan="5" Grid.Column="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+          <TextBox Width="57" x:Name="tbNewEnergy"/>
+          <Button Content="+" Click="OnButtonNewEnergy" Width="20" Height="22" Margin="2,0,0,0"/>
+        </StackPanel>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Energies}" SelectedItem="{Binding SelectedEnergy}"/>
+      </Grid>
+
+    </Grid>
+  </local:SquarePanel>
+</UserControl>

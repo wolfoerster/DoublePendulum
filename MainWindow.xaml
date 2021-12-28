@@ -4,4 +4,7 @@
         xmlns:local="clr-namespace:DoublePendulum"
         Title="Double Pendulum"
         WindowStartupLocation="CenterScreen">
+  <Grid>
+    <local:ControlCenter x:Name="controlCenter"/>
+  </Grid>
 </Window>

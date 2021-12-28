@@ -1,0 +1,23 @@
+﻿<Window x:Class="DoublePendulum.CompareWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wft3d="WFTools3D"
+        xmlns:local="clr-namespace:DoublePendulum"
+        Title="CompareWindow" Height="1050" Width="1000">
+  <Window.Resources>
+    <ImageBrush x:Key="wood1" ImageSource="..\Images\wood1.jpg"/>
+    <ImageBrush x:Key="wood2" ImageSource="..\Images\wood2.jpg"/>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal">
+      <TextBlock x:Name="tb" Width="80" MouseUp="OnMouseUpDt" Margin="4,2,0,0"/>
+      <Button Content="Init" Width="80" Click="OnButtonInit"/>
+      <Button Content="Start" Width="80" Click="OnButtonStart"/>
+    </StackPanel>
+    <wft3d:Scene3D x:Name="scene" Grid.Row="1"/>
+  </Grid>
+</Window>
