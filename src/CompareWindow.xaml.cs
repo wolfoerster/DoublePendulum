@@ -24,6 +24,7 @@ namespace DoublePendulum
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
     using System.Windows.Threading;
+    using WFTools3D;
     using PendulumModel = WFTools3D.Pendulum;
 
     /// <summary>
@@ -64,7 +65,7 @@ namespace DoublePendulum
             timer.Interval = TimeSpan.FromMilliseconds(30);
             timer.Tick += Timer_Tick;
 
-            tb.Text = pendulums[0].dT.ToString("e3");
+            tb.Text = pendulums[0].dT.ToStringExt("e3");
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -78,7 +79,7 @@ namespace DoublePendulum
         {
             var dt = double.Parse(tb.Text);
             dt *= e.ChangedButton == MouseButton.Left ? 2 : 0.5;
-            tb.Text = dt.ToString("e3");
+            tb.Text = dt.ToStringExt("e3");
             foreach (var pendulator in pendulators)
             {
                 var pendulum = pendulator.Pendulum;

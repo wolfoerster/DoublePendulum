@@ -325,7 +325,7 @@ namespace DoublePendulum
         {
             var pendulum = App.SelectedPendulum;
             pendulum.PoincareColor = lastUsedColor;
-            SelectedEnergy = AddEnergy(pendulum.E0.ToString());
+            SelectedEnergy = AddEnergy(pendulum.E0.ToStringExt());
             StartPendulum(pendulum);
         }
 

@@ -23,6 +23,7 @@ namespace DoublePendulum
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using WFTools3D;
 
     /// <summary>
     /// Interaction logic for PendulatorControl.xaml
@@ -84,7 +85,7 @@ namespace DoublePendulum
             cbS.IsChecked = Pendulum.IsSoloed;
             tbId.Text = $"{Pendulum.Id:D3}";
             tbdE.Text = $"dE: {Pendulum.dE:F3}%";
-            tbdT.Text = $"dT: {Pendulum.dT:e3}";
+            tbdT.Text = $"dT: {Pendulum.dT.ToStringExt("e3")}";
             tbCount.Text = $"#Pts: {Pendulum.PoincarePoints.Count}";
             cbColor.SelectedColor = Pendulum.PoincareColor;
 

@@ -18,6 +18,7 @@
 namespace DoublePendulum
 {
     using System;
+    using WFTools3D;
 
     public class PoincarePoint
     {
@@ -56,7 +57,7 @@ namespace DoublePendulum
 
         public override string ToString()
         {
-            return string.Format("{0},{1},{2}", Q1.ToString(), W1.ToString(), W2.ToString());
+            return string.Format("{0},{1},{2}", Q1.ToStringExt(), W1.ToStringExt(), W2.ToStringExt());
         }
     }
 }
