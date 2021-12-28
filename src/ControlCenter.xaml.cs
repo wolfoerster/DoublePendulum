@@ -22,6 +22,7 @@ namespace DoublePendulum
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Runtime.CompilerServices;
@@ -52,15 +53,16 @@ namespace DoublePendulum
         private readonly Pendulum3D pendulum3D;
         private readonly Poincare3D poincare3D = new Poincare3D();
         private readonly Trajectory3D trajectory3D = new Trajectory3D();
+        private readonly string dataDirectory;
         private PendulatorUI selectedPendulatorUI;
         private int timerCount;
-        private string dataDirectory;
         private string selectedEnergy;
         private DateTime t0;
         private Color lastUsedColor = Colors.White;
 
         public ControlCenter()
         {
+            dataDirectory = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
             //RenameDirs();
             InitializeComponent();
             DataContext = this;
@@ -160,7 +162,6 @@ namespace DoublePendulum
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            dataDirectory = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
             ReadDataDirectory();
             lbUIs.Focus();
         }
@@ -251,7 +252,7 @@ namespace DoublePendulum
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (selectedPendulatorUI.Pendulator.IsBusy)
+            if (selectedPendulatorUI != null && selectedPendulatorUI.Pendulator.IsBusy)
             {
                 pendulum2D.Update();
 
@@ -697,7 +698,7 @@ namespace DoublePendulum
 
         private static double Double(string s)
         {
-            if (double.TryParse(s, out var d))
+            if (double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var d))
                 return d;
 
             return 0;
