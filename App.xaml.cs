@@ -28,15 +28,15 @@ namespace DoublePendulum
     {
         /*****
          * Image for Readme.md posted at 'https://postimages.org/'
-         * Link:
-         * Direct link:
-         * Markdown:
-         * Alt Markdown:
-         * Thumbnail for forums:
-         * Thumbnail for website:
-         * Hotlink for forums:
-         * Hotlink for website:
-         * Removal link:
+         * Link: https://postimg.cc/HjBkY7VY
+         * Direct link: https://i.postimg.cc/7YyGN342/Double-Pendulum.jpg
+         * Markdown: [Double-Pendulum.jpg](https://postimg.cc/HjBkY7VY)
+         * Alt Markdown: [![Double-Pendulum.jpg](https://i.postimg.cc/7YyGN342/Double-Pendulum.jpg)](https://postimg.cc/HjBkY7VY)
+         * Thumbnail for forums: [url=https://postimg.cc/HjBkY7VY][img]https://i.postimg.cc/HjBkY7VY/Double-Pendulum.jpg[/img][/url]
+         * Thumbnail for website: <a href='https://postimg.cc/HjBkY7VY' target='_blank'><img src='https://i.postimg.cc/HjBkY7VY/Double-Pendulum.jpg' border='0' alt='Double-Pendulum'/></a>
+         * Hotlink for forums: [url=https://postimages.org/][img]https://i.postimg.cc/7YyGN342/Double-Pendulum.jpg[/img][/url]
+         * Hotlink for website: <a href='https://postimages.org/' target='_blank'><img src='https://i.postimg.cc/7YyGN342/Double-Pendulum.jpg' border='0' alt='Double-Pendulum'/></a>
+         * Removal link: https://postimg.cc/delete/WKsFY9GY/a68bc2c6
          *****/
 
         protected override void OnStartup(StartupEventArgs e)
