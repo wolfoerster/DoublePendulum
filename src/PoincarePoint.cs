@@ -57,7 +57,7 @@ namespace DoublePendulum
 
         public override string ToString()
         {
-            return string.Format("{0},{1},{2}", Q1.ToStringExt(), W1.ToStringExt(), W2.ToStringExt());
+            return string.Format("{0},{1},{2}", Q1.ToStringInv(), W1.ToStringInv(), W2.ToStringInv());
         }
     }
 }

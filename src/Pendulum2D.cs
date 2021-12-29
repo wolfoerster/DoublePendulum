@@ -25,6 +25,7 @@ namespace DoublePendulum
     using System.Windows.Controls;
     using System.Windows.Threading;
     using WFTools3D;
+    using System.Globalization;
 
     class Pendulum2D : Canvas
     {
@@ -205,7 +206,7 @@ namespace DoublePendulum
                 dc.DrawGeometry(Background, null, new RectangleGeometry(rect));
             }
 
-            textBox.Text = $"E0: {pendulum.E0.ToStringExt()}";
+            textBox.Text = $"E0: {pendulum.E0.ToStringExt(CultureInfo.InvariantCulture)}";
 
             if (!ShowOmega)
                 return;

@@ -19,6 +19,7 @@ namespace DoublePendulum
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Media;
@@ -65,7 +66,7 @@ namespace DoublePendulum
             timer.Interval = TimeSpan.FromMilliseconds(30);
             timer.Tick += Timer_Tick;
 
-            tb.Text = pendulums[0].dT.ToStringExt("e3");
+            tb.Text = pendulums[0].dT.ToStringInv("e3");
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -77,9 +78,9 @@ namespace DoublePendulum
 
         private void OnMouseUpDt(object sender, MouseButtonEventArgs e)
         {
-            var dt = double.Parse(tb.Text);
+            var dt = double.Parse(tb.Text, CultureInfo.InvariantCulture);
             dt *= e.ChangedButton == MouseButton.Left ? 2 : 0.5;
-            tb.Text = dt.ToStringExt("e3");
+            tb.Text = dt.ToStringInv("e3");
             foreach (var pendulator in pendulators)
             {
                 var pendulum = pendulator.Pendulum;
@@ -89,7 +90,7 @@ namespace DoublePendulum
 
         private void OnButtonInit(object sender, RoutedEventArgs e)
         {
-            var dt = double.Parse(tb.Text);
+            var dt = double.Parse(tb.Text, CultureInfo.InvariantCulture);
             foreach (var pendulator in pendulators)
             {
                 var pendulum = pendulator.Pendulum;

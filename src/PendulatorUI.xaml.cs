@@ -84,8 +84,8 @@ namespace DoublePendulum
             cbM.IsChecked = Pendulum.IsMuted;
             cbS.IsChecked = Pendulum.IsSoloed;
             tbId.Text = $"{Pendulum.Id:D3}";
-            tbdE.Text = $"dE: {Pendulum.dE:F3}%";
-            tbdT.Text = $"dT: {Pendulum.dT.ToStringExt("e3")}";
+            tbdE.Text = $"dE: {Pendulum.dE.ToStringInv("f3")}%";
+            tbdT.Text = $"dT: {Pendulum.dT.ToStringInv("e3")}";
             tbCount.Text = $"#Pts: {Pendulum.PoincarePoints.Count}";
             cbColor.SelectedColor = Pendulum.PoincareColor;
 

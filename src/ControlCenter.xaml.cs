@@ -326,7 +326,7 @@ namespace DoublePendulum
         {
             var pendulum = App.SelectedPendulum;
             pendulum.PoincareColor = lastUsedColor;
-            SelectedEnergy = AddEnergy(pendulum.E0.ToStringExt());
+            SelectedEnergy = AddEnergy(pendulum.E0.ToStringInv());
             StartPendulum(pendulum);
         }
 
@@ -480,9 +480,12 @@ namespace DoublePendulum
 
         private void OnButtonNewEnergy(object sender, RoutedEventArgs e)
         {
-            var energy = tbNewEnergy.Text;
-            CleanUpEnergies();
-            SelectedEnergy = AddEnergy(energy);
+            var energy = Double(tbNewEnergy.Text);
+            if (energy > 0)
+            {
+                CleanUpEnergies();
+                SelectedEnergy = AddEnergy(energy.ToStringInv());
+            }
         }
 
         private void OnEnergyChanged()
@@ -697,8 +700,11 @@ namespace DoublePendulum
 
         private static double Double(string s)
         {
-            if (double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var d))
-                return d;
+            if (double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
+                return value;
+
+            if (double.TryParse(s, NumberStyles.Float, CultureInfo.CurrentCulture, out value))
+                return value;
 
             return 0;
         }
