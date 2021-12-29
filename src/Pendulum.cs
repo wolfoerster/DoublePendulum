@@ -226,12 +226,12 @@ namespace DoublePendulum
                 a1 = (B1 - B2 * A12) / Det;
                 w1 += a1 * dt;
                 q1 += w1 * dt;
-                q1 = MathUtils.NormalizeAngle(q1);
+                q1 = q1.NormalizeAngle();
 
                 a2 = (B2 * 2.0 - B1 * A12) / Det;
                 w2 += a2 * dt;
                 q2 += w2 * dt;
-                q2 = MathUtils.NormalizeAngle(q2);
+                q2 = q2.NormalizeAngle();
             }
 
             time += numSteps * dt;

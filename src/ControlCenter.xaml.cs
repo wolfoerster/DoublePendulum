@@ -556,18 +556,17 @@ namespace DoublePendulum
 
         private void NewPoincarePoint(Pendulum pendulum)
         {
-            this.Dispatcher.Invoke(() => 
-                {
-                    if (pendulum == App.SelectedPendulum)
-                        pendulum2D.NewPoincarePoint();
+            this.Dispatch(() =>
+            {
+                if (pendulum == App.SelectedPendulum)
+                    pendulum2D.NewPoincarePoint();
 
-                    if (poincare2D.Visibility == Visibility.Visible)
-                        poincare2D.NewPoincarePoint(pendulum);
+                if (poincare2D.Visibility == Visibility.Visible)
+                    poincare2D.NewPoincarePoint(pendulum);
 
-                    if (scene.Models.Contains(poincare3D))
-                        poincare3D.NewPoincarePoint(pendulum);
-                }, 
-                DispatcherPriority.Render);
+                if (scene.Models.Contains(poincare3D))
+                    poincare3D.NewPoincarePoint(pendulum);
+            });
         }
 
         private void OnPendulatorChanged()

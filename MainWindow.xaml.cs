@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************
 // Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
 //
-// This file is part of the DoublePendulum project which can be found on github.com
+// This file is part of the DoublePendulum project which can be found on github.com.
 //
 // DoublePendulum is free software: you can redistribute it and/or modify it under the terms 
 // of the GNU General Public License as published by the Free Software Foundation, 
@@ -63,7 +63,7 @@ namespace DoublePendulum
         private void RestoreSizeAndPosition()
         {
             var name = Properties.Settings.Default.ScreenName;
-            var screen = WFUtils.GetScreenByName(name);
+            var screen = Screen.LookUpByName(name);
             if (screen == null)
             {
                 this.Top = 0;
@@ -89,7 +89,7 @@ namespace DoublePendulum
                 this.WindowState = WindowState.Normal;
 
             var pt = new Point(this.Left, this.Top);
-            var screen = WFUtils.GetScreenByPixel(pt.ToPixel(this));
+            var screen = Screen.LookUpByPixel(pt.ToPixel(this));
             Properties.Settings.Default.ScreenName = screen?.Name;
 
             Properties.Settings.Default.Top = this.Top;
