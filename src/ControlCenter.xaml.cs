@@ -154,10 +154,7 @@ namespace DoublePendulum
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             base.OnPreviewKeyDown(e);
-            if (selectedPendulatorUI != null)
-            {
-                CheckKey(e.Key);
-            }
+            CheckKey(e.Key);
         }
 
         private void MeLoaded(object sender, RoutedEventArgs e)
@@ -617,7 +614,26 @@ namespace DoublePendulum
 
         private void CheckKey(Key key)
         {
-            if (key == Key.H || key == Key.M || key == Key.S)
+            if (key == Key.C)
+            {
+                ComparePendulums();
+                return;
+            }
+
+            if (selectedPendulatorUI == null)
+                return;
+
+            if (key == Key.Space)
+            {
+                selectedPendulatorUI.Stop();
+            }
+            else if (key == Key.Delete)
+            {
+                var ok = MessageBox.Show("Really delete this simulation?", "Delete Simulation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (ok == MessageBoxResult.Yes)
+                    DeleteSelected();
+            }
+            else if (key == Key.H || key == Key.M || key == Key.S)
             {
                 if (key == Key.H)
                 {
@@ -637,22 +653,6 @@ namespace DoublePendulum
 
                 poincare2D.Redraw();
                 poincare3D.Redraw();
-            }
-            else if (key == Key.C)
-            {
-                ComparePendulums();
-            }
-            else if (key == Key.Space)
-            {
-                selectedPendulatorUI.Stop();
-            }
-            else if (key == Key.Delete)
-            {
-                var ok = MessageBox.Show("Really delete this simulation?", "Delete Simulation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (ok == MessageBoxResult.Yes && selectedPendulatorUI != null)
-                {
-                    DeleteSelected();
-                }
             }
         }
 
@@ -750,10 +750,10 @@ namespace DoublePendulum
 
         private void ComparePendulums()
         {
-            var pendulums = App.Pendulums.Where(o => o.IsSoloed).ToList();
+            var pendulums = App.Pendulums.Where(o => o.IsHighlighted).ToList();
             if (pendulums.Count < 2)
             {
-                MessageBox.Show("Need at least two soloed pendulums!");
+                MessageBox.Show("Need at least two highlighted pendulums!");
                 return;
             }
 

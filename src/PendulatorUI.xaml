@@ -34,7 +34,7 @@
       <TextBlock Grid.Row="1" Grid.Column="2" x:Name="tbCount"/>
 
       <TextBlock Grid.Row="1" Grid.Column="3" x:Name="tbT"/>
-      <TextBlock Grid.Row="0" Grid.Column="3" x:Name="tbdT" MouseUp="OnMouseUpDt">
+      <TextBlock Grid.Row="0" Grid.Column="3" x:Name="tbdT" MouseUp="OnMouseUpDt" ToolTip="Mouseclick left/right to change value">
         <TextBlock.Style>
           <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="2,4,0,0"/>
