@@ -25,9 +25,9 @@
       <local:ColorBox Grid.Row="1" Grid.Column="0" x:Name="cbColor" SelectionChanged="ColorChanged" Margin="2"/>
 
       <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="0,2,0,0">
-        <CheckBox x:Name="cbH" Content="H" Click="OnCheckBoxClicked"/>
-        <CheckBox x:Name="cbM" Content="M" Click="OnCheckBoxClicked"/>
-        <CheckBox x:Name="cbS" Content="S" Click="OnCheckBoxClicked"/>
+        <CheckBox x:Name="cbH" Content="H" Click="OnCheckBoxClicked" ToolTip="Highlight"/>
+        <CheckBox x:Name="cbM" Content="M" Click="OnCheckBoxClicked" ToolTip="Mute"/>
+        <CheckBox x:Name="cbS" Content="S" Click="OnCheckBoxClicked" ToolTip="Solo"/>
       </StackPanel>
 
       <TextBlock Grid.Row="0" Grid.Column="2" x:Name="tbdE"/>
