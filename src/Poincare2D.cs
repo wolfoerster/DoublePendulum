@@ -19,6 +19,7 @@ namespace DoublePendulum
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
@@ -129,7 +130,12 @@ namespace DoublePendulum
 
         public void NewPoincarePoint(Pendulum pendulum)
         {
-            if (!pendulum.IsMuted)
+            if (pendulum.IsMuted)
+                return;
+
+            var isAnySoloed = App.Pendulums.Any(o => o.IsSoloed);
+
+            if (!isAnySoloed || pendulum.IsSoloed)
             {
                 var pt = pendulum.PoincarePoints[pendulum.PoincarePoints.Count - 1];
                 AddPoint(pt, pendulum.PoincareColor, pendulum.IsHighlighted);

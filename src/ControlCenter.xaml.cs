@@ -146,7 +146,7 @@ namespace DoublePendulum
             {
                 if (pendulatorUI.Pendulator.IsBusy)
                 {
-                    pendulatorUI.Pendulator.Stop();
+                    pendulatorUI.Stop();
                 }
             }
         }

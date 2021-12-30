@@ -83,7 +83,12 @@ namespace DoublePendulum
 
         public void NewPoincarePoint(Pendulum pendulum)
         {
-            if (!pendulum.IsMuted)
+            if (pendulum.IsMuted)
+                return;
+
+            var isAnySoloed = App.Pendulums.Any(o => o.IsSoloed);
+
+            if (!isAnySoloed || pendulum.IsSoloed)
             {
                 Redraw(pendulum);
             }
