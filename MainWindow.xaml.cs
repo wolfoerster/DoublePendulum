@@ -66,10 +66,7 @@ namespace DoublePendulum
             var screen = Screen.LookUpByName(name);
             if (screen == null)
             {
-                this.Top = 0;
-                this.Width = 1415;
-                this.Height = 1050;
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                Properties.Settings.Default.IsMaximized = true;
                 return;
             }
 

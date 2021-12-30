@@ -33,6 +33,7 @@ namespace DoublePendulum
         private readonly Image image = new Image();
         private readonly bool hideChaos = false;
         private WriteableBitmap bitmap;
+        private bool isHighDensity;
 
         public Poincare2D()
         {
@@ -45,11 +46,13 @@ namespace DoublePendulum
         void MySizeChanged(object sender, SizeChangedEventArgs e)
         {
             var dpi = VisualTreeHelper.GetDpi(this);
+            isHighDensity = dpi.PixelsPerInchX > 200;
+
             int width = (int)(ActualWidth * dpi.DpiScaleX);
             int height = (int)(ActualHeight * dpi.DpiScaleY);
 
-            bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Pbgra32, null);
-            //no! bitmap = new WriteableBitmap(width, height, dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32, null);
+            //no! bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Pbgra32, null);
+            bitmap = new WriteableBitmap(width, height, dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32, null);
             image.Source = bitmap;
 
             zoomStack.Init(width, height);
@@ -157,8 +160,11 @@ namespace DoublePendulum
 
             bitmap.SetPixel(x, y, color);
 
-            if (isHighlighted)
+            if (isHighlighted || isHighDensity)
                 bitmap.DrawRectangle(x - 1, y - 1, x + 1, y + 1, color);
+
+            if (isHighlighted && isHighDensity)
+                bitmap.DrawRectangle(x - 2, y - 2, x + 2, y + 2, color);
         }
 
         public Point GetCoordinates()
@@ -207,7 +213,7 @@ namespace DoublePendulum
             return pendulumIndex;
         }
 
-        #region Zooming
+#region Zooming
 
         private Point mouseDown = new Point(double.NaN, 0);
         private OverlayRect ovr;
@@ -305,6 +311,7 @@ namespace DoublePendulum
         {
             private readonly List<LinearTransform> tx = new List<LinearTransform>();
             private readonly List<LinearTransform> ty = new List<LinearTransform>();
+            private readonly int padding = 4;
             private int lastColumn;
             private int lastRow;
 
@@ -315,17 +322,17 @@ namespace DoublePendulum
                 if (tx.Count > 0)
                 {
                     int i = tx.Count - 1;
-                    xmin = tx[i].BackTransform(0);
+                    xmin = tx[i].BackTransform(padding);
                     xmax = tx[i].BackTransform(lastColumn);
                     ymin = ty[i].BackTransform(lastRow);
-                    ymax = ty[i].BackTransform(0);
+                    ymax = ty[i].BackTransform(padding);
                 }
 
                 tx.Clear();
                 ty.Clear();
 
-                lastColumn = width - 1;
-                lastRow = height - 1;
+                lastColumn = width - 1 - padding;
+                lastRow = height - 1 - padding;
 
                 if (!double.IsNaN(xmin))
                 {
@@ -350,8 +357,8 @@ namespace DoublePendulum
 
             public void Zoom(double xmin, double xmax, double ymin, double ymax)
             {
-                tx.Add(new LinearTransform(xmin, xmax, 0, lastColumn));
-                ty.Add(new LinearTransform(ymin, ymax, lastRow, 0));
+                tx.Add(new LinearTransform(xmin, xmax, padding, lastColumn));
+                ty.Add(new LinearTransform(ymin, ymax, lastRow, padding));
             }
 
             public void Unzoom(bool singleStep)
@@ -379,6 +386,6 @@ namespace DoublePendulum
             }
         }
 
-        #endregion Zooming
+#endregion Zooming
     }
 }
