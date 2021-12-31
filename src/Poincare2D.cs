@@ -30,7 +30,7 @@ namespace DoublePendulum
 
     internal class Poincare2D : Border
     {
-        private readonly ZoomStack zoomStack = new ZoomStack();
+        private readonly PixelMapper pixelMapper = new PixelMapper();
         private readonly Image image = new Image();
         private readonly bool hideChaos = false;
         private WriteableBitmap bitmap;
@@ -56,7 +56,7 @@ namespace DoublePendulum
             bitmap = new WriteableBitmap(width, height, dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32, null);
             image.Source = bitmap;
 
-            zoomStack.Init(width, height);
+            pixelMapper.Init(bitmap);
             Redraw();
         }
 
@@ -66,12 +66,6 @@ namespace DoublePendulum
         {
             if (bitmap == null)
                 return;
-
-            if (zoomStack.IsEmpty)
-            {
-                var pendulum = App.Pendulums.Count > 0 ? App.Pendulums[0] : App.SelectedPendulum;
-                zoomStack.Zoom(-pendulum.Q1Max, pendulum.Q1Max, -pendulum.L1Max, pendulum.L1Max);
-            }
 
             bitmap.Lock();
             bitmap.Clear();
@@ -97,14 +91,13 @@ namespace DoublePendulum
 
         public void Clear()
         {
-            zoomStack.Clear();
+            if (bitmap == null)
+                return;
 
-            if (bitmap != null)
-            {
-                bitmap.Lock();
-                bitmap.Clear();
-                bitmap.Unlock();
-            }
+            bitmap.Lock();
+            bitmap.Clear();
+            bitmap.Unlock();
+            pixelMapper.Init(bitmap);
         }
 
         void ShowData(Pendulum pendulum)
@@ -156,7 +149,7 @@ namespace DoublePendulum
 
         void AddPoint(double q1, double l1, Color color, bool isHighlighted)
         {
-            var pt = zoomStack.DataToPixel(new Point(q1, l1));
+            var pt = pixelMapper.DataToPixel(new Point(q1, l1));
 
             int x = (int)Math.Round(pt.X);
             int y = (int)Math.Round(pt.Y);
@@ -164,19 +157,26 @@ namespace DoublePendulum
             if (x < 0 || y < 0 || x >= bitmap.PixelWidth || y >= bitmap.PixelHeight)
                 return;
 
-            bitmap.SetPixel(x, y, color);
-
-            if (isHighlighted || isHighDensity)
-                bitmap.DrawRectangle(x - 1, y - 1, x + 1, y + 1, color);
-
-            if (isHighlighted && isHighDensity)
-                bitmap.DrawRectangle(x - 2, y - 2, x + 2, y + 2, color);
+            if (isHighDensity)
+            {
+                if (isHighlighted)
+                    bitmap.FillRectangle(x - 3, y - 3, x + 3, y + 3, color);
+                else
+                    bitmap.FillRectangle(x - 1, y - 1, x + 1, y + 1, color);
+            }
+            else
+            {
+                if (isHighlighted)
+                    bitmap.FillRectangle(x - 1, y - 1, x + 1, y + 1, color);
+                else
+                    bitmap.SetPixel(x, y, color);
+            }
         }
 
         public Point GetCoordinates()
         {
             Point pt = Mouse.GetPosition(this).ToPixel(this);
-            return zoomStack.PixelToData(pt);
+            return pixelMapper.PixelToData(pt);
         }
 
         public int GetNearestPendulumIndex(Point ptMouse, out int poincareIndex)
@@ -269,12 +269,12 @@ namespace DoublePendulum
                 {
                     var topLeft = mouseDown.ToPixel(this);
                     var bottomRight = mouseUp.ToPixel(this);
-                    zoomStack.Zoom(topLeft, bottomRight);
+                    pixelMapper.Zoom(topLeft, bottomRight);
                     Redraw();
                 }
                 else
                 {
-                    zoomStack.Unzoom((mouseDown - mouseUp).Length < 200);
+                    pixelMapper.Unzoom((mouseDown - mouseUp).Length < 200);
                     Redraw();
                 }
 
@@ -313,46 +313,28 @@ namespace DoublePendulum
             }
         }
 
-        class ZoomStack
+        class PixelMapper
         {
             private readonly List<LinearTransform> tx = new List<LinearTransform>();
             private readonly List<LinearTransform> ty = new List<LinearTransform>();
             private readonly int padding = 4;
-            private int lastColumn;
+            private int lastCol;
             private int lastRow;
 
-            public void Init(int width, int height)
-            {
-                double xmin = double.NaN, xmax = 0, ymin = 0, ymax = 0;
-
-                if (tx.Count > 0)
-                {
-                    int i = tx.Count - 1;
-                    xmin = tx[i].BackTransform(padding);
-                    xmax = tx[i].BackTransform(lastColumn);
-                    ymin = ty[i].BackTransform(lastRow);
-                    ymax = ty[i].BackTransform(padding);
-                }
-
-                tx.Clear();
-                ty.Clear();
-
-                lastColumn = width - 1 - padding;
-                lastRow = height - 1 - padding;
-
-                if (!double.IsNaN(xmin))
-                {
-                    Zoom(xmin, xmax, ymin, ymax);
-                }
-            }
-
-            public void Clear()
+            public void Init(WriteableBitmap bitmap)
             {
                 tx.Clear();
                 ty.Clear();
-            }
 
-            public bool IsEmpty => tx.Count == 0;
+                lastCol = bitmap.PixelWidth - 1 - padding;
+                lastRow = bitmap.PixelHeight - 1 - padding;
+
+                var pendulum = App.Pendulums.Count > 0 ? App.Pendulums[0] : App.SelectedPendulum;
+                if (pendulum != null && pendulum.E0 > 0)
+                {
+                    Zoom(-pendulum.Q1Max, pendulum.Q1Max, -pendulum.L1Max, pendulum.L1Max);
+                }
+            }
 
             public void Zoom(Point topLeft, Point bottomRight)
             {
@@ -363,7 +345,7 @@ namespace DoublePendulum
 
             public void Zoom(double xmin, double xmax, double ymin, double ymax)
             {
-                tx.Add(new LinearTransform(xmin, xmax, padding, lastColumn));
+                tx.Add(new LinearTransform(xmin, xmax, padding, lastCol));
                 ty.Add(new LinearTransform(ymin, ymax, lastRow, padding));
             }
 

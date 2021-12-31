@@ -488,7 +488,6 @@ namespace DoublePendulum
         private void OnEnergyChanged()
         {
             pendulum2D.Clear();
-            poincare2D.Clear();
             poincare3D.Clear();
             PendulatorUIs.Clear();
             App.Pendulums.Clear();
@@ -515,6 +514,7 @@ namespace DoublePendulum
             }
 
             App.SelectedPendulum.Init(energy);
+            poincare2D.Clear();
             poincare2D.Redraw();
             poincare3D.Redraw();
         }
