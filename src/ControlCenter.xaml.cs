@@ -55,7 +55,6 @@ namespace DoublePendulum
         private readonly Trajectory3D trajectory3D = new Trajectory3D();
         private readonly string dataDirectory;
         private PendulatorUI selectedPendulatorUI;
-        private int timerCount;
         private string selectedEnergy;
         private DateTime t0;
         private Color lastUsedColor = Colors.White;
@@ -260,42 +259,34 @@ namespace DoublePendulum
                     trajectory3D.Update();
             }
 
+            //--- if all pendulators are stopped, pendulator uis need to be updated
             var updateUIs = !IsBusy;
 
-            timerCount++;
-            var msg = string.Empty;
+            //--- also after each second uis need to be updated
             var t1 = DateTime.UtcNow;
-            var ms = (int)(t1 - t0).TotalMilliseconds;
-            if (ms > 980)
+            if ((int)(t1 - t0).TotalMilliseconds > 980)
             {
                 t0 = t1;
-                msg = $"{ms:D4}, {timerCount}";
-                timerCount = 0;
                 updateUIs = true;
             }
 
             if (updateUIs)
             {
-                int numBusy = 0;
-                int calcsPerSecond = 0;
+                var calcsPerSecond = 0;
 
                 foreach (var pendulatorUI in PendulatorUIs)
                 {
                     if (pendulatorUI.Pendulator.IsBusy)
                     {
-                        numBusy++;
                         pendulatorUI.Update();
                         calcsPerSecond += pendulatorUI.Pendulator.CalcsPerSecond;
                     }
                 }
 
-                if (msg.Length > 0 && numBusy > 0)
-                {
-                    var cpms = calcsPerSecond / (1000 * numBusy);
-                    Title = $"Double Pendulum, {msg}, {cpms} cpms";
-                }
+                Title = $"Double Pendulum, {calcsPerSecond / 1000} cpms";
             }
 
+            //--- if all pendulators are stopped, stop the timer, too
             if (!IsBusy)
             {
                 Timer.Stop();
@@ -691,7 +682,6 @@ namespace DoublePendulum
         {
             if (!Timer.IsEnabled)
             {
-                timerCount = 0;
                 t0 = DateTime.UtcNow;
                 pendulum2D.IsBusy = true;
                 Timer.Start();
