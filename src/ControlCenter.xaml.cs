@@ -128,7 +128,9 @@ namespace DoublePendulum
                     if (App.SelectedPendulum != null)
                         App.SelectedPendulum.NewTrajectoryPoint = null;
 
-                    App.SelectedPendulum = value?.Pendulum;
+                    if (value?.Pendulum != null)
+                        App.SelectedPendulum = value?.Pendulum;
+
                     selectedPendulatorUI = value;
                     lbUIs.ScrollIntoView(value);
                     OnPropertyChanged();
@@ -314,9 +316,11 @@ namespace DoublePendulum
         {
             var pendulum = App.SelectedPendulum;
             pendulum.PoincareColor = lastUsedColor;
+            quickHack = true;
             SelectedEnergy = AddEnergy(pendulum.E0.ToStringInv());
             StartPendulum(pendulum);
         }
+        bool quickHack;
 
         private void Pendulum2D_IsDragging(object sender, EventArgs e)
         {
@@ -479,10 +483,10 @@ namespace DoublePendulum
         private void OnEnergyChanged()
         {
             pendulum2D.Clear();
+            poincare2D.Clear();
             poincare3D.Clear();
             PendulatorUIs.Clear();
             App.Pendulums.Clear();
-            App.SelectedPendulum = new Pendulum();
 
             tbNewEnergy.Text = selectedEnergy;
 
@@ -504,8 +508,12 @@ namespace DoublePendulum
                 }
             }
 
-            App.SelectedPendulum.Init(energy);
-            poincare2D.Clear();
+            if (quickHack)
+                quickHack = false;
+            else
+                App.SelectedPendulum.Init(energy);
+
+            poincare2D.Init();
             poincare2D.Redraw();
             poincare3D.Redraw();
         }

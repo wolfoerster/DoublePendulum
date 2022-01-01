@@ -91,13 +91,20 @@ namespace DoublePendulum
 
         public void Clear()
         {
-            if (bitmap == null)
-                return;
+            if (bitmap != null)
+            {
+                bitmap.Lock();
+                bitmap.Clear();
+                bitmap.Unlock();
+            }
+        }
 
-            bitmap.Lock();
-            bitmap.Clear();
-            bitmap.Unlock();
-            pixelMapper.Init(bitmap);
+        public void Init()
+        {
+            if (bitmap != null)
+            {
+                pixelMapper.Init(bitmap);
+            }
         }
 
         void ShowData(Pendulum pendulum)
