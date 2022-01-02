@@ -206,7 +206,7 @@ namespace DoublePendulum
                 dc.DrawGeometry(Background, null, new RectangleGeometry(rect));
             }
 
-            textBox.Text = $"E0: {pendulum.E0.ToStringExt(CultureInfo.InvariantCulture)}";
+            textBox.Text = $"E0: {pendulum.E0.ToStringInv()}";
 
             if (!ShowOmega)
                 return;

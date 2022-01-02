@@ -59,8 +59,14 @@ When you start the application for the first time, you will see a lot of empty s
 
  After dragging one or both pendulum bobs to an initial position, you can click the [Start] button to start the simulation. The 2D pendulum view now shows the motion and every time the lower mass swings through its rest position from left to right, i.e. every time the Poincare condition is fulfilled, the bob turns to red for a short period and a new point is added to the 2D Poincare map to the left.
 
-You can now start more simulations for the same energy by doing a right mouse click within the 2D Poincare map. If the mouse click position (Q1, L1, Q2=0) leads to a valid L2, a new simulation is started immediately.
+You can now start more simulations for the same energy by doing a right mouse click within the 2D Poincare map. If the mouse position (Q1, L1, Q2 = 0) leads to a valid L2, a new simulation is started immediately.
 
-To limit accumulated errors in the calculation, simulations are stopped automatically after 3 minutes of simulated time.
+The 2D Poincare map has a small margin colored in dark gray. This margin can be used to specify maximum initial values for Q1 or L1. For example if you move the mouse into the margin to the right and do a right click there, Q1 will be set to the maximum Q1 value of the selected energy.
+
+You can also zoom into the 2D Poincare map by dragging the mouse to bottom right. Dragging to the opposite direction will unzoom one level, i.e. show the previous area of the map. You can unzoom to the first level by dragging a long distance to the top left.
+
+You can also specify the initial energy directly, without moving the pendulum bobs in the 2D pendulum view. Just enter the desired energy into the edit box in the upper right corner of the application and then click the [+] button next to it.
+
+To limit accumulated errors in the calculation, simulations are stopped automatically after 3 minutes of simulated time. If you press [Start] again, the simulation will run for another 3 minutes.
 
 To delete a saved simulation, select the simulation and press the [Delete] key.
