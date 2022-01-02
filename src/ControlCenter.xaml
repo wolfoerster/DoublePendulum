@@ -9,7 +9,7 @@
     <ImageBrush x:Key="wood2" ImageSource="..\Images\wood2.jpg"/>
   </UserControl.Resources>
   <local:SquarePanel>
-    <Border BorderThickness="6">
+    <Border local:SquarePanel.Location="0" BorderThickness="6">
       <Grid>
         <local:Poincare2D local:SquarePanel.Location="0" x:Name="poincare2D" Background="Black"/>
         <local:DynaScene3D x:Name="scene"/>
@@ -20,11 +20,12 @@
           <ToggleButton x:Name="mode4" Content=" Q2, L2, L1 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
-          <ToggleButton x:Name="mirrorQ" Content=" Mirror Q " Click="OnButtonSwitchMirror"/>
-          <ToggleButton x:Name="mirrorL" Content=" Mirror L " Click="OnButtonSwitchMirror" Margin="4,0,0,0"/>
+          <ToggleButton x:Name="mirrorQ" Content=" Mirror Q " Click="OnButtonSwitchMirror" ToolTip="Reflect at Q1 axis"/>
+          <ToggleButton x:Name="mirrorL" Content=" Mirror L " Click="OnButtonSwitchMirror" Margin="4,0,0,0" ToolTip="Reflect at L1/L2 axis"/>
         </StackPanel>
       </Grid>
     </Border>
+    
     <Grid local:SquarePanel.Location="1" Margin="0,6,6,6">
 
       <Grid.RowDefinitions>
@@ -46,10 +47,10 @@
       </Border>
 
       <StackPanel Grid.Row="2" Orientation="Horizontal">
-        <ToggleButton x:Name="view0" Content="Poincare 2D" Click="OnButtonSwitchView" IsChecked="true"/>
-        <ToggleButton x:Name="view1" Content="Poincare 3D" Click="OnButtonSwitchView" Margin="7,0,0,0"/>
-        <ToggleButton x:Name="view2" Content="Pendulum 3D" Click="OnButtonSwitchView" Margin="7,0,0,0"/>
-        <ToggleButton x:Name="view3" Content="Trajectory " Click="OnButtonSwitchView" Margin="7,0,0,0"/>
+        <ToggleButton x:Name="view0" Content="Poincare 2D" Click="OnButtonSwitchView" IsChecked="true" ToolTip="Show 2D Poincare map"/>
+        <ToggleButton x:Name="view1" Content="Poincare 3D" Click="OnButtonSwitchView" Margin="7,0,0,0" ToolTip="Show 3D Poincare space"/>
+        <ToggleButton x:Name="view2" Content="Pendulum 3D" Click="OnButtonSwitchView" Margin="7,0,0,0" ToolTip="Show 3D pendulum"/>
+        <ToggleButton x:Name="view3" Content="Trajectory " Click="OnButtonSwitchView" Margin="7,0,0,0" ToolTip="Show phase space trajectory projections"/>
       </StackPanel>
 
       <ListBox x:Name="lbUIs" Grid.Row="4" Width="300" HorizontalAlignment="Left" ItemsSource="{Binding PendulatorUIs}" SelectedItem="{Binding SelectedPendulatorUI}" HorizontalContentAlignment="Stretch"/>
@@ -60,8 +61,8 @@
           <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-          <TextBox Width="57" x:Name="tbNewEnergy"/>
-          <Button Content="+" Click="OnButtonNewEnergy" Width="20" Height="22" Margin="2,0,0,0"/>
+          <TextBox Width="57" x:Name="tbNewEnergy" ToolTip="Enter new energy"/>
+          <Button Content="+" Click="OnButtonNewEnergy" Width="20" Height="22" Margin="2,0,0,0" ToolTip="Add new energy"/>
         </StackPanel>
         <ListBox Grid.Row="1" ItemsSource="{Binding Energies}" SelectedItem="{Binding SelectedEnergy}"/>
       </Grid>
