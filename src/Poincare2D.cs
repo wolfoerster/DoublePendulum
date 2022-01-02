@@ -30,6 +30,7 @@ namespace DoublePendulum
 
     internal class Poincare2D : Border
     {
+        private static int padding = 6;
         private readonly PixelMapper pixelMapper = new PixelMapper();
         private readonly Image image = new Image();
         private WriteableBitmap bitmap;
@@ -37,7 +38,6 @@ namespace DoublePendulum
         private Point mouseDown = new Point(double.NaN, 0);
         private OverlayRect overlayRect;
         private bool IsZooming => overlayRect != null && !double.IsNaN(mouseDown.X);
-
 
         public Poincare2D()
         {
@@ -51,6 +51,7 @@ namespace DoublePendulum
         {
             var dpi = VisualTreeHelper.GetDpi(this);
             isHighDensity = dpi.PixelsPerInchX > 200;
+            padding = isHighDensity ? 12 : 6;
 
             int width = (int)(ActualWidth * dpi.DpiScaleX);
             int height = (int)(ActualHeight * dpi.DpiScaleY);
@@ -73,6 +74,7 @@ namespace DoublePendulum
 
             bitmap.Lock();
             bitmap.Clear();
+            ShowPadding();
 
             var soloed = false;
             foreach (var pendulum in App.Pendulums)
@@ -91,16 +93,6 @@ namespace DoublePendulum
             }
 
             bitmap.Unlock();
-        }
-
-        public void Clear()
-        {
-            if (bitmap != null)
-            {
-                bitmap.Lock();
-                bitmap.Clear();
-                bitmap.Unlock();
-            }
         }
 
         public void Init(double energy)
@@ -243,6 +235,12 @@ namespace DoublePendulum
                 var mode = e.RightButton == MouseButtonState.Pressed;
                 mouseDown = overlayRect.HandleMouseMove(e.GetPosition(this), mode);
             }
+            else
+            {
+                var pt = e.GetPosition(this);
+                var showHand = pt.X < padding || pt.Y < padding || pt.X > ActualWidth - 1 - padding || pt.Y > ActualHeight - 1 - padding;
+                Cursor = showHand ? Cursors.Hand : null;
+            }
         }
 
         protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
@@ -285,6 +283,17 @@ namespace DoublePendulum
             }
         }
 
+        private void ShowPadding()
+        {
+            var width = bitmap.PixelWidth;
+            var height = bitmap.PixelHeight;
+            var color = Colors.DarkSlateGray;
+            bitmap.FillRectangle(0, 0, width, padding, color);
+            bitmap.FillRectangle(0, height - padding, width, height, color);
+            bitmap.FillRectangle(0, 0, padding, height, color);
+            bitmap.FillRectangle(width - padding, 0, width, height, color);
+        }
+
         private sealed class OverlayRect : Adorner
         {
             private readonly Brush fill;
@@ -316,11 +325,10 @@ namespace DoublePendulum
             }
         }
 
-        class PixelMapper
+        private class PixelMapper
         {
             private readonly List<LinearTransform> tx = new List<LinearTransform>();
             private readonly List<LinearTransform> ty = new List<LinearTransform>();
-            private readonly int padding = 4;
             private int lastCol;
             private int lastRow;
 

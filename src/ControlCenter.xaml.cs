@@ -335,51 +335,35 @@ namespace DoublePendulum
             var e0 = Double(selectedEnergy);
             var pt = poincare2D.GetCoordinates();
             var pendulum = new Pendulum { PoincareColor = lastUsedColor };
+            pendulum.Init(e0);
 
-#if false
-            if (WFUtils.IsShiftDown() || WFUtils.IsCtrlDown())
+            if (pt.X < -pendulum.Q1Max)
             {
-                if (WFUtils.IsShiftDown() && WFUtils.IsCtrlDown())
-                {
-                    var p = new Pendulum();
-                    p.Init(e0);
-                    var q10 = 0.999999 * p.Q1Max;
-
-                    if (pendulum.Init(e0, q10, 0))
-                    {
-                        //pendulum.dT *= 0.5;
-                        StartPendulum(pendulum);
-                    }
-                }
-                else
-                {
-                    var l10 = 1.999999 * Math.Sqrt(e0);
-
-                    if (WFUtils.IsCtrlDown())
-                        l10 *= -1;
-
-                    if (pendulum.Init(e0, 0, l10))
-                    {
-                        //pendulum.dT *= 0.5;
-                        StartPendulum(pendulum);
-                    }
-                }
+                pt.X = -pendulum.Q1Max;
+                pt.Y = 0;
             }
-            else
+            else if (pt.X > pendulum.Q1Max)
             {
-                if (pendulum.Init(e0, pt.X, pt.Y))
-                {
-                    StartPendulum(pendulum);
-                }
+                pt.X = pendulum.Q1Max;
+                pt.Y = 0;
             }
-#else
+            else if (pt.Y < -pendulum.L1Max)
+            {
+                pt.X = 0;
+                pt.Y = -pendulum.L1Max;
+            }
+            else if (pt.Y > pendulum.L1Max)
+            {
+                pt.X = 0;
+                pt.Y = pendulum.L1Max;
+            }
+
             if (pendulum.Init(e0, pt.X, pt.Y))
             {
                 if (WFUtils.IsShiftDown()) pendulum.dT *= 2.0;
                 if (WFUtils.IsCtrlDown()) pendulum.dT *= 0.5;
                 StartPendulum(pendulum);
             }
-#endif
         }
 
         private void StartPendulum(Pendulum pendulum)
@@ -483,7 +467,6 @@ namespace DoublePendulum
         private void OnEnergyChanged()
         {
             pendulum2D.Clear();
-            poincare2D.Clear();
             poincare3D.Clear();
             PendulatorUIs.Clear();
             App.Pendulums.Clear();
