@@ -218,12 +218,8 @@ namespace DoublePendulum
             DrawArc(dc, pendulum.Q2, pendulum.W2, position1, pen);
 
             pen = new Pen(hot, thickness);
-            double fac = MathUtils.PIo2 / pendulum.L1Max;
-            bool showA = true;
-            double a1 = showA ? pendulum.A1 : pendulum.L1 * fac;
-            double a2 = showA ? pendulum.A2 : pendulum.L2 * fac;
-            DrawArc(dc, pendulum.Q1, a1, Center, pen);
-            DrawArc(dc, pendulum.Q2, a2, position1, pen);
+            DrawArc(dc, pendulum.Q1, pendulum.A1, Center, pen);
+            DrawArc(dc, pendulum.Q2, pendulum.A2, position1, pen);
         }
 
         private void DrawArc(DrawingContext dc, double q, double w, Point origin, Pen pen)

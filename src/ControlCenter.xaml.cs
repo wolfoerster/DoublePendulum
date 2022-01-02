@@ -308,7 +308,6 @@ namespace DoublePendulum
 
         private void Pendulum2D_BeginDrag(object sender, EventArgs e)
         {
-            CleanUpEnergies();
             SelectedEnergy = null;
             SelectedPendulatorUI = null;
         }
@@ -393,25 +392,6 @@ namespace DoublePendulum
             }
         }
 
-        private void CleanUpEnergies()
-        {
-            var tobeRemoved = new List<string>();
-
-            foreach (var energy in Energies)
-            {
-                var dir = Path.Combine(dataDirectory, energy);
-                if (!Directory.Exists(dir))
-                {
-                    tobeRemoved.Add(energy);
-                }
-            }
-
-            foreach (var energy in tobeRemoved)
-            {
-                Energies.Remove(energy);
-            }
-        }
-
         private void ReadDataDirectory()
         {
             if (!Directory.Exists(dataDirectory))
@@ -459,7 +439,6 @@ namespace DoublePendulum
             var energy = Double(tbNewEnergy.Text);
             if (energy > 0)
             {
-                CleanUpEnergies();
                 SelectedEnergy = AddEnergy(energy.ToStringInv());
             }
         }
