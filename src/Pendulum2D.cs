@@ -94,13 +94,6 @@ namespace DoublePendulum
         private void ShowOmegaClick(object sender, RoutedEventArgs e)
         {
             ShowOmega = (sender as CheckBox).IsChecked.Value;
-
-            if (!ShowOmega)
-            {
-                var pendulum = App.SelectedPendulum;
-                pendulum.Init(pendulum.Q1, pendulum.Q2, 0, 0);
-            }
-
             Update();
         }
 

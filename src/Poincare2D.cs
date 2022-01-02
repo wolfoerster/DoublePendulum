@@ -32,9 +32,12 @@ namespace DoublePendulum
     {
         private readonly PixelMapper pixelMapper = new PixelMapper();
         private readonly Image image = new Image();
-        private readonly bool hideChaos = false;
         private WriteableBitmap bitmap;
         private bool isHighDensity;
+        private Point mouseDown = new Point(double.NaN, 0);
+        private OverlayRect overlayRect;
+        private bool IsZooming => overlayRect != null && !double.IsNaN(mouseDown.X);
+
 
         public Poincare2D()
         {
@@ -56,7 +59,8 @@ namespace DoublePendulum
             bitmap = new WriteableBitmap(width, height, dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32, null);
             image.Source = bitmap;
 
-            pixelMapper.Init(bitmap);
+            var pendulum = App.Pendulums.Count > 0 ? App.Pendulums[0] : App.SelectedPendulum;
+            pixelMapper.Init(bitmap, pendulum.E0);
             Redraw();
         }
 
@@ -99,20 +103,18 @@ namespace DoublePendulum
             }
         }
 
-        public void Init()
+        public void Init(double energy)
         {
             if (bitmap != null)
             {
-                pixelMapper.Init(bitmap);
+                pixelMapper.Init(bitmap, energy);
+                Redraw();
             }
         }
 
         void ShowData(Pendulum pendulum)
         {
             if (bitmap == null || pendulum.IsMuted || pendulum.PoincarePoints.Count == 0)
-                return;
-
-            if (hideChaos && pendulum.PoincareColor == Colors.Cyan)
                 return;
 
             bitmap.Lock();
@@ -226,18 +228,12 @@ namespace DoublePendulum
             return pendulumIndex;
         }
 
-#region Zooming
-
-        private Point mouseDown = new Point(double.NaN, 0);
-        private OverlayRect ovr;
-        private bool IsZooming => ovr != null && !double.IsNaN(mouseDown.X);
-
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             CaptureMouse();
             mouseDown = e.GetPosition(this);
-            ovr = new OverlayRect(this, mouseDown);
-            AdornerLayer.GetAdornerLayer(this).Add(ovr);
+            overlayRect = new OverlayRect(this, mouseDown);
+            AdornerLayer.GetAdornerLayer(this).Add(overlayRect);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -245,7 +241,7 @@ namespace DoublePendulum
             if (IsZooming)
             {
                 var mode = e.RightButton == MouseButtonState.Pressed;
-                mouseDown = ovr.HandleMouseMove(e.GetPosition(this), mode);
+                mouseDown = overlayRect.HandleMouseMove(e.GetPosition(this), mode);
             }
         }
 
@@ -261,8 +257,8 @@ namespace DoublePendulum
         {
             if (IsZooming)
             {
-                AdornerLayer.GetAdornerLayer(this).Remove(ovr);
-                ovr = null;
+                AdornerLayer.GetAdornerLayer(this).Remove(overlayRect);
+                overlayRect = null;
 
                 e.Handled = true;
                 ReleaseMouseCapture();
@@ -328,7 +324,7 @@ namespace DoublePendulum
             private int lastCol;
             private int lastRow;
 
-            public void Init(WriteableBitmap bitmap)
+            public void Init(WriteableBitmap bitmap, double energy)
             {
                 tx.Clear();
                 ty.Clear();
@@ -336,11 +332,9 @@ namespace DoublePendulum
                 lastCol = bitmap.PixelWidth - 1 - padding;
                 lastRow = bitmap.PixelHeight - 1 - padding;
 
-                var pendulum = App.Pendulums.Count > 0 ? App.Pendulums[0] : App.SelectedPendulum;
-                if (pendulum != null && pendulum.E0 > 0)
-                {
-                    Zoom(-pendulum.Q1Max, pendulum.Q1Max, -pendulum.L1Max, pendulum.L1Max);
-                }
+                var pendulum = new Pendulum();
+                pendulum.Init(energy);
+                Zoom(-pendulum.Q1Max, pendulum.Q1Max, -pendulum.L1Max, pendulum.L1Max);
             }
 
             public void Zoom(Point topLeft, Point bottomRight)
@@ -380,7 +374,5 @@ namespace DoublePendulum
                 return new Point(tx[i].BackTransform(pt.X), ty[i].BackTransform(pt.Y));
             }
         }
-
-#endregion Zooming
     }
 }

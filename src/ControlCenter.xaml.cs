@@ -292,6 +292,7 @@ namespace DoublePendulum
             if (!IsBusy)
             {
                 Timer.Stop();
+                pendulum2D.Update();
                 pendulum2D.IsBusy = false;
             }
         }
@@ -316,11 +317,9 @@ namespace DoublePendulum
         {
             var pendulum = App.SelectedPendulum;
             pendulum.PoincareColor = lastUsedColor;
-            quickHack = true;
             SelectedEnergy = AddEnergy(pendulum.E0.ToStringInv());
             StartPendulum(pendulum);
         }
-        bool quickHack;
 
         private void Pendulum2D_IsDragging(object sender, EventArgs e)
         {
@@ -344,10 +343,11 @@ namespace DoublePendulum
                 {
                     var p = new Pendulum();
                     p.Init(e0);
+                    var q10 = 0.999999 * p.Q1Max;
 
-                    if (pendulum.Init(e0, p.Q1Max, 0))
+                    if (pendulum.Init(e0, q10, 0))
                     {
-                        pendulum.dT *= 0.1;
+                        //pendulum.dT *= 0.5;
                         StartPendulum(pendulum);
                     }
                 }
@@ -508,13 +508,7 @@ namespace DoublePendulum
                 }
             }
 
-            if (quickHack)
-                quickHack = false;
-            else
-                App.SelectedPendulum.Init(energy);
-
-            poincare2D.Init();
-            poincare2D.Redraw();
+            poincare2D.Init(energy);
             poincare3D.Redraw();
         }
 
@@ -603,10 +597,6 @@ namespace DoublePendulum
 
                 case "Start":
                     OnStarted();
-                    break;
-
-                default:
-                    //App.Log.Information(methodName);
                     break;
             }
         }
