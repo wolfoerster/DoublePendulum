@@ -31,7 +31,8 @@ namespace DoublePendulum
     public partial class PendulatorUI : UserControl
     {
         private readonly Brush oldBrush;
-        private readonly Brush hotBrush;
+        private readonly Brush redBrush;
+        private readonly Brush grnBrush;
         private readonly Action<PendulatorUI, string> callback;
 
         public PendulatorUI(Pendulator pendulator, Action<PendulatorUI, string> callback)
@@ -44,8 +45,11 @@ namespace DoublePendulum
             Update();
             this.callback = callback;
 
-            hotBrush = new SolidColorBrush(Color.FromRgb(255, 100, 100)) { Opacity = 0.99 };
-            hotBrush.Freeze();
+            redBrush = new SolidColorBrush(Color.FromRgb(255, 100, 100)) { Opacity = 0.99 };
+            redBrush.Freeze();
+
+            grnBrush = new SolidColorBrush(Color.FromRgb(100, 255, 100)) { Opacity = 0.99 };
+            grnBrush.Freeze();
 
             oldBrush = btnStartStop.Background;
         }
@@ -64,8 +68,8 @@ namespace DoublePendulum
         {
             Pendulator.Start();
             btnStartStop.Content = "Stop";
-            btnStartStop.Background = hotBrush;
-            btnSave.Background = hotBrush;
+            btnStartStop.Background = redBrush;
+            btnSave.Background = grnBrush;
             btnSave.IsEnabled = false;
             NotifyCaller();
         }

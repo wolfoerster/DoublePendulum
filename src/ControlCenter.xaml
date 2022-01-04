@@ -9,6 +9,7 @@
     <ImageBrush x:Key="wood2" ImageSource="..\Images\wood2.jpg"/>
   </UserControl.Resources>
   <local:SquarePanel>
+    
     <Border local:SquarePanel.Location="0" BorderThickness="6">
       <Grid>
         <local:Poincare2D local:SquarePanel.Location="0" x:Name="poincare2D" Background="Black"/>
@@ -20,8 +21,8 @@
           <ToggleButton x:Name="mode4" Content=" Q2, L2, L1 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
-          <ToggleButton x:Name="mirrorQ" Content=" Mirror Q " Click="OnButtonSwitchMirror" ToolTip="Reflect at Q1 axis"/>
-          <ToggleButton x:Name="mirrorL" Content=" Mirror L " Click="OnButtonSwitchMirror" Margin="4,0,0,0" ToolTip="Reflect at L1/L2 axis"/>
+          <ToggleButton x:Name="mirrorQ" Content=" Mirror Q " Click="OnButtonSwitchMirror" ToolTip="Reflect Q1 at L1 axis"/>
+          <ToggleButton x:Name="mirrorL" Content=" Mirror L " Click="OnButtonSwitchMirror" Margin="4,0,0,0" ToolTip="Reflect at L1 and L2 at Q1 axis"/>
         </StackPanel>
       </Grid>
     </Border>
@@ -39,10 +40,10 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="300"/>
         <ColumnDefinition Width="6"/>
-        <ColumnDefinition Width="80"/>
+        <ColumnDefinition MinWidth="80"/>
       </Grid.ColumnDefinitions>
 
-      <Border BorderThickness="1" BorderBrush="Gray">
+      <Border Grid.Row="0" BorderThickness="1" BorderBrush="Gray">
         <local:Pendulum2D x:Name="pendulum2D" Width="298" Height="298" Background="LightGray" HorizontalAlignment="Left"/>
       </Border>
 
@@ -55,16 +56,20 @@
 
       <ListBox x:Name="lbUIs" Grid.Row="4" Width="300" HorizontalAlignment="Left" ItemsSource="{Binding PendulatorUIs}" SelectedItem="{Binding SelectedPendulatorUI}" HorizontalContentAlignment="Stretch"/>
 
-      <Grid Grid.RowSpan="5" Grid.Column="2">
+      <Grid Grid.Row="0" Grid.RowSpan="5" Grid.Column="2">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>
           <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-          <TextBox Width="57" x:Name="tbNewEnergy" ToolTip="Enter new energy"/>
-          <Button Content="+" Click="OnButtonNewEnergy" Width="20" Height="22" Margin="2,0,0,0" ToolTip="Add new energy"/>
-        </StackPanel>
-        <ListBox Grid.Row="1" ItemsSource="{Binding Energies}" SelectedItem="{Binding SelectedEnergy}"/>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+          </Grid.ColumnDefinitions>
+          <TextBox Grid.Column="0" x:Name="tbNewEnergy" ToolTip="Enter new energy"/>
+          <Button Grid.Column="1" Content="+" Click="OnButtonNewEnergy" Margin="2,0,0,0" ToolTip="Add new energy"/>
+        </Grid>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Energies}" SelectedItem="{Binding SelectedEnergy}" Margin="0,4,0,0"/>
       </Grid>
 
     </Grid>

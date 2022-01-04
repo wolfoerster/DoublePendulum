@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 -2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -24,15 +24,18 @@ namespace DoublePendulum
     public class ArcGeometry
     {
         /// <summary>
-        /// Creates the specified arc.
+        /// Creates the specified arc geometry.
         /// </summary>
         /// <param name="center">The center in pixel.</param>
         /// <param name="radius">The radius in pixel.</param>
         /// <param name="startAngle">The start angle in radians.</param>
         /// <param name="stopAngle">The stop angle in radians.</param>
         /// <param name="segmentLength">The length of a circle segment in pixel.</param>
-        static public Geometry Create(Point center, double radius,
-            double startAngle, double stopAngle,
+        static public Geometry Create(
+            Point center, 
+            double radius,
+            double startAngle, 
+            double stopAngle,
             double segmentLength)
         {
             if (startAngle == stopAngle)
@@ -42,12 +45,11 @@ namespace DoublePendulum
 
             using (StreamGeometryContext ctx = streamGeometry.Open())
             {
-                //double phi = MathUtils.NormalizeRadians(stopAngle - startAngle);//in radians
-                double phi = stopAngle - startAngle;//in radians
-                double totalLength = Math.Abs(phi * radius);//in DIP
+                double phi = stopAngle - startAngle; // in radians
+                double totalLength = Math.Abs(phi * radius); // in DIP
 
                 int iSteps = (int)(totalLength / segmentLength + 1.5);
-                double dPhi = phi / iSteps;//in radians
+                double dPhi = phi / iSteps; // in radians
 
                 ctx.BeginFigure(GetPoint(center, radius, startAngle), false, false);
 

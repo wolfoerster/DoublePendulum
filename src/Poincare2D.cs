@@ -95,6 +95,11 @@ namespace DoublePendulum
             bitmap.Unlock();
         }
 
+        public void Clear()
+        {
+            Init(0);
+        }
+
         public void Init(double energy)
         {
             if (bitmap != null)
