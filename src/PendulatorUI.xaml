@@ -30,11 +30,11 @@
         <CheckBox x:Name="cbS" Content="S" Click="OnCheckBoxClicked" ToolTip="Solo"/>
       </StackPanel>
 
-      <TextBlock Grid.Row="0" Grid.Column="2" x:Name="tbdE"/>
-      <TextBlock Grid.Row="1" Grid.Column="2" x:Name="tbCount"/>
+      <TextBlock Grid.Row="0" Grid.Column="2" x:Name="tbdE" ToolTip="Energy deviation"/>
+      <TextBlock Grid.Row="1" Grid.Column="2" x:Name="tbCount" ToolTip="Number of Poincare points"/>
 
-      <TextBlock Grid.Row="1" Grid.Column="3" x:Name="tbT"/>
-      <TextBlock Grid.Row="0" Grid.Column="3" x:Name="tbdT" MouseUp="OnMouseUpDt" ToolTip="Mouseclick left/right to change value">
+      <TextBlock Grid.Row="1" Grid.Column="3" x:Name="tbT" ToolTip="Simulated time"/>
+      <TextBlock Grid.Row="0" Grid.Column="3" x:Name="tbdT" MouseUp="OnMouseUpDt" ToolTip="Simulation time step&#x0a;Mouseclick left/right to change value">
         <TextBlock.Style>
           <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="2,4,0,0"/>
