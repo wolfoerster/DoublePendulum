@@ -472,6 +472,8 @@ namespace DoublePendulum
                 }
             }
 
+            App.SelectedPendulum.Init(energy);
+            pendulum2D.Update();
             poincare2D.Init(energy);
             poincare3D.Redraw();
         }
