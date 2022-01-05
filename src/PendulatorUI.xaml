@@ -21,7 +21,7 @@
         <ColumnDefinition Width="40"/>
       </Grid.ColumnDefinitions>
 
-      <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tbId" FontFamily="Arial Black" ToolTip="Simulation id/file extension"/>
+      <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tbId" FontFamily="Arial Black" ToolTip="Simulation id/file extension&#x0a;Right mouse click to change" MouseRightButtonUp="ChangeId"/>
       <local:ColorBox Grid.Row="1" Grid.Column="0" x:Name="cbColor" SelectionChanged="ColorChanged" Margin="2" ToolTip="Change color of Poincare points"/>
 
       <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="0,2,0,0">

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************
 // Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
 //
-// This file is part of the DoublePendulum project which can be found on github.com
+// This file is part of the DoublePendulum project which can be found on github.com.
 //
 // DoublePendulum is free software: you can redistribute it and/or modify it under the terms 
 // of the GNU General Public License as published by the Free Software Foundation, 
@@ -562,6 +562,33 @@ namespace DoublePendulum
                 case "Start":
                     OnStarted();
                     break;
+
+                case "ChangeId":
+                    ChangeId(pendulum);
+                    break;
+            }
+        }
+
+        private void ChangeId(Pendulum pendulum)
+        {
+            for (int i = 0; i < PendulatorUIs.Count; i++)
+            {
+                if (PendulatorUIs[i].Pendulum == pendulum)
+                {
+                    if (i < PendulatorUIs.Count - 1)
+                    {
+                        var prevId = PendulatorUIs[i + 1].Pendulum.Id;
+                        if (prevId < pendulum.Id - 1)
+                        {
+                            DeleteFile(pendulum.Id);
+                            pendulum.Id = prevId + 1;
+                            Save(pendulum);
+                            PendulatorUIs[i].Update();
+                        }
+                    }
+
+                    return;
+                }
             }
         }
 
@@ -612,16 +639,21 @@ namespace DoublePendulum
         private void DeleteSelected()
         {
             var pendulum = selectedPendulatorUI.Pendulum;
-
-            var directory = Path.Combine(dataDirectory, selectedEnergy);
-            var fileName = Path.Combine(directory, $"{selectedEnergy}.{pendulum.Id:D3}");
-            if (File.Exists(fileName))
-                File.Delete(fileName);
+            DeleteFile(pendulum.Id);
 
             App.Pendulums.Remove(pendulum);
             PendulatorUIs.Remove(selectedPendulatorUI);
             poincare2D.Redraw();
             poincare3D.Redraw();
+        }
+
+        private void DeleteFile(int pendulumId)
+        {
+            var directory = Path.Combine(dataDirectory, selectedEnergy);
+            var fileName = Path.Combine(directory, $"{selectedEnergy}.{pendulumId:D3}");
+
+            if (File.Exists(fileName))
+                File.Delete(fileName);
         }
 
         private void Save(Pendulum pendulum)

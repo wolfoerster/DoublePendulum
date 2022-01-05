@@ -38,7 +38,6 @@ namespace DoublePendulum
         public PendulatorUI(Pendulator pendulator, Action<PendulatorUI, string> callback)
         {
             InitializeComponent();
-            GotKeyboardFocus += MeGotKeyboardFocus;
             Pendulator = pendulator;
             Pendulator.Finished = Pendulator_Finished;
 
@@ -54,10 +53,9 @@ namespace DoublePendulum
             oldBrush = btnStartStop.Background;
         }
 
-        private void MeGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void ChangeId(object sender, MouseButtonEventArgs e)
         {
-            var id = (sender as PendulatorUI).Pendulum.Id;
-            NotifyCaller(id.ToString());
+            NotifyCaller();
         }
 
         public Pendulator Pendulator { get; }
