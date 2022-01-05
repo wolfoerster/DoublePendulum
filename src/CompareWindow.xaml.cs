@@ -41,7 +41,7 @@ namespace DoublePendulum
         public CompareWindow(List<Pendulum> pendulums)
         {
             InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            SetSizeAndPosition();
 
             helper = new Helper(pendulators);
             scene2D.Child = helper;
@@ -83,6 +83,15 @@ namespace DoublePendulum
             base.OnKeyDown(e);
             if (e.Key == Key.Escape)
                 Close();
+        }
+
+        private void SetSizeAndPosition()
+        {
+            var mainWindow = Application.Current.MainWindow;
+            Top = mainWindow.Top;
+            Height = mainWindow.Height;
+            Width = Height - 30;
+            Left = mainWindow.Left + (mainWindow.Width - Width) * 0.5;
         }
 
         private void OnMouseUpDt(object sender, MouseButtonEventArgs e)

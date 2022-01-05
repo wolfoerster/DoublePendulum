@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wft3d="WFTools3D"
         xmlns:local="clr-namespace:DoublePendulum"
-        Title="CompareWindow" Height="1050" Width="1000">
+        Title="CompareWindow">
   <Window.Resources>
     <ImageBrush x:Key="wood1" ImageSource="..\Images\wood1.jpg"/>
     <ImageBrush x:Key="wood2" ImageSource="..\Images\wood2.jpg"/>

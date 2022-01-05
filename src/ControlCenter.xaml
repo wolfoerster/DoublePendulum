@@ -12,7 +12,7 @@
     
     <Border local:SquarePanel.Location="0" BorderThickness="6">
       <Grid>
-        <local:Poincare2D local:SquarePanel.Location="0" x:Name="poincare2D" Background="Black"/>
+        <local:Poincare2D local:SquarePanel.Location="0" x:Name="poincare2D" Background="Black" ToolTip="Left click and drag to zoom/unzoom&#x0a;Right click to start a new simulation"/>
         <local:DynaScene3D x:Name="scene"/>
         <StackPanel x:Name="modePanel" Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
           <ToggleButton x:Name="mode1" Content=" Q1, L1, Q2 " Click="OnButtonSwitchMode" IsChecked="true"/>

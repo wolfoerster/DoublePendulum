@@ -242,8 +242,11 @@ namespace DoublePendulum
             }
             else
             {
-                var pt = e.GetPosition(this);
-                var showHand = pt.X < padding || pt.Y < padding || pt.X > ActualWidth - 1 - padding || pt.Y > ActualHeight - 1 - padding;
+                var pt = e.GetPosition(this).ToPixel(this);
+                var showHand = pt.X < padding 
+                    || pt.Y < padding 
+                    || pt.X > bitmap.PixelWidth - 1 - padding 
+                    || pt.Y > bitmap.PixelHeight - 1 - padding;
                 Cursor = showHand ? Cursors.Hand : null;
             }
         }

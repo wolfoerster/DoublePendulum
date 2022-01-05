@@ -61,6 +61,9 @@ namespace DoublePendulum
             weight1.Fill = weight2.Fill = warm1;
             omega1.Fill = omega2.Fill = warm2;
 
+            weight1.ToolTip = weight2.ToolTip = "Click and drag to initial angle";
+            omega1.ToolTip = omega2.ToolTip = "Click and drag to initial angular velocity";
+
             Children.Add(line1);
             Children.Add(line2);
             Children.Add(axis);

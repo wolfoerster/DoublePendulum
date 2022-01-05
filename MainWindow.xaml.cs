@@ -68,7 +68,8 @@ namespace DoublePendulum
 
             if (screen == null)
             {
-                var area = Screen.LookUpPrimary().WorkArea;
+                screen = Screen.LookUpPrimary();
+                var area = screen.WorkArea;
                 var topLeft = area.TopLeft.ToDip(this);
                 var bottomRight = area.BottomRight.ToDip(this);
                 var width = bottomRight.X - topLeft.X;
