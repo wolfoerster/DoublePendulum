@@ -68,6 +68,7 @@ namespace DoublePendulum
         {
             Pendulator.Start();
             btnStartStop.Content = "Stop";
+            btnStartStop.ToolTip = "Stop simulation";
             btnStartStop.Background = redBrush;
             btnSave.Background = grnBrush;
             btnSave.IsEnabled = false;
@@ -78,6 +79,7 @@ namespace DoublePendulum
         {
             Pendulator.Stop();
             btnStartStop.Content = "Start";
+            btnStartStop.ToolTip = "Start/continue simulation";
             btnStartStop.Background = oldBrush;
             NotifyCaller();
         }

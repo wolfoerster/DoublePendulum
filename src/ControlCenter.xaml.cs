@@ -292,6 +292,7 @@ namespace DoublePendulum
             if (!IsBusy)
             {
                 Timer.Stop();
+                pendulum3D.Update();
                 pendulum2D.Update();
                 pendulum2D.IsBusy = false;
             }

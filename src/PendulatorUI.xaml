@@ -21,13 +21,13 @@
         <ColumnDefinition Width="40"/>
       </Grid.ColumnDefinitions>
 
-      <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tbId" FontFamily="Arial Black"/>
-      <local:ColorBox Grid.Row="1" Grid.Column="0" x:Name="cbColor" SelectionChanged="ColorChanged" Margin="2"/>
+      <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tbId" FontFamily="Arial Black" ToolTip="Simulation id/file extension"/>
+      <local:ColorBox Grid.Row="1" Grid.Column="0" x:Name="cbColor" SelectionChanged="ColorChanged" Margin="2" ToolTip="Change color of Poincare points"/>
 
       <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="0,2,0,0">
-        <CheckBox x:Name="cbH" Content="H" Click="OnCheckBoxClicked" ToolTip="Highlight"/>
-        <CheckBox x:Name="cbM" Content="M" Click="OnCheckBoxClicked" ToolTip="Mute"/>
-        <CheckBox x:Name="cbS" Content="S" Click="OnCheckBoxClicked" ToolTip="Solo"/>
+        <CheckBox x:Name="cbH" Content="H" Click="OnCheckBoxClicked" ToolTip="Highlight Poincare points"/>
+        <CheckBox x:Name="cbM" Content="M" Click="OnCheckBoxClicked" ToolTip="Mute (hide this) Poincare points"/>
+        <CheckBox x:Name="cbS" Content="S" Click="OnCheckBoxClicked" ToolTip="Solo (hide other) Poincare points"/>
       </StackPanel>
 
       <TextBlock Grid.Row="0" Grid.Column="2" x:Name="tbdE" ToolTip="Energy deviation"/>
@@ -48,8 +48,8 @@
         </TextBlock.Style>
       </TextBlock>
 
-      <Button Grid.Row="0" Grid.Column="4" x:Name="btnStartStop" Content="Start" Click="OnButtonStartStop" Margin="2,2,2,1"/>
-      <Button Grid.Row="1" Grid.Column="4" x:Name="btnSave" Content="Save" Click="OnButtonSave" Margin="2,1,2,2"/>
+      <Button Grid.Row="0" Grid.Column="4" x:Name="btnStartStop" Content="Start" Click="OnButtonStartStop" Margin="2,2,2,1" ToolTip="Start/continue simulation"/>
+      <Button Grid.Row="1" Grid.Column="4" x:Name="btnSave" Content="Save" Click="OnButtonSave" Margin="2,1,2,2" ToolTip="Save simulation to file"/>
 
     </Grid>
   </Border>

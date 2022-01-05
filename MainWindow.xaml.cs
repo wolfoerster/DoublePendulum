@@ -21,6 +21,7 @@ namespace DoublePendulum
     using System.Windows.Input;
     using System.ComponentModel;
     using WFTools3D;
+    using System;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -64,17 +65,29 @@ namespace DoublePendulum
         {
             var name = Properties.Settings.Default.ScreenName;
             var screen = Screen.LookUpByName(name);
+
             if (screen == null)
             {
-                Properties.Settings.Default.IsMaximized = true;
-                return;
+                var area = Screen.LookUpPrimary().WorkArea;
+                var topLeft = area.TopLeft.ToDip(this);
+                var bottomRight = area.BottomRight.ToDip(this);
+                var width = bottomRight.X - topLeft.X;
+                var height = bottomRight.Y - topLeft.Y;
+
+                this.Top = topLeft.Y;
+                this.Height = height;
+                this.Width = Math.Min(width, height + 370);
+                this.Left = (width - this.Width) * 0.5;
+            }
+            else
+            {
+                this.Top = Properties.Settings.Default.Top;
+                this.Left = Properties.Settings.Default.Left;
+                this.Width = Properties.Settings.Default.Width;
+                this.Height = Properties.Settings.Default.Height;
             }
 
-            this.Top = Properties.Settings.Default.Top;
-            this.Left = Properties.Settings.Default.Left;
-            this.Width = Properties.Settings.Default.Width;
-            this.Height = Properties.Settings.Default.Height;
-            this.WindowState = (WindowState)Properties.Settings.Default.WindowState;
+            this.WindowState = WindowState.Normal;
             this.WindowStartupLocation = WindowStartupLocation.Manual;
         }
 
