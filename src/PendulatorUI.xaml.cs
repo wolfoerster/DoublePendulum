@@ -64,6 +64,15 @@ namespace DoublePendulum
 
         public void Start()
         {
+            if (WFUtils.IsCtrlDown())
+            {
+                var pendulum = Pendulator.Pendulum;
+                var dT = pendulum.dT;
+                pendulum.Init(pendulum.Q10, pendulum.Q20, pendulum.W10, pendulum.W20);
+                pendulum.dT = dT;
+                NotifyCaller("OnCheckBoxClicked");
+            }
+
             Pendulator.Start();
             btnStartStop.Content = "Stop";
             btnStartStop.ToolTip = "Stop simulation";

@@ -666,12 +666,6 @@ namespace DoublePendulum
 
             var fileName = Path.Combine(directory, $"{selectedEnergy}.{pendulum.Id:D3}");
             pendulum.Write(fileName);
-
-            if (Keyboard.IsKeyDown(Key.LeftCtrl))
-            {
-                // ONLY FOR TEST
-                _ = new Pendulum(fileName);
-            }
         }
 
         private void OnStarted()

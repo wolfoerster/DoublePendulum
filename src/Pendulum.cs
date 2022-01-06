@@ -89,11 +89,17 @@ namespace DoublePendulum
 
         public double Q2 => q2;
 
+        public double Q20 => q20;
+
         public double Q2Max => q2max;
 
         public double W1 => w1;
 
+        public double W10 => w10;
+
         public double W2 => w2;
+
+        public double W20 => w20;
 
         public double A1 => a1;
 
@@ -155,9 +161,9 @@ namespace DoublePendulum
             w2 = this.w20 = w20;
             a1 = a2 = 0;
 
-            double cos = Math.Cos(q10 - q20);
-            l10 = 2.0 * w10 + w20 * cos;
-            l20 = w20 + w10 * cos;
+            double cos = Math.Cos(q1 - q2);
+            l10 = 2.0 * w1 + w2 * cos;
+            l20 = w2 + w1 * cos;
 
             e0 = CalculateEnergy();
             SetEnergy(e0);
@@ -181,12 +187,12 @@ namespace DoublePendulum
             if (double.IsNaN(l2))
                 return false;
 
-            w2 = (2.0 * l2 - l1 * cos) / b;
+            w1 = w10 = (l1 - l2 * cos) / b;
+            w2 = w20 = (2.0 * l2 - l1 * cos) / b;
+            a1 = a2 = 0;
 
             if (w2 < 0)
                 return false;
-
-            w1 = (l1 - l2 * cos) / b;
 
             ResetMovement();
             return true;
