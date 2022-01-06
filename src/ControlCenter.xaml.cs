@@ -582,6 +582,12 @@ namespace DoublePendulum
                         var prevId = PendulatorUIs[i + 1].Pendulum.Id;
                         if (prevId < pendulum.Id - 1)
                         {
+                            if (PendulatorUIs[i].Pendulator.IsBusy)
+                            {
+                                MessageBox.Show("Stop simulation first!");
+                                return;
+                            }
+
                             DeleteFile(pendulum.Id);
                             pendulum.Id = prevId + 1;
                             Save(pendulum);

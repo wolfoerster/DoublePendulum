@@ -200,8 +200,6 @@ namespace DoublePendulum
 
         public void Move(int numSteps)
         {
-            double A12, Det, B0, B1, B2;
-
             for (int i = 0; i < numSteps; i++)
             {
                 //--- first check for Poincare condition
@@ -217,27 +215,26 @@ namespace DoublePendulum
                 q2old = q2;
 
                 //--- then move the pendulum
-                A12 = Math.Cos(q1 - q2);
-                Det = 2.0 - A12 * A12;
-                B0 = Math.Sin(q1 - q2);
-                B1 = -B0 * w2 * w2;
-                B2 = B0 * w1 * w1;
+                var q12 = q1 - q2;
+                var cos = Math.Cos(q12);
+                var sin = Math.Sin(q12);
+                var b0 = 2.0 - cos * cos;
+                var b1 = -sin * w2 * w2;
+                var b2 = sin * w1 * w1;
 
                 if (gravity)
                 {
-                    B1 -= 2 * Math.Sin(q1);
-                    B2 -= Math.Sin(q2);
+                    b1 -= 2 * Math.Sin(q1);
+                    b2 -= Math.Sin(q2);
                 }
 
-                a1 = (B1 - B2 * A12) / Det;
+                a1 = (b1 - b2 * cos) / b0;
                 w1 += a1 * dt;
-                q1 += w1 * dt;
-                q1 = q1.NormalizeAngle();
+                q1 = Normalize(q1 + w1 * dt);
 
-                a2 = (B2 * 2.0 - B1 * A12) / Det;
+                a2 = (b2 * 2.0 - b1 * cos) / b0;
                 w2 += a2 * dt;
-                q2 += w2 * dt;
-                q2 = q2.NormalizeAngle();
+                q2 = Normalize(q2 + w2 * dt);
             }
 
             time += numSteps * dt;
@@ -258,6 +255,17 @@ namespace DoublePendulum
         {
             double e1 = CalculateEnergy();
             de = (e1 - e0) / e0 * 100.0;
+        }
+
+        private double Normalize(double angle)
+        {
+            if (angle < -MathUtils.PI)
+                return angle + MathUtils.PIx2;
+
+            if (angle > MathUtils.PI)
+                return angle - MathUtils.PIx2;
+
+            return angle;
         }
 
         private double CalculateL2(double cos, double b)

@@ -66,7 +66,7 @@ namespace DoublePendulum
             var name = Properties.Settings.Default.ScreenName;
             var screen = Screen.LookUpByName(name);
 
-            if (screen == null)
+            if (screen == null || Keyboard.IsKeyToggled(Key.CapsLock))
             {
                 screen = Screen.LookUpPrimary();
                 var area = screen.WorkArea;
