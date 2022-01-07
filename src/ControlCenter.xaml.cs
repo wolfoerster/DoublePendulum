@@ -472,8 +472,11 @@ namespace DoublePendulum
                 }
             }
 
+#if QuickHack
+            Doing so ends up in a 'wrong' pendulum (q2 is 0) when doing a 'Start' in pendulum2D
             App.SelectedPendulum.Init(energy);
             pendulum2D.Update();
+#endif
             poincare2D.Init(energy);
             poincare3D.Redraw();
         }

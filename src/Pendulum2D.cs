@@ -19,13 +19,12 @@ namespace DoublePendulum
 {
     using System;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Shapes;
-    using System.Windows.Controls;
     using System.Windows.Threading;
     using WFTools3D;
-    using System.Globalization;
 
     class Pendulum2D : Canvas
     {

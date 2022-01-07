@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************
 // Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
 //
-// This file is part of the DoublePendulum project which can be found on github.com
+// This file is part of the DoublePendulum project which can be found on github.com.
 //
 // DoublePendulum is free software: you can redistribute it and/or modify it under the terms 
 // of the GNU General Public License as published by the Free Software Foundation, 
@@ -31,9 +31,9 @@ namespace DoublePendulum
         private const byte SoloFlag = 0x04; // indicates pendulum is soloed
         private const byte HighFlag = 0x08; // indicates pendulum is highlighted
 
-        private bool gravity = true;
         private int id = 999;
         private byte flags;
+        private bool gravity = true;
         private Color poincareColor = Colors.White;
         private double q1, q10, q1max, q2, q20, q2max, q2old, w1, w10, w2, w20, a1, a2, l1, l10, l1max, l2, l20, l2max, e0, de, dt, time;
 
