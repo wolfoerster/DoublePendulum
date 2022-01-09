@@ -161,7 +161,7 @@ namespace DoublePendulum
             w2 = this.w20 = w20;
             a1 = a2 = 0;
 
-            double cos = Math.Cos(q1 - q2);
+            var cos = Math.Cos(q1 - q2);
             l10 = 2.0 * w1 + w2 * cos;
             l20 = w2 + w1 * cos;
 
@@ -180,8 +180,8 @@ namespace DoublePendulum
             q2 = q20 = 0;
             q2old = -0.1;
 
-            double cos = Math.Cos(q1 - q2);
-            double b = 2.0 - cos * cos;
+            var cos = Math.Cos(q1 - q2);
+            var b = 2.0 - cos * cos;
             l2 = l20 = CalculateL2(cos, b);
 
             if (double.IsNaN(l2))
@@ -203,14 +203,8 @@ namespace DoublePendulum
             for (int i = 0; i < numSteps; i++)
             {
                 //--- first check for Poincare condition
-                if (q2 >= 0 && q2old < 0 && q2 <= MathUtils.PIo2)
-                {
-                    //--- move back in time to when q2 was 0
-                    //--- q(0) = q2, q(-dt) = q2old, q(t) = 0 ==>
-                    double t = -Math.Abs(q2 * dt / (q2 - q2old));
-                    PoincarePoints.Add(new PoincarePoint(q1 + w1 * t, w1 + a1 * t, w2 + a2 * t));
-                    NewPoincarePoint?.Invoke(this);
-                }
+                if (q2old < 0 && q2 >= 0 && q2 < MathUtils.PIo2)
+                    PoincareConditionHappened();
 
                 q2old = q2;
 
@@ -218,7 +212,7 @@ namespace DoublePendulum
                 var q12 = q1 - q2;
                 var cos = Math.Cos(q12);
                 var sin = Math.Sin(q12);
-                var b0 = 2.0 - cos * cos;
+                var b = 2.0 - cos * cos;
                 var b1 = -sin * w2 * w2;
                 var b2 = sin * w1 * w1;
 
@@ -228,11 +222,11 @@ namespace DoublePendulum
                     b2 -= Math.Sin(q2);
                 }
 
-                a1 = (b1 - b2 * cos) / b0;
+                a1 = (b1 - b2 * cos) / b;
                 w1 += a1 * dt;
                 q1 = Normalize(q1 + w1 * dt);
 
-                a2 = (b2 * 2.0 - b1 * cos) / b0;
+                a2 = (b2 * 2.0 - b1 * cos) / b;
                 w2 += a2 * dt;
                 q2 = Normalize(q2 + w2 * dt);
             }
@@ -255,6 +249,33 @@ namespace DoublePendulum
         {
             double e1 = CalculateEnergy();
             de = (e1 - e0) / e0 * 100.0;
+        }
+
+        private void PoincareConditionHappened()
+        {
+            //--- Poincare condition means: right now q2 is >= 0 and it has been < 0 one time step before.
+            //--- So q2 must have been excatly 0 for some small time ago.
+            //--- Might be no time at all if q2 is smaller than some crazy small number, i.e. more or less zero.
+            //--- If q2 is more or less zero, just store the current pendulum state in a Poincare point.
+            if (q2 < 1e-13)
+            {
+                var pp = new PoincarePoint(q1, w1, w2);
+                PoincarePoints.Add(pp);
+            }
+
+            //--- So q2 is really greater than 0 right now.
+            //--- That also means that q2old is really smaller than 0 by now.
+            //--- Otherwise we would have been here one time step before (and q2 would have been < 1e-13)!
+            //--- The change in q2 happended in a single time step dT.
+            //--- If the we assume that the change rate didn't change within the time step,
+            //--- a linear interpolation will tell the amount of time one has to move back in time
+            //--- to reach the point when q2 exactly was 0. In the end simple cross-multiplication
+            //--- will do the job:
+            var bt = -q2 * dt / (q2 - q2old); // because bt / dt = (q2 - 0) / (q2 - q2old)
+
+            //--- recalc q1, w1 and w2 to when q2 qas 0
+            PoincarePoints.Add(new PoincarePoint(q1 + w1 * bt, w1 + a1 * bt, w2 + a2 * bt));
+            NewPoincarePoint?.Invoke(this);
         }
 
         private double Normalize(double angle)
