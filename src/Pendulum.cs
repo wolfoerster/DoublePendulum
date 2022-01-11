@@ -202,8 +202,9 @@ namespace DoublePendulum
         {
             for (int i = 0; i < numSteps; i++)
             {
-                //--- first check for Poincare condition
-                if (q2old < 0 && q2 >= 0 && q2 < MathUtils.PIo2)
+                //--- first check for Poincare condition, i.e.
+                //--- q2 changes sign when moving from quadrant 3 to 4, i.e. q2 is positive but far below PI / 2)
+                if (q2old < 0 && q2 >= 0 && q2 < 1)
                     PoincareConditionHappened();
 
                 q2old = q2;
@@ -255,23 +256,33 @@ namespace DoublePendulum
         {
             //--- Poincare condition means: right now q2 is >= 0 and it has been < 0 one time step before.
             //--- So q2 must have been excatly 0 for some small time ago.
-            //--- Might be no time at all if q2 is smaller than some crazy small number, i.e. more or less zero.
-            //--- If q2 is more or less zero, just store the current pendulum state in a Poincare point.
-            if (q2 < 1e-13)
+            //--- Might be no time at all if q2 is smaller than some crazy small number.
+            //--- If so, just store the current pendulum state in a Poincare point.
+            //--- This will most likely happen only once, namely when movement is STARTED at the Poincare condition!
+            if (q2 < 1e-16)
             {
-                var pp = new PoincarePoint(q1, w1, w2);
-                PoincarePoints.Add(pp);
+                PoincarePoints.Add(new PoincarePoint(q1, w1, w2));
+                return;
             }
 
             //--- So q2 is really greater than 0 right now.
             //--- That also means that q2old is really smaller than 0 by now.
-            //--- Otherwise we would have been here one time step before (and q2 would have been < 1e-13)!
-            //--- The change in q2 happended in a single time step dT.
-            //--- If the we assume that the change rate didn't change within the time step,
+            //--- Otherwise we would have been here one time step before (and q2 would have been < 1e-16)!
+            //--- The change in q2 happended in a single time step dT, which should be rather small, i.e. < 1e-6.
+            //--- Assuming that the q2 change rate didn't change within the time step dT,
             //--- a linear interpolation will tell the amount of time one has to move back in time
-            //--- to reach the point when q2 exactly was 0. In the end simple cross-multiplication
-            //--- will do the job:
-            var bt = -q2 * dt / (q2 - q2old); // because bt / dt = (q2 - 0) / (q2 - q2old)
+            //--- to reach the point when q2 exactly was 0. In the end a simple cross-multiplication
+            //--- will do the job. Calling the amount of time in question 'bt' (back time) and calling
+            //--- the time step between q2 and q2old 'dt', euclidean geometry leads to the following equation: 
+            //--- bt / dt = (q2 - 0) / (q2 - q2old) or
+            //--- bt / dt = q2 / (q2 - q2old) | *dt
+            //--- bt = dt * q2 / (q2 - q2old) | which must be > 0
+            //--- so -bt must be < 0, or
+            var bt = -dt * q2 / (q2 - q2old);
+            if (bt > 0)
+            {
+                throw new InvalidOperationException("IMHO this should never happen!");
+            }
 
             //--- recalc q1, w1 and w2 to when q2 qas 0
             PoincarePoints.Add(new PoincarePoint(q1 + w1 * bt, w1 + a1 * bt, w2 + a2 * bt));
