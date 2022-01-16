@@ -389,6 +389,7 @@ namespace DoublePendulum
             if (index > -1)
             {
                 SelectedPendulatorUI = PendulatorUIs[index];
+                lastUsedColor = SelectedPendulatorUI.Pendulum.PoincareColor;
                 lbUIs.Focus();
             }
         }
