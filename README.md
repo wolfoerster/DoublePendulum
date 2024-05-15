@@ -69,7 +69,7 @@ You can also specify the initial energy directly, without moving the pendulum bo
 
 To limit accumulated errors in the calculation, simulations are stopped automatically after 3 minutes of simulated time. If you press [Start] again, the simulation will run for another 3 minutes.
 
-You can change the speed of a simulation by doing a mouse click on the 'dT' field of the simulation. Left click doubles the speed, right click halvens it.
+You can change the speed of a simulation by doing a mouse click on the 'dT' field of the simulation. Left click doubles the speed, right click halves it.
 
 The checkboxes 'H', 'M' and 'S' are used to highlight, mute or solo a simulation in the Poincare views (2D and 3D).
 
