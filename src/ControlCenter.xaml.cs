@@ -67,6 +67,12 @@ namespace DoublePendulum
             DataContext = this;
             Loaded += MeLoaded;
 
+            Poincare3D.MirrorQ = Poincare2D.MirrorQ = Properties.Settings.Default.MirrorQ;
+            mirrorQ.IsChecked = Poincare3D.MirrorQ;
+
+            Poincare3D.MirrorL = Properties.Settings.Default.MirrorL;
+            mirrorL.IsChecked = Poincare3D.MirrorL;
+
             pendulum2D.BeginDrag += Pendulum2D_BeginDrag;
             pendulum2D.IsDragging += Pendulum2D_IsDragging;
             pendulum2D.StartSim += Pendulum2D_StartSim;
