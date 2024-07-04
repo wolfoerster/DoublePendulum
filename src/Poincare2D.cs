@@ -191,9 +191,10 @@ namespace DoublePendulum
             var pendulumIndex = -1;
             var minDist = double.PositiveInfinity;
 
-            for (int i = 0; i < App.Pendulums.Count; i++)
+            foreach (var pendulum in GetVisiblePendulums())
             {
-                var pendulum = App.Pendulums[i];
+                var i = App.Pendulums.IndexOf(pendulum);
+
                 for (int j = 0; j < pendulum.PoincarePoints.Count; j++)
                 {
                     PoincarePoint pt = pendulum.PoincarePoints[j];
@@ -223,6 +224,23 @@ namespace DoublePendulum
             }
 
             return pendulumIndex;
+        }
+
+        private List<Pendulum> GetVisiblePendulums()
+        {
+            var soloed = new List<Pendulum>();
+            var unmuted = new List<Pendulum>();
+
+            foreach (var pendulum in App.Pendulums)
+            {
+                if (pendulum.IsSoloed)
+                    soloed.Add(pendulum);
+
+                else if (!pendulum.IsMuted) 
+                    unmuted.Add(pendulum);
+            }
+
+            return soloed.Count > 0 ? soloed : unmuted;
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
