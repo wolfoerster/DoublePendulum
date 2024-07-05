@@ -427,7 +427,7 @@ namespace DoublePendulum
                     byte green = reader.ReadByte();
                     byte blue = reader.ReadByte();
                     byte alpha = reader.ReadByte();
-                    /*flags = */reader.ReadByte();
+                    flags = (byte)(reader.ReadByte() & MuteFlag);
 
                     if (version == 104)
                     {
