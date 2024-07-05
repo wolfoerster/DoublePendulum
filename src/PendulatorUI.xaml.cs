@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -105,7 +105,8 @@ namespace DoublePendulum
             var elapsed = TimeSpan.FromSeconds(Pendulum.SimulationTime);
             tbT.Text = elapsed.ToString("hh\\:mm\\:ss");
 
-            if (Pendulator.IsBusy && Pendulator.Elapsed >= 180)
+            // stop simulation after 4 minutes
+            if (Pendulator.IsBusy && Pendulator.Elapsed >= 240)
             {
                 Stop();
             }
