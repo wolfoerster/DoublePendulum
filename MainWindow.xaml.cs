@@ -108,8 +108,8 @@ namespace DoublePendulum
             Properties.Settings.Default.Width = this.Width;
             Properties.Settings.Default.Height = this.Height;
 
-            Properties.Settings.Default.MirrorQ = Poincare3D.MirrorQ;
-            Properties.Settings.Default.MirrorL = Poincare3D.MirrorL;
+            Properties.Settings.Default.MirrorQ = ControlCenter.MirrorQ;
+            Properties.Settings.Default.MirrorL = ControlCenter.MirrorL;
 
             Properties.Settings.Default.Save();
         }

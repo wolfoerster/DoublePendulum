@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -27,6 +27,7 @@ namespace DoublePendulum
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using WFTools3D;
+    using static ControlCenter;
 
     internal class Poincare2D : Border
     {
@@ -65,8 +66,6 @@ namespace DoublePendulum
             Redraw();
         }
 
-        public static bool MirrorQ = false;
-
         public void Redraw()
         {
             if (bitmap == null)
@@ -76,21 +75,8 @@ namespace DoublePendulum
             bitmap.Clear();
             ShowPadding();
 
-            var soloed = false;
-            foreach (var pendulum in App.Pendulums)
-            {
-                if (pendulum.IsSoloed)
-                {
-                    soloed = true;
-                    ShowData(pendulum);
-                }
-            }
-
-            if (!soloed)
-            {
-                foreach (var pendulum in App.Pendulums)
-                    ShowData(pendulum);
-            }
+            foreach (var pendulum in App.VisiblePendulums)
+                ShowData(pendulum);
 
             bitmap.Unlock();
         }
@@ -191,7 +177,7 @@ namespace DoublePendulum
             var pendulumIndex = -1;
             var minDist = double.PositiveInfinity;
 
-            foreach (var pendulum in GetVisiblePendulums())
+            foreach (var pendulum in App.VisiblePendulums)
             {
                 var i = App.Pendulums.IndexOf(pendulum);
 
@@ -224,23 +210,6 @@ namespace DoublePendulum
             }
 
             return pendulumIndex;
-        }
-
-        private List<Pendulum> GetVisiblePendulums()
-        {
-            var soloed = new List<Pendulum>();
-            var unmuted = new List<Pendulum>();
-
-            foreach (var pendulum in App.Pendulums)
-            {
-                if (pendulum.IsSoloed)
-                    soloed.Add(pendulum);
-
-                else if (!pendulum.IsMuted) 
-                    unmuted.Add(pendulum);
-            }
-
-            return soloed.Count > 0 ? soloed : unmuted;
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

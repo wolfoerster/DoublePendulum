@@ -53,7 +53,7 @@ namespace DoublePendulum
         private readonly Pendulum3D pendulum3D;
         private readonly Poincare3D poincare3D = new Poincare3D();
         private readonly Trajectory3D trajectory3D = new Trajectory3D();
-        private readonly string dataDirectory;
+        private readonly string dataDirectory = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
         private PendulatorUI selectedPendulatorUI;
         private string selectedEnergy;
         private DateTime t0;
@@ -61,17 +61,15 @@ namespace DoublePendulum
 
         public ControlCenter()
         {
-            dataDirectory = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
-            //RenameDirs();
             InitializeComponent();
             DataContext = this;
             Loaded += MeLoaded;
 
-            Poincare3D.MirrorQ = Poincare2D.MirrorQ = Properties.Settings.Default.MirrorQ;
-            mirrorQ.IsChecked = Poincare3D.MirrorQ;
+            MirrorQ = Properties.Settings.Default.MirrorQ;
+            mirrorQ.IsChecked = MirrorQ;
 
-            Poincare3D.MirrorL = Properties.Settings.Default.MirrorL;
-            mirrorL.IsChecked = Poincare3D.MirrorL;
+            MirrorL = Properties.Settings.Default.MirrorL;
+            mirrorL.IsChecked = MirrorL;
 
             pendulum2D.BeginDrag += Pendulum2D_BeginDrag;
             pendulum2D.IsDragging += Pendulum2D_IsDragging;
@@ -85,20 +83,24 @@ namespace DoublePendulum
             pendulum3D = new Pendulum3D(brush1, brush2) { Position = new Point3D(0, 0, -1) };
             pendulum3D.Rotation1 = Math3D.RotationZ(-90);
 
-            byte b = 64;
-            scene.Lighting.AmbientLight.Color = Color.FromRgb(b, b, b);
+            scene.Lighting.AmbientLight.Color = Color.FromRgb(64, 64, 64);
             scene.Lighting.DirectionalLight1.Direction = new Vector3D(1, 1, -1);
             scene.Lighting.DirectionalLight2.Direction = new Vector3D(-1, -1, 0);
 
             scene.Camera.Position = new Point3D(-2, -4, 3);
             scene.Camera.LookAt(new Point3D(0, 0, 0));
             scene.Camera.Scale = 0.1;
+            scene.MouseLeftButtonUp += Scene_MouseLeftButtonUp;
 
             Timer.Interval = TimeSpan.FromMilliseconds(30);
             Timer.Tick += Timer_Tick;
 
             SwitchView("view0");
         }
+
+        public static bool MirrorQ { get; set; }
+
+        public static bool MirrorL { get; set; }
 
         public ObservableCollection<string> Energies { get; } = new ObservableCollection<string>();
 
@@ -174,15 +176,13 @@ namespace DoublePendulum
         {
             if ((sender as ToggleButton).Name == "mirrorQ")
             {
-                Poincare2D.MirrorQ ^= true;
+                MirrorQ ^= true;
                 poincare2D.Redraw();
-
-                Poincare3D.MirrorQ ^= true;
                 poincare3D.Redraw();
             }
             else
             {
-                Poincare3D.MirrorL ^= true;
+                MirrorL ^= true;
                 poincare3D.Redraw();
             }
         }
@@ -392,6 +392,26 @@ namespace DoublePendulum
         {
             var pt = poincare2D.GetCoordinates();
             var index = poincare2D.GetNearestPendulumIndex(pt, out var _);
+            SelectPendulum(index);
+        }
+
+        private void Scene_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (scene.Models.Contains(poincare3D))
+            {
+                var ptScene = e.GetPosition(scene);
+                var id = poincare3D.FindHitPendulumId(ptScene);
+                if (id > -1)
+                {
+                    var pendulum = App.Pendulums.FirstOrDefault(p => p.Id == id);
+                    var index = App.Pendulums.IndexOf(pendulum);
+                    SelectPendulum(index);
+                }
+            }
+        }
+
+        private void SelectPendulum(int index)
+        {
             if (index > -1)
             {
                 SelectedPendulatorUI = PendulatorUIs[index];
@@ -703,45 +723,6 @@ namespace DoublePendulum
                 return value;
 
             return 0;
-        }
-
-        private void RenameDirs()
-        {
-            foreach (var dir in Directory.GetDirectories(dataDirectory))
-            {
-                RenameDir(dir);
-            }
-        }
-
-        private void RenameDir(string dir)
-        {
-            foreach (var subDir in Directory.GetDirectories(dir))
-            {
-                RenameDir(subDir);
-            }
-
-            bool Convert(string oldName, out string newName)
-            {
-                newName = oldName;
-                var odir = Path.GetDirectoryName(oldName);
-                var name = Path.GetFileName(oldName);
-
-                if (name[0] != 'E' || name.IndexOf('P') < 0)
-                    return false;
-
-                name = name.Substring(1).Replace('P', '.');
-                newName = Path.Combine(odir, name);
-                return true;
-            }
-
-            foreach (var file in Directory.GetFiles(dir))
-            {
-                if (Convert(file, out var newFile))
-                    File.Move(file, newFile);
-            }
-
-            if (Convert(dir, out var newDir))
-                Directory.Move(dir, newDir);
         }
 
         private void ComparePendulums()

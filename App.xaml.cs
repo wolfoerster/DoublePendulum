@@ -56,5 +56,25 @@ namespace DoublePendulum
         public static List<Pendulum> Pendulums = new List<Pendulum>();
 
         public static Pendulum SelectedPendulum = new Pendulum();
+
+        public static List<Pendulum> VisiblePendulums
+        {
+            get 
+            {
+                var soloed = new List<Pendulum>();
+                var unmuted = new List<Pendulum>();
+
+                foreach (var pendulum in App.Pendulums)
+                {
+                    if (pendulum.IsSoloed)
+                        soloed.Add(pendulum);
+
+                    else if (!pendulum.IsMuted)
+                        unmuted.Add(pendulum);
+                }
+
+                return soloed.Count > 0 ? soloed : unmuted;
+            }
+        }
     }
 }

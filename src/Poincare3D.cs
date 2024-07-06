@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -18,17 +18,15 @@
 namespace DoublePendulum
 {
     using System.Linq;
+    using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
     using WFTools3D;
+    using static ControlCenter;
 
     public class Poincare3D : Object3D
     {
         private static readonly LinearTransform3D dataTransform = new LinearTransform3D();
-
-        public static bool MirrorQ;
-
-        public static bool MirrorL;
 
         public void Clear()
         {
@@ -42,7 +40,8 @@ namespace DoublePendulum
             if (child != null)
                 Children.Remove(child);
 
-            AddPointsModel(pendulum);
+            if (!pendulum.IsMuted)
+                Children.Add(new PointsModel(pendulum));
         }
 
         public void Redraw()
@@ -55,30 +54,28 @@ namespace DoublePendulum
                 dataTransform.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max);
             }
 
-            var soloed = false;
-            foreach (var pendulum in App.Pendulums)
+            foreach (var pendulum in App.VisiblePendulums)
             {
-                if (pendulum.IsSoloed)
-                {
-                    soloed = true;
-                    AddPointsModel(pendulum);
-                }
-            }
-
-            if (!soloed)
-            {
-                foreach (var pendulum in App.Pendulums)
-                    AddPointsModel(pendulum);
+                Children.Add(new PointsModel(pendulum));
             }
         }
 
-        private void AddPointsModel(Pendulum pendulum)
+        public int FindHitPendulumId(Point ptMouse)
         {
-            if (!pendulum.IsMuted)
+            foreach (var child in Children)
             {
-                var model = new PointsModel(pendulum);
-                Children.Add(model);
+                if (child is PointsModel pointsModel)
+                {
+                    var htr = Math3D.HitTest(pointsModel, ptMouse);
+                    if (htr != null)
+                    {
+                        //Debug.WriteLine($"{pointsModel.PendulumId}: {htr.PointHit}");
+                        return pointsModel.PendulumId;
+                    }
+                }
             }
+
+            return -1;
         }
 
         public void NewPoincarePoint(Pendulum pendulum)
