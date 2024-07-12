@@ -42,7 +42,7 @@ namespace DoublePendulum
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void FirePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -118,7 +118,7 @@ namespace DoublePendulum
                 if (selectedEnergy != value)
                 {
                     selectedEnergy = value;
-                    OnPropertyChanged();
+                    FirePropertyChanged();
                     OnEnergyChanged();
                 }
             }
@@ -141,7 +141,7 @@ namespace DoublePendulum
 
                     selectedPendulatorUI = value;
                     lbUIs.ScrollIntoView(value);
-                    OnPropertyChanged();
+                    FirePropertyChanged();
                     OnPendulatorChanged();
                 }
             }
