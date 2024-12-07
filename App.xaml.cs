@@ -53,11 +53,14 @@ namespace DoublePendulum
             Resources.MergedDictionaries.Add(Application.LoadComponent(uri) as ResourceDictionary);
         }
 
-        public static Pendulum PlaceHolderPendulum = new Pendulum();
-
         public static List<Pendulum> Pendulums = new List<Pendulum>();
 
-        public static Pendulum SelectedPendulum = PlaceHolderPendulum;
+        public static Pendulum SelectedPendulum
+        {
+            get => selectedPendulum ?? new Pendulum();
+            set => selectedPendulum = value;
+        }
+        private static Pendulum selectedPendulum;
 
         public static List<Pendulum> VisiblePendulums
         {

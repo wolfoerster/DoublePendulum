@@ -135,13 +135,8 @@ namespace DoublePendulum
             {
                 if (selectedPendulatorUI != value)
                 {
-                    if (App.SelectedPendulum != null)
-                        App.SelectedPendulum.NewTrajectoryPoint = null;
-
-                    if (value?.Pendulum != null)
-                        App.SelectedPendulum = value?.Pendulum;
-                    else
-                        App.SelectedPendulum = App.PlaceHolderPendulum;
+                    App.SelectedPendulum.NewTrajectoryPoint = null;
+                    App.SelectedPendulum = value?.Pendulum;
 
                     selectedPendulatorUI = value;
                     lbUIs.ScrollIntoView(value);
@@ -575,10 +570,11 @@ namespace DoublePendulum
 
         private void OnPendulatorChanged()
         {
+            pendulum2D.Update();
+
             if (selectedPendulatorUI == null)
                 return;
 
-            pendulum2D.Update();
             pendulum3D.Update();
 
             App.SelectedPendulum.NewTrajectoryPoint = trajectory3D.NewTrajectoryPoint;
