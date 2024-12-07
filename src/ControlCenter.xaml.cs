@@ -75,8 +75,10 @@ namespace DoublePendulum
             pendulum2D.IsDragging += Pendulum2D_IsDragging;
             pendulum2D.StartSim += Pendulum2D_StartSim;
 
+            poincare2D.MouseMove += Poincare2D_MouseMove;
             poincare2D.MouseLeftButtonUp += Poincare2D_MouseLeftButtonUp;
             poincare2D.MouseRightButtonUp += Poincare2D_MouseRightButtonUp;
+            poincare2D.MouseRightButtonDown += Poincare2D_MouseRightButtonDown;
 
             var brush1 = Resources["wood1"] as ImageBrush;
             var brush2 = Resources["wood2"] as ImageBrush;
@@ -138,6 +140,8 @@ namespace DoublePendulum
 
                     if (value?.Pendulum != null)
                         App.SelectedPendulum = value?.Pendulum;
+                    else
+                        App.SelectedPendulum = App.PlaceHolderPendulum;
 
                     selectedPendulatorUI = value;
                     lbUIs.ScrollIntoView(value);
@@ -331,6 +335,17 @@ namespace DoublePendulum
         {
             var pendulum = App.SelectedPendulum;
             pendulum3D.Update(pendulum.Q1, pendulum.Q2);
+        }
+
+        private void Poincare2D_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Mouse.RightButton != MouseButtonState.Pressed)
+                return;
+        }
+
+        private void Poincare2D_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SelectedPendulatorUI = null;
         }
 
         private void Poincare2D_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
