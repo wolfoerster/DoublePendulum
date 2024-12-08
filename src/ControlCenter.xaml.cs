@@ -337,10 +337,10 @@ namespace DoublePendulum
             SelectedPendulatorUI = null;
             if (selectedEnergy != null)
             {
-                var pendulum = new Pendulum { PoincareColor = lastUsedColor };
-                pendulum.Id = PrepareId;
+                var pendulum = new Pendulum { Id = PrepareId, PoincareColor = lastUsedColor };
                 pendulum.Init(Double(selectedEnergy));
                 App.SelectedPendulum = pendulum;
+                PrepareNewSimulation();
                 pendulum2D.Update();
             }
         }
