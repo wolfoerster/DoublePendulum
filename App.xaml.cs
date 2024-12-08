@@ -55,12 +55,7 @@ namespace DoublePendulum
 
         public static List<Pendulum> Pendulums = new List<Pendulum>();
 
-        public static Pendulum SelectedPendulum
-        {
-            get => selectedPendulum ?? new Pendulum();
-            set => selectedPendulum = value;
-        }
-        private static Pendulum selectedPendulum;
+        public static Pendulum SelectedPendulum = new Pendulum();
 
         public static List<Pendulum> VisiblePendulums
         {

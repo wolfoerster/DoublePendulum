@@ -136,7 +136,7 @@ namespace DoublePendulum
                 if (selectedPendulatorUI != value)
                 {
                     App.SelectedPendulum.NewTrajectoryPoint = null;
-                    App.SelectedPendulum = value?.Pendulum;
+                    App.SelectedPendulum = value?.Pendulum ?? new Pendulum();
 
                     selectedPendulatorUI = value;
                     lbUIs.ScrollIntoView(value);
