@@ -332,27 +332,50 @@ namespace DoublePendulum
             pendulum3D.Update(pendulum.Q1, pendulum.Q2);
         }
 
-        private void Poincare2D_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (Mouse.RightButton != MouseButtonState.Pressed)
-                return;
-        }
-
         private void Poincare2D_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             SelectedPendulatorUI = null;
+            if (selectedEnergy != null)
+            {
+                var pendulum = new Pendulum { PoincareColor = lastUsedColor };
+                pendulum.Id = PrepareId;
+                pendulum.Init(Double(selectedEnergy));
+                App.SelectedPendulum = pendulum;
+                pendulum2D.Update();
+            }
+        }
+
+        private const int PrepareId = int.MaxValue;
+
+        private void Poincare2D_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Mouse.RightButton == MouseButtonState.Pressed && PrepareNewSimulation())
+            {
+                pendulum2D.Update();
+            }
         }
 
         private void Poincare2D_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (selectedEnergy == null)
+            if (selectedEnergy == null || selectedPendulatorUI != null)
                 return;
 
-            var e0 = Double(selectedEnergy);
-            var pt = poincare2D.GetCoordinates();
-            var pendulum = new Pendulum { PoincareColor = lastUsedColor };
-            pendulum.Init(e0);
+            if (PrepareNewSimulation())
+            {
+                var pendulum = App.SelectedPendulum;
+                if (WFUtils.IsShiftDown()) pendulum.dT *= 2.0;
+                if (WFUtils.IsCtrlDown()) pendulum.dT *= 0.5;
+                StartPendulum(pendulum);
+            }
+        }
 
+        private bool PrepareNewSimulation()
+        {
+            var pendulum = App.SelectedPendulum;
+            if (pendulum.Id != PrepareId)
+                return false;
+
+            var pt = poincare2D.GetCoordinates();
             if (pt.X < -pendulum.Q1Max)
             {
                 pt.X = -pendulum.Q1Max;
@@ -374,12 +397,7 @@ namespace DoublePendulum
                 pt.Y = pendulum.L1Max;
             }
 
-            if (pendulum.Init(e0, pt.X, pt.Y))
-            {
-                if (WFUtils.IsShiftDown()) pendulum.dT *= 2.0;
-                if (WFUtils.IsCtrlDown()) pendulum.dT *= 0.5;
-                StartPendulum(pendulum);
-            }
+            return pendulum.Init(Double(selectedEnergy), pt.X, pt.Y);
         }
 
         private void StartPendulum(Pendulum pendulum)
