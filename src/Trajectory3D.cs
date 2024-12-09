@@ -23,7 +23,7 @@ namespace DoublePendulum
 
     public class Trajectory3D : Primitive3D
     {
-        private readonly TubeBuilder builder = new TubeBuilder(0.01, 4);
+        private readonly TubeBuilder builder = new TubeBuilder(0.02, 4);
         private readonly LinearTransform3D T = new LinearTransform3D();
         private int count;
         private int mode;

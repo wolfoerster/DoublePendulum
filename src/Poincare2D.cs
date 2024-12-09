@@ -51,7 +51,7 @@ namespace DoublePendulum
         void MySizeChanged(object sender, SizeChangedEventArgs e)
         {
             var dpi = VisualTreeHelper.GetDpi(this);
-            isHighDensity = dpi.PixelsPerInchX > 200;
+            isHighDensity = dpi.PixelsPerInchX > 167;
             padding = isHighDensity ? 12 : 6;
 
             int width = (int)(ActualWidth * dpi.DpiScaleX);
@@ -152,7 +152,7 @@ namespace DoublePendulum
             if (isHighDensity)
             {
                 if (isHighlighted)
-                    bitmap.FillRectangle(x - 3, y - 3, x + 3, y + 3, color);
+                    bitmap.FillEllipse(x - 3, y - 3, x + 3, y + 3, color);
                 else
                     bitmap.FillRectangle(x - 1, y - 1, x + 1, y + 1, color);
             }
