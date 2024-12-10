@@ -418,6 +418,9 @@ namespace DoublePendulum
 
         private void Poincare2D_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (Mouse.RightButton == MouseButtonState.Pressed)
+                return;
+
             var pt = poincare2D.GetCoordinates();
             var index = poincare2D.GetNearestPendulumIndex(pt, out var _);
             SelectPendulum(index);
