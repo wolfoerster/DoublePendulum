@@ -55,6 +55,7 @@
     </ApplicationDefinition>
     <Compile Include="src\ArcGeometry.cs" />
     <Compile Include="src\ColorBox.cs" />
+    <Compile Include="src\ColorTransform.cs" />
     <Compile Include="src\CompareWindow.xaml.cs">
       <DependentUpon>CompareWindow.xaml</DependentUpon>
     </Compile>
@@ -62,6 +63,7 @@
       <DependentUpon>ControlCenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\DynaScene3D.cs" />
+    <Compile Include="src\FlexTube.cs" />
     <Compile Include="src\LinearTransform3D.cs" />
     <Compile Include="src\Pendulator.cs" />
     <Compile Include="src\PendulatorUI.xaml.cs">
