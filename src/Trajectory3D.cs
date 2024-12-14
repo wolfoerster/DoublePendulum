@@ -67,21 +67,20 @@ namespace DoublePendulum
             {
                 case 1: record = T.Transform(q1, l1, q2, l2); break;
                 case 2: record = T.Transform(q1, l1, l2, q2); break;
-                case 3: record = T.Transform(q2, l2, q1, l1); break;
-                case 4: record = T.Transform(q2, l2, l1, q1); break;
+                case 3: record = T.Transform(q1, q2, l2, l1); break;
+                case 4: record = T.Transform(l1, q2, l2, q1); break;
                 default: return;
             }
 
             records.Add(record);
-            if (records.Count > 1)
-            {
-                Dispatcher.Invoke(() => OnNewPoint(), System.Windows.Threading.DispatcherPriority.Render);
-            }
+            Dispatcher.Invoke(() => OnNewPoint(), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void OnNewPoint()
         {
             var i = records.Count - 1;
+            if (i < 1)
+                return;
 
             var cyl = new Cylinder(6)
             {

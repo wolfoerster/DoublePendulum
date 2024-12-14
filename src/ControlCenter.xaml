@@ -17,8 +17,8 @@
         <StackPanel x:Name="modePanel" Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
           <ToggleButton x:Name="mode1" Content=" Q1, L1, Q2 " Click="OnButtonSwitchMode" IsChecked="true"/>
           <ToggleButton x:Name="mode2" Content=" Q1, L1, L2 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
-          <ToggleButton x:Name="mode3" Content=" Q2, L2, Q1 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
-          <ToggleButton x:Name="mode4" Content=" Q2, L2, L1 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
+          <ToggleButton x:Name="mode3" Content=" Q1, Q2, L2 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
+          <ToggleButton x:Name="mode4" Content=" L1, Q2, L2 " Click="OnButtonSwitchMode" Margin="4,0,0,0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
           <ToggleButton x:Name="mirrorQ" Content=" Mirror Q " Click="OnButtonSwitchMirror" ToolTip="Reflect Q1 at L1 axis"/>
