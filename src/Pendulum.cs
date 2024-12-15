@@ -362,7 +362,7 @@ namespace DoublePendulum
         private void ResetMovement()
         {
             de = 0;
-            dt = 2e-6 / (Math.Sqrt(e0) + 1);
+            dt = 5e-7 / (Math.Sqrt(e0) + 1);
             dt = dt.RoundSignificantDigits(1);
             time = 0;
             PoincarePoints.Clear();
