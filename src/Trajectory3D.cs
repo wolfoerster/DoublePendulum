@@ -17,7 +17,7 @@
 
 namespace DoublePendulum
 {
-#if !false
+#if false
     using System.Collections.Generic;
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
@@ -97,51 +97,25 @@ namespace DoublePendulum
         public void Update()
         {
         }
-
-        private class Transformation
-        {
-            private readonly LinearTransform3D t3d = new LinearTransform3D();
-            private readonly ColorTransform tc = new ColorTransform();
-
-            public void Init(double xmax, double ymax, double zmax, double cmax)
-            {
-                t3d.Init(xmax, ymax, zmax);
-                tc.Init(-cmax, cmax, Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0));
-            }
-
-            public Record Transform(double x, double y, double z, double c)
-            {
-                return new Record(t3d.Transform(x, y, z), tc.GetColor(c));
-            }
-        }
-
-        private class Record
-        {
-            public Record(Point3D point, Color color)
-            {
-                Color = color;
-                Point = point;
-            }
-
-            public Point3D Point { get; set; }
-            
-            public Color Color { get; set; }
-        }
     }
 #else
+    using System.Collections.Generic;
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
     using WFTools3D;
 
     public class Trajectory3D : Primitive3D
     {
-        private readonly TubeBuilder builder = new TubeBuilder(0.02, 4);
-        private readonly LinearTransform3D T = new LinearTransform3D();
+        private readonly List<Point4D> path = new();
+        private readonly Transformation T = new();
         private int count;
         private int mode;
 
         public Trajectory3D()
         {
+            ScaleX = ScaleY = 0.02;
+            DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Red, Colors.Yellow, 0);
+            DiffuseMaterial.Brush.Freeze();
         }
 
         public int Mode
@@ -159,7 +133,7 @@ namespace DoublePendulum
 
         public void Clear()
         {
-            builder.Clear();
+            path.Clear();
 
             var pendulum = App.SelectedPendulum;
             if (pendulum == null)
@@ -167,30 +141,18 @@ namespace DoublePendulum
 
             switch (mode)
             {
-                case 1: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max); break;
-                case 2: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max); break;
-                case 3: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max); break;
-                case 4: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max); break;
+                case 1: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max, pendulum.L2Max); break;
+                case 2: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max, pendulum.Q2Max); break;
+                case 3: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max, pendulum.L1Max); break;
+                case 4: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max, pendulum.Q1Max); break;
                 default: return;
             }
-
-            DiffuseMaterial.Brush = new SolidColorBrush(pendulum.PoincareColor);
-            DiffuseMaterial.Brush.Freeze();
         }
 
         public void NewTrajectoryPoint(double q1, double q2, double l1, double l2)
         {
-            Point3D point;
-            switch (mode)
-            {
-                case 1: point = T.Transform(q1, l1, q2); break;
-                case 2: point = T.Transform(q1, l1, l2); break;
-                case 3: point = T.Transform(q2, l2, q1); break;
-                case 4: point = T.Transform(q2, l2, l1); break;
-                default: return;
-            }
+            path.Add(new Point4D(q1, q2, l1, l2));
 
-            builder.AddPoint(point);
         }
 
         public void Update()
@@ -204,8 +166,63 @@ namespace DoublePendulum
 
         protected override MeshGeometry3D CreateMesh()
         {
-            return builder.CreateMesh();
+            if (path.Count < 2)
+                return null;
+
+            var mesh1 = CreateCylMesh(1);
+
+            return mesh1;
+        }
+
+        private MeshGeometry3D CreateCylMesh(int toIndex)
+        {
+            var mesh = MeshUtils.CreateCylinderSegment(6, false);
+            var from = GetPoint(toIndex - 1);
+            var to = GetPoint(toIndex);
+            var mainAxis = to - from;
+
+            return mesh;
+        }
+
+        private Point3D GetPoint(int i)
+        {
+            var q1 = path[i].Q1;
+            var q2 = path[i].Q2;
+            var l1 = path[i].L1;
+            var l2 = path[i].L2;
+
+            Point3DC record = mode switch
+            {
+                1 => T.Transform(q1, l1, q2, l2),
+                2 => T.Transform(q1, l1, l2, q2),
+                3 => T.Transform(q1, q2, l2, l1),
+                4 => T.Transform(l1, q2, l2, q1),
+                _ => throw new System.Exception(),
+            };
+
+            return record.Point;
         }
     }
 #endif
+
+    public class Transformation
+    {
+        private readonly LinearTransform3D t3d = new();
+        private readonly ColorTransform tc = new();
+
+        public void Init(double xmax, double ymax, double zmax, double cmax)
+        {
+            t3d.Init(xmax, ymax, zmax);
+            tc.Init(-cmax, cmax, Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0));
+        }
+
+        public Point3DC Transform(double x, double y, double z, double c)
+        {
+            return new Point3DC(t3d.Transform(x, y, z), tc.GetColor(c));
+        }
+    }
+
+    public record Point3DC(Point3D Point, Color Color);
+
+    public record Point4D(double Q1, double Q2, double L1, double L2);
 }
