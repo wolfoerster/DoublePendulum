@@ -524,13 +524,19 @@ namespace DoublePendulum
             pendulum2D.Clear();
             poincare2D.Clear();
             poincare3D.Clear();
+            trajectory3D.Clear();
             PendulatorUIs.Clear();
             App.Pendulums.Clear();
 
             tbNewEnergy.Text = selectedEnergy;
 
             if (selectedEnergy == null)
+            {
+                App.SelectedPendulum.Init(0);
+                pendulum2D.Update();
+                pendulum3D.Update();
                 return;
+            }
 
             var energy = Double(selectedEnergy);
             var dir = Path.Combine(dataDirectory, selectedEnergy);
@@ -547,11 +553,9 @@ namespace DoublePendulum
                 }
             }
 
-#if QuickHack
-            Doing so ends up in a 'wrong' pendulum (q2 is 0) when doing a 'Start' in pendulum2D
             App.SelectedPendulum.Init(energy);
             pendulum2D.Update();
-#endif
+            pendulum3D.Update();
             poincare2D.Init(energy);
             poincare3D.Redraw();
         }
