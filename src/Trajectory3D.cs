@@ -89,7 +89,7 @@ namespace DoublePendulum
                 To = records[i].Point
             };
 
-            cyl.DiffuseMaterial.Brush = new SolidColorBrush(records[i].Color);
+            cyl.DiffuseMaterial.Brush = new LinearGradientBrush(records[i - 1].Color, records[i].Color, 0);
             cyl.DiffuseMaterial.Brush.Freeze();
             Children.Add(cyl);
         }

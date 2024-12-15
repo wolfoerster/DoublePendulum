@@ -27,9 +27,9 @@ namespace DoublePendulum
 
         public void Init(double lowValue, double highValue, Color lowColor, Color highColor)
         {
-            tR = new LinearTransform(lowValue, highValue, lowColor.R - 0.01, highColor.R + 0.01);
-            tG = new LinearTransform(lowValue, highValue, lowColor.G - 0.01, highColor.G + 0.01);
-            tB = new LinearTransform(lowValue, highValue, lowColor.B - 0.01, highColor.B + 0.01);
+            tR = new LinearTransform(lowValue, highValue, lowColor.R, highColor.R);
+            tG = new LinearTransform(lowValue, highValue, lowColor.G, highColor.G);
+            tB = new LinearTransform(lowValue, highValue, lowColor.B, highColor.B);
         }
 
         public Color GetColor(double t)
@@ -37,7 +37,6 @@ namespace DoublePendulum
             byte r = (byte)(tR.Transform(t) + 0.5);
             byte g = (byte)(tG.Transform(t) + 0.5);
             byte b = (byte)(tB.Transform(t) + 0.5);
-            Debug.WriteLine($"{t}: {r}, {g}, {b}");
             return Color.FromRgb(r, g, b);
         }
     }
