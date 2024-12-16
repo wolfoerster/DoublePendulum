@@ -82,7 +82,7 @@ namespace DoublePendulum
             if (i < 1)
                 return;
 
-            var cyl = new Cylinder(6)
+            var cyl = new Cylinder(8)
             {
                 Radius = 0.02,
                 From = records[i - 1].Point,
@@ -91,6 +91,7 @@ namespace DoublePendulum
 
             cyl.DiffuseMaterial.Brush = new LinearGradientBrush(records[i - 1].Color, records[i].Color, 0);
             cyl.DiffuseMaterial.Brush.Freeze();
+            //cyl.BackMaterial = cyl.Material;
             Children.Add(cyl);
         }
 
