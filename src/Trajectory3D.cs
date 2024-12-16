@@ -73,30 +73,27 @@ namespace DoublePendulum
             }
 
             records.Add(record);
-            Dispatcher.Invoke(() => OnNewPoint(), System.Windows.Threading.DispatcherPriority.Background);
-        }
-
-        private void OnNewPoint()
-        {
-            var i = records.Count - 1;
-            if (i < 1)
-                return;
-
-            var cyl = new Cylinder(8)
-            {
-                Radius = 0.02,
-                From = records[i - 1].Point,
-                To = records[i].Point
-            };
-
-            cyl.DiffuseMaterial.Brush = new LinearGradientBrush(records[i - 1].Color, records[i].Color, 0);
-            cyl.DiffuseMaterial.Brush.Freeze();
-            //cyl.BackMaterial = cyl.Material;
-            Children.Add(cyl);
         }
 
         public void Update()
         {
+            var nChilds = Children.Count;
+            var nRecords = records.Count;
+
+            for (int i = nChilds; i < nRecords - 1; i++)
+            {
+                var cyl = new Cylinder(8)
+                {
+                    Radius = 0.02,
+                    From = records[i].Point,
+                    To = records[i + 1].Point
+                };
+
+                cyl.DiffuseMaterial.Brush = new LinearGradientBrush(records[i].Color, records[i + 1].Color, 0);
+                cyl.DiffuseMaterial.Brush.Freeze();
+                ////cyl.BackMaterial = cyl.Material;
+                Children.Add(cyl);
+            }
         }
 
         private class Transformation
