@@ -23,9 +23,8 @@ namespace DoublePendulum
 
     public class Trajectory3D : Primitive3D
     {
-        private readonly TubeBuilder builder = new TubeBuilder(0.02, 4);
-        private readonly LinearTransform3D T = new LinearTransform3D();
-        private int count;
+        private readonly TubeBuilder builder = new(0.02, 4);
+        private readonly LinearTransform3D T = new();
         private int mode;
 
         public Trajectory3D()
@@ -48,6 +47,7 @@ namespace DoublePendulum
         public void Clear()
         {
             builder.Clear();
+            InitMesh();
 
             var pendulum = App.SelectedPendulum;
             if (pendulum == null)
@@ -83,11 +83,7 @@ namespace DoublePendulum
 
         public void Update()
         {
-            if (++count == 4)
-            {
-                count = 0;
-                InitMesh();
-            }
+            InitMesh();
         }
 
         protected override MeshGeometry3D CreateMesh()
