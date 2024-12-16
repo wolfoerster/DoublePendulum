@@ -513,7 +513,12 @@ namespace DoublePendulum
             tbNewEnergy.Text = selectedEnergy;
 
             if (selectedEnergy == null)
+            {
+                App.SelectedPendulum.Init(0);
+                pendulum2D.Update();
+                pendulum3D.Update();
                 return;
+            }
 
             var energy = Double(selectedEnergy);
             var dir = Path.Combine(dataDirectory, selectedEnergy);
@@ -531,7 +536,9 @@ namespace DoublePendulum
             }
 
 #if QuickHack
-            Doing so ends up in a 'wrong' pendulum (q2 is 0) when doing a 'Start' in pendulum2D
+            Doing so ends up in a 'wrong' pendulum (q2 is 0) when doing a 'Start' in Pendulum2D
+            To reproduce: move the second bob straight up (q2 is definitely != 0) and press 'Start'
+            => the second bob will start at q2 = 0
             App.SelectedPendulum.Init(energy);
             pendulum2D.Update();
 #endif
