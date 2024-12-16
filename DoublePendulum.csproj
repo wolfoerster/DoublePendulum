@@ -22,7 +22,4 @@
     <Resource Include="Images\wood1.jpg" />
     <Resource Include="Images\wood2.jpg" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="REM xcopy &quot;$(SolutionDir)\bin\$(Configuration)\net8.0-windows\&quot; &quot;..\&quot; /s /i /y" />
-  </Target>
 </Project>

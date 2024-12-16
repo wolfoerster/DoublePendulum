@@ -553,9 +553,11 @@ namespace DoublePendulum
                 }
             }
 
+#if false // leads to wrong start value q2 for the pendulum when started from Pendulum2D
             App.SelectedPendulum.Init(energy);
             pendulum2D.Update();
             pendulum3D.Update();
+#endif
             poincare2D.Init(energy);
             poincare3D.Redraw();
         }

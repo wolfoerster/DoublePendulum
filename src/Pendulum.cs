@@ -270,6 +270,7 @@ namespace DoublePendulum
 
             //--- recalc q1, w1 and w2 to when q2 qas 0
             var q1t = q1 + w1 * bt;
+            //var q2t = q2 + w2 * bt;
             var w1t = w1 + a1 * bt;
             var w2t = w2 + a2 * bt;
             PoincarePoints.Add(new PoincarePoint(q1t, w1t, w2t));
