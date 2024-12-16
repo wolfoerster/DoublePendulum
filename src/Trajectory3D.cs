@@ -17,7 +17,7 @@
 
 namespace DoublePendulum
 {
-#if !false
+#if false
     using System.Collections.Generic;
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
@@ -135,7 +135,6 @@ namespace DoublePendulum
     {
         private readonly TubeBuilder builder = new TubeBuilder(0.02, 4);
         private readonly LinearTransform3D T = new LinearTransform3D();
-        private int count;
         private int mode;
 
         public Trajectory3D()
@@ -193,11 +192,7 @@ namespace DoublePendulum
 
         public void Update()
         {
-            if (++count == 4)
-            {
-                count = 0;
-                InitMesh();
-            }
+             InitMesh();
         }
 
         protected override MeshGeometry3D CreateMesh()
