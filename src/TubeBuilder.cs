@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -26,12 +26,12 @@ namespace DoublePendulum
 
     public class TubeBuilder
     {
-        private readonly List<Point> section = new List<Point>();
-        private readonly List<Point3D> path = new List<Point3D>();
-        private readonly List<Vector3D> normals = new List<Vector3D>();
-        private readonly List<Point3D> positions = new List<Point3D>();
-        private readonly List<int> indices = new List<int>();
-        private readonly List<int> marker = new List<int>();
+        private readonly List<Point> section = [];
+        private readonly List<Point3D> path = [];
+        private readonly List<Vector3D> normals = [];
+        private readonly List<Point3D> positions = [];
+        private readonly List<int> indices = [];
+        private readonly List<int> marker = [];
         private Vector3D v;
 
         public TubeBuilder(double radius = 0.01, int divisions = 6)
@@ -49,11 +49,10 @@ namespace DoublePendulum
         public void Clear()
         {
             path.Clear();
-            marker.Add(0);
+            marker.Clear();
             indices.Clear();
             normals.Clear();
             positions.Clear();
-            marker.Clear();
         }
 
         public MeshGeometry3D CreateMesh()
@@ -69,17 +68,10 @@ namespace DoublePendulum
 #else
             return new MeshGeometry3D
             {
-                TriangleIndices = new Int32Collection(PickUp(indices)),
-                Positions = new Point3DCollection(PickUp(positions)),
-                Normals = new Vector3DCollection(PickUp(normals)),
+                TriangleIndices = new Int32Collection(indices.PickUp()),
+                Positions = new Point3DCollection(positions.PickUp()),
+                Normals = new Vector3DCollection(normals.PickUp()),
             };
-
-            static IEnumerable<T> PickUp<T>(List<T> list)
-            {
-                var count = list.Count;
-                for (int i = 0; i < count; ++i)
-                    yield return list[i];
-            }
 #endif
         }
 
@@ -103,6 +95,7 @@ namespace DoublePendulum
         {
             if (newSegment)
             {
+                // add end cap
                 var i = path.Count - 1;
                 AddPositions(i, false, true);
                 AddTriangles(i);
@@ -111,19 +104,22 @@ namespace DoublePendulum
 
             path.Add(point);
 
-            var segStart = marker.Count > 0 ? marker[marker.Count - 1] : 0;
+            var segStart = marker.Count > 0 ? marker[^1] : 0;
             var numPoints = path.Count - segStart;
 
             if (numPoints > 1)
             {
-                if (numPoints == 2)
-                    v = FindAnyPerpendicular(path[segStart + 1] - path[segStart]);
+                if (numPoints == 2) // initialize v, a vector perpendicular to the segment's start direction
+                {
+                    var startDirection = path[segStart + 1] - path[segStart];
+                    v = startDirection.FindAnyPerpendicular();
+                }
 
                 // calc positions for the last but one section:
                 var i = path.Count - 2;
                 AddPositions(i, i == segStart);
 
-                if (numPoints > 2) // for the very first time
+                if (numPoints > 2)
                 {
                     // add triangles from section i-1 to section i
                     AddTriangles(i);
@@ -172,17 +168,6 @@ namespace DoublePendulum
                 n.Normalize();
                 normals.Add(n);
             }
-        }
-
-        private Vector3D FindAnyPerpendicular(Vector3D direction)
-        {
-            direction.Normalize();
-            Vector3D result = direction.Cross(Math3D.UnitX);
-
-            if (result.LengthSquared < 1e-3)
-                result = direction.Cross(Math3D.UnitY);
-
-            return result;
         }
 
         private void AddTriangleIndices(int i, int j, int k)
