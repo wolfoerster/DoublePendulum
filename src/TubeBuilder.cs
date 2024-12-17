@@ -62,34 +62,24 @@ namespace DoublePendulum
             // doesn't work, because underlying lists are changed during execution
             return new MeshGeometry3D
             {
-                Normals = new Vector3DCollection(normals),
+                TriangleIndices = new Int32Collection(indices),
                 Positions = new Point3DCollection(positions),
-                TriangleIndices = new Int32Collection(triangleIndices)
+                Normals = new Vector3DCollection(normals),
             };
 #else
-            var indicesCount = indices.Count;
-            var positionsCount = positions.Count;
-
-            var indexArray = new int[indicesCount];
-            for (int i = 0; i < indicesCount; i++)
-            {
-                indexArray[i] = indices[i];
-            }
-
-            var pointArray = new Point3D[positionsCount];
-            var normalArray = new Vector3D[positionsCount];
-            for (int i = 0; i < positionsCount; i++)
-            {
-                pointArray[i] = positions[i];
-                normalArray[i] = normals[i];
-            }
-
             return new MeshGeometry3D
             {
-                Normals = new Vector3DCollection(normalArray),
-                Positions = new Point3DCollection(pointArray),
-                TriangleIndices = new Int32Collection(indexArray)
+                TriangleIndices = new Int32Collection(PickUp(indices)),
+                Positions = new Point3DCollection(PickUp(positions)),
+                Normals = new Vector3DCollection(PickUp(normals)),
             };
+
+            static IEnumerable<T> PickUp<T>(List<T> list)
+            {
+                var count = list.Count;
+                for (int i = 0; i < count; ++i)
+                    yield return list[i];
+            }
 #endif
         }
 
@@ -184,7 +174,7 @@ namespace DoublePendulum
             }
         }
 
-        Vector3D FindAnyPerpendicular(Vector3D direction)
+        private Vector3D FindAnyPerpendicular(Vector3D direction)
         {
             direction.Normalize();
             Vector3D result = direction.Cross(Math3D.UnitX);
@@ -195,7 +185,7 @@ namespace DoublePendulum
             return result;
         }
 
-        void AddTriangleIndices(int i, int j, int k)
+        private void AddTriangleIndices(int i, int j, int k)
         {
             indices.Add(i);
             indices.Add(j);
