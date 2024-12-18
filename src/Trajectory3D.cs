@@ -25,6 +25,7 @@ namespace DoublePendulum
     {
         private readonly TubeBuilder[] builder = new TubeBuilder[4];
         private readonly LinearTransform4D[] T = new LinearTransform4D[4];
+        private int mode;
         private bool doListen;
 
         public Trajectory3D()
@@ -33,7 +34,18 @@ namespace DoublePendulum
             DiffuseMaterial.Brush.Freeze();
         }
 
-        public int Mode { get; set; }
+        public int Mode
+        {
+            get => mode;
+            set
+            {
+                if (mode != value)
+                {
+                    mode = value;
+                    InitMesh();
+                }
+            }
+        }
 
         public bool DoListen 
         {
@@ -91,7 +103,7 @@ namespace DoublePendulum
         protected override MeshGeometry3D CreateMesh()
         {
             EnsureBuilder();
-            return builder[Mode].CreateMesh();
+            return builder[mode].CreateMesh();
         }
 
         private void EnsureBuilder()
