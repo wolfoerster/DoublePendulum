@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -23,13 +23,9 @@ namespace DoublePendulum
 
     public class Trajectory3D : Primitive3D
     {
-        private readonly TubeBuilder builder = new(0.02, 4);
-        private readonly LinearTransform3D T = new();
+        private readonly TubeBuilder builder = new();
+        private readonly LinearTransform4D T = new();
         private int mode;
-
-        public Trajectory3D()
-        {
-        }
 
         public int Mode
         {
@@ -55,30 +51,31 @@ namespace DoublePendulum
 
             switch (mode)
             {
-                case 1: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max); break;
-                case 2: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max); break;
-                case 3: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max); break;
-                case 4: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max); break;
+                case 1: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max, pendulum.L2Max); break;
+                case 2: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max, pendulum.Q2Max); break;
+                case 3: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max, pendulum.L1Max); break;
+                case 4: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max, pendulum.Q1Max); break;
                 default: return;
             }
 
-            DiffuseMaterial.Brush = new SolidColorBrush(pendulum.PoincareColor);
+            DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Magenta, Colors.Cyan, 0);
             DiffuseMaterial.Brush.Freeze();
         }
 
         public void NewTrajectoryPoint(double q1, double q2, double l1, double l2)
         {
-            Point3D point;
-            switch (mode)
-            {
-                case 1: point = T.Transform(q1, l1, q2); break;
-                case 2: point = T.Transform(q1, l1, l2); break;
-                case 3: point = T.Transform(q2, l2, q1); break;
-                case 4: point = T.Transform(q2, l2, l1); break;
-                default: return;
-            }
+            if (mode == 0)
+                return;
 
-            builder.AddPoint(point);
+            var (point, tc) = mode switch
+            {
+                1 => T.Transform(q1, l1, q2, l2),
+                2 => T.Transform(q1, l1, l2, q2),
+                3 => T.Transform(q2, l2, q1, l1),
+                _ => T.Transform(q2, l2, l1, q1),
+            };
+
+            builder.AddPoint(point, tc);
         }
 
         public void Update()

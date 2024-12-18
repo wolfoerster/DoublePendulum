@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -20,24 +20,18 @@ namespace DoublePendulum
     using System.Windows.Media.Media3D;
     using WFTools3D;
 
-    public class LinearTransform3D
+    public class LinearTransform4D
     {
-        private LinearTransform tx, ty, tz;
+        private readonly LinearTransform3D t3d = new();
+        private readonly LinearTransform ttc = new();
 
-        public void Init(double xmax, double ymax, double zmax)
+        public void Init(double xmax, double ymax, double zmax, double cmax)
         {
-            tx = new(-xmax, xmax, -1, 1);
-            ty = new(-ymax, ymax, -1, 1);
-            tz = new(-zmax, zmax, -1, 1);
+            t3d.Init(xmax, ymax, zmax);
+            ttc.Init(-cmax, cmax, 0, 1);
         }
 
-        public Point3D Transform(double x, double y, double z) => new(tx.Transform(x), ty.Transform(y), tz.Transform(z));
-
-        public bool IsEmpty => tx == null;
-
-        public void Clear()
-        {
-            tx = ty = tz = null;
-        }
+        public (Point3D Point, double TexCoord) Transform(double x, double y, double z, double c)
+            => (t3d.Transform(x, y, z), ttc.Transform(c));
     }
 }

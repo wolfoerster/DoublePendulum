@@ -23,6 +23,7 @@ namespace DoublePendulum
     using System.Windows.Media.Media3D;
     using System.Collections.Generic;
     using WFTools3D;
+    using System.Linq;
 
     public class TubeBuilder
     {
@@ -30,11 +31,11 @@ namespace DoublePendulum
         private readonly List<Point3D> path = [];
         private readonly List<Vector3D> normals = [];
         private readonly List<Point3D> positions = [];
+        private readonly List<double> tcoords = [];
         private readonly List<int> indices = [];
-        private readonly List<int> marker = [];
         private Vector3D v;
 
-        public TubeBuilder(double radius = 0.01, int divisions = 6)
+        public TubeBuilder(double radius = 0.02, int divisions = 6)
         {
             //--- setup the cross section of the tube
             for (int i = 0; i < divisions; i++)
@@ -42,21 +43,21 @@ namespace DoublePendulum
                 double phi = i * MathUtils.PIx2 / divisions;
                 section.Add(new Point(radius * Math.Cos(phi), radius * Math.Sin(phi)));
             }
-
-            Clear();
         }
 
         public void Clear()
         {
             path.Clear();
-            marker.Clear();
-            indices.Clear();
             normals.Clear();
             positions.Clear();
+            tcoords.Clear();
+            indices.Clear();
         }
 
         public MeshGeometry3D CreateMesh()
         {
+            if (indices.Count == 0)
+                return null;
 #if false
             // doesn't work, because underlying lists are changed during execution
             return new MeshGeometry3D
@@ -71,59 +72,58 @@ namespace DoublePendulum
                 TriangleIndices = new Int32Collection(indices.PickUp()),
                 Positions = new Point3DCollection(positions.PickUp()),
                 Normals = new Vector3DCollection(normals.PickUp()),
+                TextureCoordinates = new PointCollection(tcoords.PickUp().Select(x => new Point(x, 0))),
             };
 #endif
         }
 
-        public void AddPoint(Point3D point)
+        public void AddPoint(Point3D point, double tcoord)
         {
-            var newSegment = false;
-
-            if (path.Count > 0)
-            {
-                var dist = (path[path.Count - 1] - point).Length;
-                if (dist > 1)
-                {
-                    newSegment = true;
-                }
-            }
-
-            AddToPath(point, newSegment);
-        }
-
-        private void AddToPath(Point3D point, bool newSegment)
-        {
-            if (newSegment)
-            {
-                // add end cap
-                var i = path.Count - 1;
-                AddPositions(i, false, true);
-                AddTriangles(i);
-                marker.Add(path.Count);
-            }
+            tcoord = CheckTextureCoordinate(tcoord);
 
             path.Add(point);
 
-            var segStart = marker.Count > 0 ? marker[^1] : 0;
-            var numPoints = path.Count - segStart;
-
-            if (numPoints > 1)
+            if (path.Count > 1)
             {
-                if (numPoints == 2) // initialize v, a vector perpendicular to the segment's start direction
-                {
-                    var startDirection = path[segStart + 1] - path[segStart];
-                    v = startDirection.FindAnyPerpendicular();
-                }
-
                 // calc positions for the last but one section:
                 var i = path.Count - 2;
-                AddPositions(i, i == segStart);
+                AddPositions(i, tcoord);
 
-                if (numPoints > 2)
+                if (path.Count > 2)
                 {
                     // add triangles from section i-1 to section i
                     AddTriangles(i);
                 }
+            }
+        }
+
+        private void AddPositions(int i, double tcoord)
+        {
+            var prev = i == 0 ? path[i] : path[i - 1];
+            var next = path[i + 1];
+            var diff = next - prev;
+
+            if (i == 0)
+            {
+                var startDirection = path[1] - path[0];
+                v = startDirection.FindAnyPerpendicular();
+            }
+
+            var u = v.Cross(diff);
+            u.Normalize();
+
+            v = diff.Cross(u);
+            v.Normalize();
+
+            // add positions and normals for section i:
+            for (int j = 0; j < section.Count; j++)
+            {
+                var n = section[j].X * u + section[j].Y * v;
+                positions.Add(path[i] + n);
+                tcoords.Add(tcoord);
+
+                n.Normalize();
+                normals.Add(n);
             }
         }
 
@@ -147,34 +147,21 @@ namespace DoublePendulum
             }
         }
 
-        private void AddPositions(int i, bool isFirstSection = false, bool isLastSection = false)
-        {
-            var prev = isFirstSection ? path[i] : path[i - 1];
-            var next = isLastSection ? path[i] : path[i + 1];
-            var diff = next - prev;
-
-            var u = v.Cross(diff);
-            u.Normalize();
-
-            v = diff.Cross(u);
-            v.Normalize();
-
-            // add positions and normals for section i:
-            for (int j = 0; j < section.Count; j++)
-            {
-                var n = section[j].X * u + section[j].Y * v;
-                positions.Add(path[i] + n);
-
-                n.Normalize();
-                normals.Add(n);
-            }
-        }
-
         private void AddTriangleIndices(int i, int j, int k)
         {
             indices.Add(i);
             indices.Add(j);
             indices.Add(k);
+        }
+
+        private static double CheckTextureCoordinate(double tcoord)
+        {
+            var eps = 1e-12;
+
+            if (tcoord < -eps || tcoord > 1 + eps)
+                throw new ArgumentOutOfRangeException(nameof(tcoord));
+
+            return Math.Max(0, Math.Min(1, tcoord));
         }
     }
 }
