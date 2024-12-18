@@ -23,18 +23,26 @@ namespace DoublePendulum
 
     public class Trajectory3D : Primitive3D
     {
-        private readonly TubeBuilder builder = new();
-        private readonly LinearTransform4D T = new();
-        private int mode;
+        private readonly TubeBuilder[] builder = new TubeBuilder[4];
+        private readonly LinearTransform4D[] T = new LinearTransform4D[4];
+        private bool doListen;
 
-        public int Mode
+        public Trajectory3D()
         {
-            get { return mode; }
+            DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Magenta, Colors.Cyan, 0);
+            DiffuseMaterial.Brush.Freeze();
+        }
+
+        public int Mode { get; set; }
+
+        public bool DoListen 
+        {
+            get => doListen;
             set
             {
-                if (mode != value)
+                if (doListen != value)
                 {
-                    mode = value;
+                    doListen = value;
                     Clear();
                 }
             }
@@ -42,40 +50,37 @@ namespace DoublePendulum
 
         public void Clear()
         {
-            builder.Clear();
+            foreach (var b in builder)
+                b.Clear();
+
             InitMesh();
 
             var pendulum = App.SelectedPendulum;
             if (pendulum == null)
                 return;
 
-            switch (mode)
-            {
-                case 1: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max, pendulum.L2Max); break;
-                case 2: T.Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max, pendulum.Q2Max); break;
-                case 3: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max, pendulum.L1Max); break;
-                case 4: T.Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max, pendulum.Q1Max); break;
-                default: return;
-            }
-
-            DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Magenta, Colors.Cyan, 0);
-            DiffuseMaterial.Brush.Freeze();
+            T[0].Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max, pendulum.L2Max);
+            T[1].Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max, pendulum.Q2Max);
+            T[2].Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max, pendulum.L1Max);
+            T[3].Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max, pendulum.Q1Max);
         }
 
         public void NewTrajectoryPoint(double q1, double q2, double l1, double l2)
         {
-            if (mode == 0)
+            if (!doListen)
                 return;
 
-            var (point, tc) = mode switch
-            {
-                1 => T.Transform(q1, l1, q2, l2),
-                2 => T.Transform(q1, l1, l2, q2),
-                3 => T.Transform(q2, l2, q1, l1),
-                _ => T.Transform(q2, l2, l1, q1),
-            };
+            var (point, tc) = T[0].Transform(q1, l1, q2, l2);
+            builder[0].AddPoint(point, tc);
 
-            builder.AddPoint(point, tc);
+            (point, tc) = T[1].Transform(q1, l1, l2, q2);
+            builder[1].AddPoint(point, tc);
+
+            (point, tc) = T[2].Transform(q2, l2, q1, l1);
+            builder[2].AddPoint(point, tc);
+
+            (point, tc) = T[3].Transform(q2, l2, l1, q1);
+            builder[3].AddPoint(point, tc);
         }
 
         public void Update()
@@ -85,7 +90,20 @@ namespace DoublePendulum
 
         protected override MeshGeometry3D CreateMesh()
         {
-            return builder.CreateMesh();
+            EnsureBuilder();
+            return builder[Mode].CreateMesh();
+        }
+
+        private void EnsureBuilder()
+        {
+            if (builder[0] == null)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    builder[i] = new TubeBuilder();
+                    T[i] = new LinearTransform4D();
+                }
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ namespace DoublePendulum
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
     using System.Windows.Threading;
+    using System.Xml.Linq;
     using WFTools3D;
 
     public partial class ControlCenter : UserControl, INotifyPropertyChanged
@@ -188,16 +189,11 @@ namespace DoublePendulum
 
         private void OnButtonSwitchMode(object sender, RoutedEventArgs e)
         {
-            mode1.IsChecked = mode2.IsChecked = mode3.IsChecked = mode4.IsChecked = false;
+            mode0.IsChecked = mode1.IsChecked = mode2.IsChecked = mode3.IsChecked = false;
             ToggleButton tb = (sender as ToggleButton);
             tb.IsChecked = true;
 
-            SwitchMode(tb.Name);
-        }
-
-        private void SwitchMode(string tbName)
-        {
-            trajectory3D.Mode = int.Parse(tbName.Substring(4));
+            trajectory3D.Mode = int.Parse(tb.Name.Substring(4));
         }
 
         private void OnButtonSwitchView(object sender, RoutedEventArgs e)
@@ -211,7 +207,7 @@ namespace DoublePendulum
 
         private void SwitchView(string tbName)
         {
-            trajectory3D.Mode = 0;
+            trajectory3D.DoListen = false;
             modePanel.Visibility = Visibility.Hidden;
             mirrorQ.Visibility = Visibility.Hidden;
             mirrorL.Visibility = Visibility.Hidden;
@@ -247,7 +243,7 @@ namespace DoublePendulum
                     scene.Models.Add(new AxisModel(2));
                     scene.Models.Add(trajectory3D);
                     scene.Models.Add(CreateXYPlane(2));
-                    trajectory3D.Mode = 1;
+                    trajectory3D.DoListen = true;
                 }
 
                 scene.Visibility = Visibility.Visible;
