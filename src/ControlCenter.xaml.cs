@@ -246,11 +246,27 @@ namespace DoublePendulum
                     modePanel.Visibility = Visibility.Visible;
                     scene.Models.Add(new AxisModel(2));
                     scene.Models.Add(trajectory3D);
+                    scene.Models.Add(CreateXYPlane(2));
                     trajectory3D.Mode = 1;
                 }
 
                 scene.Visibility = Visibility.Visible;
             }
+        }
+
+        Object3D CreateXYPlane(double radius)
+        {
+            var brush = new SolidColorBrush(Color.FromRgb(23, 23, 23)) { Opacity = 0.4 };
+            brush.Freeze();
+
+            var xyPlane = new Disk();
+            xyPlane.DiffuseMaterial.Brush = brush;
+            xyPlane.EmissiveMaterial.Brush = brush;
+            xyPlane.SpecularMaterial.Brush = null;
+            xyPlane.BackMaterial = xyPlane.Material;
+            xyPlane.Radius = radius;
+
+            return xyPlane;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
