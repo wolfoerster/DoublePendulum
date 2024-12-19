@@ -46,7 +46,7 @@ namespace DoublePendulum
             Read(fileName);
         }
 
-        public List<PoincarePoint> PoincarePoints { get; private set; } = new List<PoincarePoint>();
+        public List<PoincarePoint> PoincarePoints { get; private set; } = [];
 
         public Action<Pendulum> NewPoincarePoint;
 
@@ -65,26 +65,26 @@ namespace DoublePendulum
 
         public int Id
         {
-            get { return id; }
-            set { id = value; }
+            get => id;
+            set => id = value;
         }
 
         public Color PoincareColor
         {
-            get { return poincareColor; }
-            set { poincareColor = value; }
+            get => poincareColor;
+            set => poincareColor = value;
         }
 
         public bool Gravity
         {
-            get { return gravity; }
-            set { gravity = value; }
+            get => gravity;
+            set => gravity = value;
         }
 
         public double dT
         {
-            get { return dt; }
-            set { dt = value; }
+            get => dt;
+            set => dt = value;
         }
 
         public double Q1 => q1;
@@ -363,13 +363,14 @@ namespace DoublePendulum
 
         private void ResetMovement()
         {
-            de = 0;
 #if DEBUG
-            dt = 1e-6 / (Math.Sqrt(e0) + 1);
+            dt = 1e-6;
 #else
-            dt = 5e-7 / (Math.Sqrt(e0) + 1);
+            dt = 5e-7;
 #endif
+            dt /= (Math.Sqrt(e0) + 1);
             dt = dt.RoundSignificantDigits(1);
+            de = 0;
             time = 0;
             PoincarePoints.Clear();
         }

@@ -29,7 +29,7 @@ namespace DoublePendulum
 
         public Trajectory3D()
         {
-            DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Magenta, Colors.Cyan, 0);
+            DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Cyan, Colors.Magenta, 0);
             DiffuseMaterial.Brush.Freeze();
         }
 

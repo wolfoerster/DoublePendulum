@@ -34,7 +34,6 @@ namespace DoublePendulum
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
     using System.Windows.Threading;
-    using System.Xml.Linq;
     using WFTools3D;
 
     public partial class ControlCenter : UserControl, INotifyPropertyChanged
@@ -271,7 +270,7 @@ namespace DoublePendulum
                 if (scene.Models.Contains(pendulum3D))
                     pendulum3D.Update();
 
-                if (scene.Models.Contains(trajectory3D))
+                else if (scene.Models.Contains(trajectory3D))
                     trajectory3D.Update();
             }
 
@@ -607,23 +606,15 @@ namespace DoublePendulum
 
         private void OnPendulatorChanged()
         {
+            lbUIs.ScrollIntoView(selectedPendulatorUI);
             var callback = App.SelectedPendulum.NewTrajectoryPoint;
             App.SelectedPendulum.NewTrajectoryPoint = null;
             App.SelectedPendulum = selectedPendulatorUI?.Pendulum ?? new Pendulum();
 
-            lbUIs.ScrollIntoView(selectedPendulatorUI);
-
             pendulum2D.Update();
+            pendulum3D.Update();
             trajectory3D.Init();
             App.SelectedPendulum.NewTrajectoryPoint = callback;
-
-            if (selectedPendulatorUI == null)
-            {
-                int ii = 99;
-                //return;
-            }
-
-            pendulum3D.Update();
         }
 
         private void UICallback(PendulatorUI pendulatorUI, string methodName)

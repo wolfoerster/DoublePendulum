@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -29,10 +29,7 @@ namespace DoublePendulum
         public void Update()
         {
             var pendulum = App.SelectedPendulum;
-            if (pendulum != null)
-            {
-                Update(pendulum.Q1, pendulum.Q2);
-            }
+            Update(pendulum.Q1, pendulum.Q2);
         }
     }
 }
