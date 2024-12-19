@@ -136,16 +136,8 @@ namespace DoublePendulum
             {
                 if (selectedPendulatorUI != value)
                 {
-                    var callback = App.SelectedPendulum.NewTrajectoryPoint;
-                    App.SelectedPendulum.NewTrajectoryPoint = null;
-                    App.SelectedPendulum = value?.Pendulum ?? new Pendulum();
-
                     selectedPendulatorUI = value;
-                    lbUIs.ScrollIntoView(value);
                     FirePropertyChanged();
-
-                    trajectory3D.Init();
-                    App.SelectedPendulum.NewTrajectoryPoint = callback;
                     OnPendulatorChanged();
                 }
             }
@@ -615,10 +607,21 @@ namespace DoublePendulum
 
         private void OnPendulatorChanged()
         {
+            var callback = App.SelectedPendulum.NewTrajectoryPoint;
+            App.SelectedPendulum.NewTrajectoryPoint = null;
+            App.SelectedPendulum = selectedPendulatorUI?.Pendulum ?? new Pendulum();
+
+            lbUIs.ScrollIntoView(selectedPendulatorUI);
+
             pendulum2D.Update();
+            trajectory3D.Init();
+            App.SelectedPendulum.NewTrajectoryPoint = callback;
 
             if (selectedPendulatorUI == null)
-                return;
+            {
+                int ii = 99;
+                //return;
+            }
 
             pendulum3D.Update();
         }
