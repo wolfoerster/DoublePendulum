@@ -54,7 +54,13 @@ namespace DoublePendulum
 
         public void UpdateTrajectory()
         {
-            NewTrajectoryPoint?.Invoke(q1, q2, L1, L2);
+            if (NewTrajectoryPoint != null)
+            {
+                var cos = Math.Cos(q1 - q2);
+                var l1 = 2.0 * w1 + w2 * cos;
+                var l2 = w2 + w1 * cos;
+                NewTrajectoryPoint(q1, q2, l1, l2);
+            }
         }
 
         public int Id
@@ -104,10 +110,6 @@ namespace DoublePendulum
         public double A1 => a1;
 
         public double A2 => a2;
-
-        public double L1 => 2.0 * w1 + w2 * Math.Cos(q1 - q2);
-
-        public double L2 => w2 + w1 * Math.Cos(q1 - q2);
 
         public double L10 => l10;
 
