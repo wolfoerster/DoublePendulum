@@ -26,6 +26,7 @@ namespace DoublePendulum
         private readonly TubeBuilder[] builder = new TubeBuilder[4];
         private readonly LinearTransform4D[] T = new LinearTransform4D[4];
         private int mode;
+        private int count;
 
         public Trajectory3D()
         {
@@ -81,7 +82,11 @@ namespace DoublePendulum
 
         public void Update()
         {
-            InitMesh();
+            if (++count == 2)
+            {
+                count = 0;
+                InitMesh();
+            }
         }
 
         protected override MeshGeometry3D CreateMesh()
