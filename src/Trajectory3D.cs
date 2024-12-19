@@ -26,7 +26,6 @@ namespace DoublePendulum
         private readonly TubeBuilder[] builder = new TubeBuilder[4];
         private readonly LinearTransform4D[] T = new LinearTransform4D[4];
         private int mode;
-        private bool doListen;
 
         public Trajectory3D()
         {
@@ -47,41 +46,26 @@ namespace DoublePendulum
             }
         }
 
-        public bool DoListen 
-        {
-            get => doListen;
-            set
-            {
-                if (doListen != value)
-                {
-                    doListen = value;
-                    Clear();
-                }
-            }
-        }
-
-        public void Clear()
+        public void Init()
         {
             foreach (var b in builder)
                 b.Clear();
 
             InitMesh();
 
-            var pendulum = App.SelectedPendulum;
-            if (pendulum == null)
-                return;
+            var q1Max = App.SelectedPendulum.Q1Max;
+            var q2Max = App.SelectedPendulum.Q2Max;
+            var l1Max = App.SelectedPendulum.L1Max;
+            var l2Max = App.SelectedPendulum.L2Max;
 
-            T[0].Init(pendulum.Q1Max, pendulum.L1Max, pendulum.Q2Max, pendulum.L2Max);
-            T[1].Init(pendulum.Q1Max, pendulum.L1Max, pendulum.L2Max, pendulum.Q2Max);
-            T[2].Init(pendulum.Q2Max, pendulum.L2Max, pendulum.Q1Max, pendulum.L1Max);
-            T[3].Init(pendulum.Q2Max, pendulum.L2Max, pendulum.L1Max, pendulum.Q1Max);
+            T[0].Init(q1Max, l1Max, q2Max, l2Max);
+            T[1].Init(q1Max, l1Max, l2Max, q2Max);
+            T[2].Init(q2Max, l2Max, q1Max, l1Max);
+            T[3].Init(q2Max, l2Max, l1Max, q1Max);
         }
 
         public void NewTrajectoryPoint(double q1, double q2, double l1, double l2)
         {
-            if (!doListen)
-                return;
-
             var (point, tc) = T[0].Transform(q1, l1, q2, l2);
             builder[0].AddPoint(point, tc);
 

@@ -136,12 +136,16 @@ namespace DoublePendulum
             {
                 if (selectedPendulatorUI != value)
                 {
+                    var callback = App.SelectedPendulum.NewTrajectoryPoint;
                     App.SelectedPendulum.NewTrajectoryPoint = null;
                     App.SelectedPendulum = value?.Pendulum ?? new Pendulum();
 
                     selectedPendulatorUI = value;
                     lbUIs.ScrollIntoView(value);
                     FirePropertyChanged();
+
+                    trajectory3D.Init();
+                    App.SelectedPendulum.NewTrajectoryPoint = callback;
                     OnPendulatorChanged();
                 }
             }
@@ -207,7 +211,7 @@ namespace DoublePendulum
 
         private void SwitchView(string tbName)
         {
-            trajectory3D.DoListen = false;
+            App.SelectedPendulum.NewTrajectoryPoint = null;
             modePanel.Visibility = Visibility.Hidden;
             mirrorQ.Visibility = Visibility.Hidden;
             mirrorL.Visibility = Visibility.Hidden;
@@ -243,14 +247,15 @@ namespace DoublePendulum
                     scene.Models.Add(new AxisModel(2));
                     scene.Models.Add(trajectory3D);
                     scene.Models.Add(CreateXYPlane(2));
-                    trajectory3D.DoListen = true;
+                    trajectory3D.Init();
+                    App.SelectedPendulum.NewTrajectoryPoint = trajectory3D.NewTrajectoryPoint;
                 }
 
                 scene.Visibility = Visibility.Visible;
             }
         }
 
-        Object3D CreateXYPlane(double radius)
+        private static Disk CreateXYPlane(double radius)
         {
             var brush = new SolidColorBrush(Color.FromRgb(23, 23, 23)) { Opacity = 0.4 };
             brush.Freeze();
@@ -616,9 +621,6 @@ namespace DoublePendulum
                 return;
 
             pendulum3D.Update();
-
-            App.SelectedPendulum.NewTrajectoryPoint = trajectory3D.NewTrajectoryPoint;
-            trajectory3D.Clear();
         }
 
         private void UICallback(PendulatorUI pendulatorUI, string methodName)
