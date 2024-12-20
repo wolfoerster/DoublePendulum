@@ -82,12 +82,11 @@ namespace DoublePendulum
         public void AddPoint(Point3D point, double tcoord)
         {
             tcoord = CheckTextureCoordinate(tcoord);
-            var isNewSegment = IsNewSegment(point);
 
-            if (isNewSegment)
+            if (IsNewSegment(point))
             {
                 var i = path.Count - 1;
-                AddPositions(i, tcoord, false, true);
+                AddPositions(i, tcoord, AddPositionsMode.Last);
                 AddTriangles(i);
                 segments.Add(path.Count);
             }
@@ -108,7 +107,8 @@ namespace DoublePendulum
 
                 // calc positions for the last but one section:
                 var i = path.Count - 2;
-                AddPositions(i, tcoord, i == segStart);
+                var mode = i == segStart ? AddPositionsMode.First : AddPositionsMode.Normal;
+                AddPositions(i, tcoord, mode);
 
                 if (numPoints > 2)
                 {
@@ -118,11 +118,9 @@ namespace DoublePendulum
             }
         }
 
-        private void AddPositions(int i, double tcoord, bool isFirstSection = false, bool isLastSection = false)
+        private void AddPositions(int i, double tcoord, AddPositionsMode mode)
         {
-            var prev = isFirstSection ? path[i] : path[i - 1];
-            var next = isLastSection ? path[i] : path[i + 1];
-            var diff = next - prev;
+            var diff = GetDiff(i, mode);
 
             var u = v.Cross(diff);
             u.Normalize();
@@ -193,6 +191,27 @@ namespace DoublePendulum
             /// So in world coordinates the maximum distance is 2.
             ///
             return dist > 1.5;
+        }
+
+        private Vector3D GetDiff(int i, AddPositionsMode mode)
+        {
+            if (mode == AddPositionsMode.First)
+                return path[i + 1] - path[i];
+
+            if (mode == AddPositionsMode.Last)
+                return path[i] - path[i - 1];
+
+            ///
+            /// Here we need a better solution!!!
+            ///
+            return path[i + 1] - path[i - 1];
+        }
+
+        private enum AddPositionsMode
+        {
+            Normal,
+            First,
+            Last,
         }
     }
 }
