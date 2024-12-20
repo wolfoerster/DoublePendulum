@@ -18,12 +18,12 @@
 namespace DoublePendulum
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
-    using System.Collections.Generic;
     using WFTools3D;
-    using System.Linq;
 
     public class TubeBuilder
     {
@@ -33,6 +33,7 @@ namespace DoublePendulum
         private readonly List<Point3D> positions = [];
         private readonly List<double> tcoords = [];
         private readonly List<int> indices = [];
+        private readonly List<int> segments = [];
         private Vector3D v;
 
         public TubeBuilder(double radius = 0.02, int divisions = 6)
@@ -52,6 +53,7 @@ namespace DoublePendulum
             positions.Clear();
             tcoords.Clear();
             indices.Clear();
+            segments.Clear();
         }
 
         public MeshGeometry3D CreateMesh()
@@ -80,16 +82,35 @@ namespace DoublePendulum
         public void AddPoint(Point3D point, double tcoord)
         {
             tcoord = CheckTextureCoordinate(tcoord);
+            var isNewSegment = IsNewSegment(point);
+
+            if (isNewSegment)
+            {
+                var i = path.Count - 1;
+                AddPositions(i, tcoord, false, true);
+                AddTriangles(i);
+                segments.Add(path.Count);
+            }
 
             path.Add(point);
 
-            if (path.Count > 1)
+            var segStart = segments.Count > 0 ? segments[^1] : 0;
+            var numPoints = path.Count - segStart;
+
+            if (numPoints > 1)
             {
+                if (numPoints == 2)
+                {
+                    // find a normal for the initial direction
+                    var startDirection = path[segStart + 1] - path[segStart];
+                    v = startDirection.FindAnyPerpendicular();
+                }
+
                 // calc positions for the last but one section:
                 var i = path.Count - 2;
-                AddPositions(i, tcoord);
+                AddPositions(i, tcoord, i == segStart);
 
-                if (path.Count > 2)
+                if (numPoints > 2)
                 {
                     // add triangles from section i-1 to section i
                     AddTriangles(i);
@@ -97,17 +118,11 @@ namespace DoublePendulum
             }
         }
 
-        private void AddPositions(int i, double tcoord)
+        private void AddPositions(int i, double tcoord, bool isFirstSection = false, bool isLastSection = false)
         {
-            var prev = i == 0 ? path[i] : path[i - 1];
-            var next = path[i + 1];
+            var prev = isFirstSection ? path[i] : path[i - 1];
+            var next = isLastSection ? path[i] : path[i + 1];
             var diff = next - prev;
-
-            if (i == 0)
-            {
-                var startDirection = path[1] - path[0];
-                v = startDirection.FindAnyPerpendicular();
-            }
 
             var u = v.Cross(diff);
             u.Normalize();
@@ -162,6 +177,22 @@ namespace DoublePendulum
                 throw new ArgumentOutOfRangeException(nameof(tcoord));
 
             return Math.Max(0, Math.Min(1, tcoord));
+        }
+
+        private bool IsNewSegment(Point3D point)
+        {
+            if (path.Count == 0)
+                return false;
+
+            var dist = (path[^1] - point).Length;
+            ///
+            /// When the pendulum performs rotations, the value of q1 or q2 will change
+            /// from high positive values to high negative values or vice versa.
+            /// The world space of the 3D model is within a unit cube, so the maximum
+            /// angle is mapped to 1 and the minimum angle is mapped to -1.
+            /// So in world coordinates the maximum distance is 2.
+            ///
+            return dist > 1.5;
         }
     }
 }
