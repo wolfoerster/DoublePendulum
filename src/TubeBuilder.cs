@@ -33,7 +33,7 @@ namespace DoublePendulum
         private readonly List<Point3D> positions = [];
         private readonly List<double> tcoords = [];
         private readonly List<int> indices = [];
-        private readonly List<int> segments = [];
+        private int segmentStart = 0;
         private Vector3D v;
 
         public TubeBuilder(double radius = 0.02, int divisions = 6)
@@ -53,7 +53,7 @@ namespace DoublePendulum
             positions.Clear();
             tcoords.Clear();
             indices.Clear();
-            segments.Clear();
+            segmentStart = 0;
         }
 
         public MeshGeometry3D CreateMesh()
@@ -81,31 +81,38 @@ namespace DoublePendulum
 
         public void AddPoint(Point3D point, double tcoord)
         {
-            if (IsNewSegment(point))
+            if (path.Count > 0)
             {
-                var i = path.Count - 1;
-                AddPositions(i, tcoord, AddPositionsMode.Last);
-                AddTriangles(i);
-                segments.Add(path.Count);
+                var dist = (path[^1] - point).Length;
+                if (dist < 1e-2) // no need to take every point
+                    return;
+
+                if (dist > 1.5) // a rotation occurred (angle crossed ± 180°)
+                {
+                    // finish the current segment
+                    var i = path.Count - 1;
+                    AddPositions(i, tcoord, AddPositionsMode.Last);
+                    AddTriangles(i);
+                    // and store the begin of a new one
+                    segmentStart = path.Count;
+                }
             }
 
             path.Add(point);
 
-            var segStart = segments.Count > 0 ? segments[^1] : 0;
-            var numPoints = path.Count - segStart;
-
+            var numPoints = path.Count - segmentStart;
             if (numPoints > 1)
             {
                 if (numPoints == 2)
                 {
                     // find a normal for the initial direction
-                    var startDirection = path[segStart + 1] - path[segStart];
+                    var startDirection = path[segmentStart + 1] - path[segmentStart];
                     v = startDirection.FindAnyPerpendicular();
                 }
 
                 // calc positions for the last but one section:
                 var i = path.Count - 2;
-                var mode = i == segStart ? AddPositionsMode.First : AddPositionsMode.Normal;
+                var mode = i == segmentStart ? AddPositionsMode.First : AddPositionsMode.Normal;
                 AddPositions(i, tcoord, mode);
 
                 if (numPoints > 2)
@@ -161,22 +168,6 @@ namespace DoublePendulum
             indices.Add(i);
             indices.Add(j);
             indices.Add(k);
-        }
-
-        private bool IsNewSegment(Point3D point)
-        {
-            if (path.Count == 0)
-                return false;
-
-            var dist = (path[^1] - point).Length;
-            ///
-            /// When the pendulum performs rotations, the value of q1 or q2 will change
-            /// from high positive values to high negative values or vice versa.
-            /// The world space of the 3D model is within a unit cube, so the maximum
-            /// angle is mapped to 1 and the minimum angle is mapped to -1.
-            /// So in world coordinates the maximum distance is 2.
-            ///
-            return dist > 1.5;
         }
 
         private Vector3D GetDiff(int i, AddPositionsMode mode)
