@@ -32,6 +32,7 @@ namespace DoublePendulum
         {
             DiffuseMaterial.Brush = new LinearGradientBrush(Colors.Cyan, Colors.Magenta, 0);
             DiffuseMaterial.Brush.Freeze();
+            BackMaterial = Material;
         }
 
         public int Mode

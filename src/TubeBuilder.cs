@@ -81,8 +81,6 @@ namespace DoublePendulum
 
         public void AddPoint(Point3D point, double tcoord)
         {
-            tcoord = CheckTextureCoordinate(tcoord);
-
             if (IsNewSegment(point))
             {
                 var i = path.Count - 1;
@@ -120,13 +118,11 @@ namespace DoublePendulum
 
         private void AddPositions(int i, double tcoord, AddPositionsMode mode)
         {
-            var diff = GetDiff(i, mode);
-
-            var u = v.Cross(diff);
-            u.Normalize();
-
-            v = diff.Cross(u);
+            var d = GetDiff(i, mode);
+            var u = v.Cross(d);
+            v = d.Cross(u);
             v.Normalize();
+            u.Normalize();
 
             // add positions and normals for section i:
             for (int j = 0; j < section.Count; j++)
@@ -167,16 +163,6 @@ namespace DoublePendulum
             indices.Add(k);
         }
 
-        private static double CheckTextureCoordinate(double tcoord)
-        {
-            var eps = 1e-12;
-
-            if (tcoord < -eps || tcoord > 1 + eps)
-                throw new ArgumentOutOfRangeException(nameof(tcoord));
-
-            return Math.Max(0, Math.Min(1, tcoord));
-        }
-
         private bool IsNewSegment(Point3D point)
         {
             if (path.Count == 0)
@@ -201,10 +187,11 @@ namespace DoublePendulum
             if (mode == AddPositionsMode.Last)
                 return path[i] - path[i - 1];
 
-            ///
-            /// Here we need a better solution!!!
-            ///
-            return path[i + 1] - path[i - 1];
+            var v0 = path[i - 1] - path[i];
+            var v1 = path[i + 1] - path[i];
+            v0.Normalize();
+            v1.Normalize();
+            return v1 - v0;
         }
 
         private enum AddPositionsMode
