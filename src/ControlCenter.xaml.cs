@@ -223,7 +223,7 @@ namespace DoublePendulum
                 {
                     mirrorQ.Visibility = Visibility.Visible;
                     mirrorL.Visibility = Visibility.Visible;
-                    scene.Models.Add(new AxisModel(2));
+                    scene.Models.Add(new AxisModel(2, 0.01, 8));
                     scene.Models.Add(poincare3D);
                     poincare3D.Redraw();
                 }
@@ -235,30 +235,15 @@ namespace DoublePendulum
                 else
                 {
                     modePanel.Visibility = Visibility.Visible;
-                    scene.Models.Add(new AxisModel(2));
+                    scene.Models.Add(new AxisModel(2, 0.01, 8));
                     scene.Models.Add(trajectory3D);
-                    scene.Models.Add(CreateXYPlane(2));
+                    scene.Models.Add(new XYGrid(2));
                     trajectory3D.Init();
                     App.SelectedPendulum.NewTrajectoryPoint = trajectory3D.NewTrajectoryPoint;
                 }
 
                 scene.Visibility = Visibility.Visible;
             }
-        }
-
-        private static Disk CreateXYPlane(double radius)
-        {
-            var brush = new SolidColorBrush(Color.FromRgb(23, 23, 23)) { Opacity = 0.4 };
-            brush.Freeze();
-
-            var xyPlane = new Disk();
-            xyPlane.DiffuseMaterial.Brush = brush;
-            xyPlane.EmissiveMaterial.Brush = brush;
-            xyPlane.SpecularMaterial.Brush = null;
-            xyPlane.BackMaterial = xyPlane.Material;
-            xyPlane.Radius = radius;
-
-            return xyPlane;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
