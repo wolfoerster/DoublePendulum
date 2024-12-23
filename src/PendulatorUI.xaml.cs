@@ -64,6 +64,9 @@ namespace DoublePendulum
 
         public void Start()
         {
+#if false
+            not clear what this is supposed to do!
+            anyway it leads to a different start position when starting a new simulation from the Poincare2D with ctrl button down
             if (WFUtils.IsCtrlDown())
             {
                 var pendulum = Pendulator.Pendulum;
@@ -72,7 +75,7 @@ namespace DoublePendulum
                 pendulum.dT = dT;
                 NotifyCaller("OnCheckBoxClicked");
             }
-
+#endif
             Pendulator.Start();
             btnStartStop.Content = "Stop";
             btnStartStop.ToolTip = "Stop simulation";
