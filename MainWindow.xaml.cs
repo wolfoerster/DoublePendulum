@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2024 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com.
 //
@@ -23,11 +23,10 @@ namespace DoublePendulum
     using WFTools3D;
     using System;
 
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly Properties.Settings settings = Properties.Settings.Default;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,7 +45,7 @@ namespace DoublePendulum
 
         private void MeLoaded(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.IsMaximized)
+            if (settings.IsMaximized)
                 this.WindowState = WindowState.Maximized;
         }
 
@@ -63,7 +62,7 @@ namespace DoublePendulum
 
         private void RestoreSizeAndPosition()
         {
-            var name = Properties.Settings.Default.ScreenName;
+            var name = settings.ScreenName;
             var screen = Screen.LookUpByName(name);
 
             if (screen == null || Keyboard.IsKeyToggled(Key.CapsLock))
@@ -82,10 +81,10 @@ namespace DoublePendulum
             }
             else
             {
-                this.Top = Properties.Settings.Default.Top;
-                this.Left = Properties.Settings.Default.Left;
-                this.Width = Properties.Settings.Default.Width;
-                this.Height = Properties.Settings.Default.Height;
+                this.Top = settings.Top;
+                this.Left = settings.Left;
+                this.Width = settings.Width;
+                this.Height = settings.Height;
             }
 
             this.WindowState = WindowState.Normal;
@@ -94,24 +93,24 @@ namespace DoublePendulum
 
         private void StoreSizeAndPosition()
         {
-            Properties.Settings.Default.IsMaximized = this.WindowState == WindowState.Maximized;
+            settings.IsMaximized = this.WindowState == WindowState.Maximized;
 
             if (this.WindowState != WindowState.Normal)
                 this.WindowState = WindowState.Normal;
 
             var pt = new Point(this.Left, this.Top);
             var screen = Screen.LookUpByPixel(pt.ToPixel(this));
-            Properties.Settings.Default.ScreenName = screen?.Name;
+            settings.ScreenName = screen?.Name;
 
-            Properties.Settings.Default.Top = this.Top;
-            Properties.Settings.Default.Left = this.Left;
-            Properties.Settings.Default.Width = this.Width;
-            Properties.Settings.Default.Height = this.Height;
+            settings.Top = this.Top;
+            settings.Left = this.Left;
+            settings.Width = this.Width;
+            settings.Height = this.Height;
 
-            Properties.Settings.Default.MirrorQ = ControlCenter.MirrorQ;
-            Properties.Settings.Default.MirrorL = ControlCenter.MirrorL;
+            settings.MirrorQ = ControlCenter.MirrorQ;
+            settings.MirrorL = ControlCenter.MirrorL;
 
-            Properties.Settings.Default.Save();
+            settings.Save();
         }
     }
 }
