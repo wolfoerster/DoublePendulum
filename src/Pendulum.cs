@@ -364,9 +364,9 @@ namespace DoublePendulum
         private void ResetMovement()
         {
 #if DEBUG
-            dt = 1e-6;
+            dt = 8e-7;
 #else
-            dt = 5e-7;
+            dt = 4e-7;
 #endif
             dt /= (Math.Sqrt(e0) + 1);
             dt = dt.RoundSignificantDigits(1);

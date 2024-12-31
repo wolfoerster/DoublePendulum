@@ -283,7 +283,7 @@ namespace DoublePendulum
                     }
                 }
 
-                Title = $"Double Pendulum, {calcsPerSecond / 1000} cpms";
+                Title = $"Double Pendulum, {calcsPerSecond / 1000000} calcs/μs";
             }
 
             //--- if all pendulators are stopped, stop the timer, too

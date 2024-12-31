@@ -39,7 +39,7 @@ namespace DoublePendulum
         private readonly Brush cold = Brushes.Green;
         private readonly Brush warm1 = Brushes.Khaki;
         private readonly Brush warm2 = Brushes.DarkKhaki;
-        private readonly TextBox textBox = new TextBox { IsReadOnly = true, Width = 70, Margin = new Thickness(4, 4, 0, 0) };
+        private readonly TextBox textBox = new TextBox { IsReadOnly = true, MinWidth = 70, Margin = new Thickness(4, 4, 0, 0) };
         private readonly CheckBox checkBox = new CheckBox { Content = "Show Ω", Margin = new Thickness(4, 280, 0, 0), ToolTip = "Show/adjust angular velocities/accelerations" };
         private readonly Button startButton = new Button { Content = " Start ", Margin = new Thickness(258, 273, 0, 0), Visibility = Visibility.Collapsed };
         private readonly DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Render);
