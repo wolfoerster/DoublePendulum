@@ -307,8 +307,16 @@ namespace DoublePendulum
 
         private void Pendulum2D_BeginDrag(object sender, EventArgs e)
         {
+            // store current pendulum
+            var pendulum = App.SelectedPendulum;
+
             SelectedEnergy = null;
             SelectedPendulatorUI = null;
+
+            // restore current pendulum
+            App.SelectedPendulum = pendulum;
+            pendulum2D.Update();
+            pendulum3D.Update();
         }
 
         private void Pendulum2D_StartSim(object sender, EventArgs e)
