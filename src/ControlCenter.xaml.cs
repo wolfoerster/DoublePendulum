@@ -322,6 +322,7 @@ namespace DoublePendulum
         private void Pendulum2D_StartSim(object sender, EventArgs e)
         {
             var pendulum = App.SelectedPendulum;
+            AdaptTimeStep(pendulum);
             pendulum.PoincareColor = lastUsedColor;
             SelectedEnergy = AddEnergy(pendulum.E0.ToStringInv());
             StartPendulum(pendulum);
@@ -364,10 +365,22 @@ namespace DoublePendulum
             if (PrepareNewSimulation())
             {
                 var pendulum = App.SelectedPendulum;
-                if (WFUtils.IsShiftDown()) pendulum.dT *= 2.0;
-                if (WFUtils.IsCtrlDown()) pendulum.dT *= 0.5;
+                AdaptTimeStep(pendulum);
                 StartPendulum(pendulum);
             }
+        }
+
+        private void AdaptTimeStep(Pendulum pendulum)
+        {
+            var isShiftDown = WFUtils.IsShiftDown();
+            var isCtrlDown = WFUtils.IsCtrlDown();
+
+            if (isCtrlDown && isShiftDown)
+                pendulum.dT *= 0.25;
+            else if (isCtrlDown)
+                pendulum.dT *= 0.5;
+            else if (isShiftDown)
+                pendulum.dT *= 2.0;
         }
 
         private bool PrepareNewSimulation()
