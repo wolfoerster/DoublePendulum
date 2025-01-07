@@ -374,8 +374,11 @@ namespace DoublePendulum
         {
             var isShiftDown = WFUtils.IsShiftDown();
             var isCtrlDown = WFUtils.IsCtrlDown();
+            var isAltDown = WFUtils.IsAltDown();
 
-            if (isCtrlDown && isShiftDown)
+            if (isCtrlDown && isShiftDown && isAltDown)
+                pendulum.dT *= 0.125;
+            else if (isCtrlDown && isShiftDown)
                 pendulum.dT *= 0.25;
             else if (isCtrlDown)
                 pendulum.dT *= 0.5;
