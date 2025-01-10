@@ -138,17 +138,17 @@ namespace DoublePendulum
         public void Update()
         {
             var pendulum = App.SelectedPendulum;
-            double radius = Radius;
-            double length = Length;
+            var radius = Radius;
+            var length = Length;
 
-            Point p0 = Center;
+            var p0 = Center;
 
-            Point p1 = p0;
+            var p1 = p0;
             p1.X += length * Math.Sin(pendulum.Q1);
             p1.Y += length * Math.Cos(pendulum.Q1);
             position1 = p1;
 
-            Point p2 = p1;
+            var p2 = p1;
             p2.X += length * Math.Sin(pendulum.Q2);
             p2.Y += length * Math.Cos(pendulum.Q2);
 
@@ -159,15 +159,15 @@ namespace DoublePendulum
             AdjustEllipse(weight2, p2, radius);
 
             radius = ShowOmega ? radius / 3 : 0;
-            Point p3 = Center;
+            var p3 = Center;
             p3.X += length * Math.Sin(pendulum.Q1 + pendulum.W1);
             p3.Y += length * Math.Cos(pendulum.Q1 + pendulum.W1);
             AdjustEllipse(omega1, p3, radius);
 
-            Point p4 = position1;
+            var p4 = position1;
             p4.X += length * Math.Sin(pendulum.Q2 + pendulum.W2);
             p4.Y += length * Math.Cos(pendulum.Q2 + pendulum.W2);
-            AdjustEllipse(omega2, p4, radius);
+            AdjustEllipse(omega2, p4, Pendulum.IsFixed ? 0 : radius);
 
             InvalidateVisual();
         }
@@ -215,13 +215,15 @@ namespace DoublePendulum
 
             double thickness = line1.StrokeThickness * 0.667;
 
-            Pen pen = new Pen(cold, thickness);
+            var pen = new Pen(cold, thickness);
             DrawArc(dc, pendulum.Q1, pendulum.W1, Center, pen);
-            DrawArc(dc, pendulum.Q2, pendulum.W2, position1, pen);
+            if (!Pendulum.IsFixed)
+                DrawArc(dc, pendulum.Q2, pendulum.W2, position1, pen);
 
             pen = new Pen(hot, thickness);
             DrawArc(dc, pendulum.Q1, pendulum.A1, Center, pen);
-            DrawArc(dc, pendulum.Q2, pendulum.A2, position1, pen);
+            if (!Pendulum.IsFixed)
+                DrawArc(dc, pendulum.Q2, pendulum.A2, position1, pen);
         }
 
         private void DrawArc(DrawingContext dc, double q, double w, Point origin, Pen pen)
@@ -234,34 +236,42 @@ namespace DoublePendulum
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (hotElli != null)
-            {
-                double x = Canvas.GetLeft(hotElli);
-                double y = Canvas.GetTop(hotElli);
-                double r = hotElli.Width * 0.5;
-                delta = new Point(x + r, y + r) - e.GetPosition(this);
-                CaptureMouse();
-                BeginDrag?.Invoke(this, new EventArgs());
-                startButton.Visibility = Visibility.Visible;
-                return;
-            }
-
-            CheckMouseDoubleClick();
-        }
-
-        private void CheckMouseDoubleClick()
-        {
             if (IsBusy)
                 return;
 
-            if ((DateTime.UtcNow - prevMouseDown).TotalMilliseconds < 300)
+            var isDoubleClick = CheckDoubleClick();
+
+            if (hotElli == null)
             {
-                App.SelectedPendulum.Init(0, 0, 0, 0);
-                BeginDrag?.Invoke(this, new EventArgs());
-                Update();
+                if (isDoubleClick)
+                {
+                    App.SelectedPendulum.Init(0, 0, 0, 0);
+                    BeginDrag?.Invoke(this, new EventArgs());
+                    Update();
+                }
+                return;
             }
 
-            prevMouseDown = DateTime.UtcNow;
+            var x = Canvas.GetLeft(hotElli);
+            var y = Canvas.GetTop(hotElli);
+            var r = hotElli.Width * 0.5;
+            delta = new Point(x + r, y + r) - e.GetPosition(this);
+            CaptureMouse();
+            BeginDrag?.Invoke(this, new EventArgs());
+            startButton.Visibility = Visibility.Visible;
+
+            if (isDoubleClick)
+            {
+                Pendulum.IsFixed = !Pendulum.IsFixed;
+            }
+        }
+
+        private bool CheckDoubleClick()
+        {
+            var utcNow = DateTime.UtcNow;
+            var result = (utcNow - prevMouseDown).TotalMilliseconds < 300;
+            prevMouseDown = utcNow;
+            return result;
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -346,13 +356,13 @@ namespace DoublePendulum
                 return VisualTreeHelper.HitTest(eli, pt) != null;
             }
 
-            if (IsHit(omega2))
+            if (!Pendulum.IsFixed && IsHit(omega2))
                 return omega2;
 
             if (IsHit(omega1))
                 return omega1;
 
-            if (IsHit(weight2))
+            if (!Pendulum.IsFixed && IsHit(weight2))
                 return weight2;
 
             if (IsHit(weight1))

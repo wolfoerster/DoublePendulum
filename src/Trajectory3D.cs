@@ -68,6 +68,12 @@ namespace DoublePendulum
 
         public void NewTrajectoryPoint(double q1, double q2, double l1, double l2)
         {
+            if (Pendulum.IsFixed)
+            {
+                q2 = 0;
+                l2 = 0;
+            }
+
             var (point, tc) = T[0].Transform(q1, l1, q2, l2);
             builder[0].AddPoint(point, tc);
 

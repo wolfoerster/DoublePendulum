@@ -153,7 +153,7 @@ namespace DoublePendulum
             set => SetFlag(HighFlag, value);
         }
 
-        public static bool IsFixed = false;
+        public static bool IsFixed = true;
 
         public void Init(double q10, double q20, double w10, double w20)
         {
@@ -206,36 +206,53 @@ namespace DoublePendulum
 
         public void Move(int numSteps)
         {
-            for (int i = 0; i < numSteps; i++)
+            if (Pendulum.IsFixed)
             {
-                //--- first check for Poincare condition, i.e.
-                //--- q2 changes sign when moving from quadrant 3 to 4, i.e. q2 is positive but far below PI / 2)
-                if (q2old < 0 && q2 >= 0 && q2 < 1)
-                    PoincareConditionHappened();
-
-                q2old = q2;
-
-                //--- then move the pendulum
-                var q12 = q1 - q2;
-                var cos = Math.Cos(q12);
-                var sin = Math.Sin(q12);
-                var b = 2.0 - cos * cos;
-                var b1 = -sin * w2 * w2;
-                var b2 = sin * w1 * w1;
-
-                if (gravity)
+                var a0 = 3.0 / 5.0;
+                for (int i = 0; i < numSteps; i++)
                 {
-                    b1 -= 2 * Math.Sin(q1);
-                    b2 -= Math.Sin(q2);
+                    a1 = -a0 * Math.Sin(q1);
+                    w1 += a1 * dt;
+                    q1 = Normalize(q1 + w1 * dt);
+
+                    a2 = a1;
+                    w2 = w1;
+                    q2 = q1;
                 }
+            }
+            else
+            {
+                for (int i = 0; i < numSteps; i++)
+                {
+                    //--- first check for Poincare condition, i.e.
+                    //--- q2 changes sign when moving from quadrant 3 to 4, i.e. q2 is positive but far below PI / 2)
+                    if (q2old < 0 && q2 >= 0 && q2 < 1)
+                        PoincareConditionHappened();
 
-                a1 = (b1 - b2 * cos) / b;
-                w1 += a1 * dt;
-                q1 = Normalize(q1 + w1 * dt);
+                    q2old = q2;
 
-                a2 = (b2 * 2.0 - b1 * cos) / b;
-                w2 += a2 * dt;
-                q2 = Normalize(q2 + w2 * dt);
+                    //--- then move the pendulum
+                    var q12 = q1 - q2;
+                    var cos = Math.Cos(q12);
+                    var sin = Math.Sin(q12);
+                    var b = 2.0 - cos * cos;
+                    var b1 = -sin * w2 * w2;
+                    var b2 = sin * w1 * w1;
+
+                    if (gravity)
+                    {
+                        b1 -= 2 * Math.Sin(q1);
+                        b2 -= Math.Sin(q2);
+                    }
+
+                    a1 = (b1 - b2 * cos) / b;
+                    w1 += a1 * dt;
+                    q1 = Normalize(q1 + w1 * dt);
+
+                    a2 = (b2 * 2.0 - b1 * cos) / b;
+                    w2 += a2 * dt;
+                    q2 = Normalize(q2 + w2 * dt);
+                }
             }
 
             time += numSteps * dt;
