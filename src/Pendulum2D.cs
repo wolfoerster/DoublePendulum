@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************
-// Copyright © 2016 - 2022 Wolfgang Foerster (wolfoerster@gmx.de)
+// Copyright © 2016 - 2025 Wolfgang Foerster (wolfoerster@gmx.de)
 //
 // This file is part of the DoublePendulum project which can be found on github.com
 //
@@ -46,10 +46,10 @@ namespace DoublePendulum
         private Ellipse hotElli; // one of the above ellipses that the mouse is over
         private Point position1; // the position of the first weight
         private Vector? delta;
+        private DateTime prevMouseDown = DateTime.UtcNow;
 
         public Pendulum2D()
         {
-            ShowOmega = false;
             SizeChanged += MySizeChanged;
 
             axis.Fill = line1.Stroke = line2.Stroke = cold;
@@ -243,7 +243,25 @@ namespace DoublePendulum
                 CaptureMouse();
                 BeginDrag?.Invoke(this, new EventArgs());
                 startButton.Visibility = Visibility.Visible;
+                return;
             }
+
+            CheckMouseDoubleClick();
+        }
+
+        private void CheckMouseDoubleClick()
+        {
+            if (IsBusy)
+                return;
+
+            if ((DateTime.UtcNow - prevMouseDown).TotalMilliseconds < 300)
+            {
+                App.SelectedPendulum.Init(0, 0, 0, 0);
+                BeginDrag?.Invoke(this, new EventArgs());
+                Update();
+            }
+
+            prevMouseDown = DateTime.UtcNow;
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -347,33 +365,33 @@ namespace DoublePendulum
         {
             var pendulum = App.SelectedPendulum;
 
-            double q1 = pendulum.Q1;
-            double q2 = pendulum.Q2;
-            double w1 = pendulum.W1;
-            double w2 = pendulum.W2;
+            var q1 = pendulum.Q1;
+            var q2 = pendulum.Q2;
+            var w1 = pendulum.W1;
+            var w2 = pendulum.W2;
 
             if (!ShowOmega)
                 w1 = w2 = 0;
 
             if (hotElli == weight1)
             {
-                Vector v = pt - Center;
+                var v = pt - Center;
                 q1 = Math.Atan2(v.X, v.Y);
             }
             else if (hotElli == weight2)
             {
-                Vector v = pt - position1;
+                var v = pt - position1;
                 q2 = Math.Atan2(v.X, v.Y);
             }
             else if (hotElli == omega1)
             {
-                Vector v = pt - Center;
+                var v = pt - Center;
                 v = Rotate(v, q1 - MathUtils.PIo2);
                 w1 = Math.Atan2(-v.Y, v.X);
             }
             else if (hotElli == omega2)
             {
-                Vector v = pt - position1;
+                var v = pt - position1;
                 v = Rotate(v, q2 - MathUtils.PIo2);
                 w2 = Math.Atan2(-v.Y, v.X);
             }
@@ -384,10 +402,10 @@ namespace DoublePendulum
             IsDragging?.Invoke(this, new EventArgs());
         }
 
-        Vector Rotate(Vector v, double angle)
+        private static Vector Rotate(Vector v, double angle)
         {
-            double sin = Math.Sin(angle);
-            double cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
             return new Vector(v.X * cos - v.Y * sin, v.X * sin + v.Y * cos);
         }
 

@@ -155,8 +155,16 @@ namespace DoublePendulum
             set => SetFlag(HighFlag, value);
         }
 
+        public static bool IsFixed = false;
+
         public void Init(double q10, double q20, double w10, double w20)
         {
+            if (IsFixed)
+            {
+                q20 = q10;
+                w20 = w10;
+            }
+
             q1 = this.q10 = q10;
             q2 = this.q20 = q2old = q20;
             w1 = this.w10 = w10;
