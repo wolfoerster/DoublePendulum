@@ -56,9 +56,7 @@ namespace DoublePendulum
         {
             if (NewTrajectoryPoint != null)
             {
-                var cos = Math.Cos(q1 - q2);
-                var l1 = 2.0 * w1 + w2 * cos;
-                var l2 = w2 + w1 * cos;
+                var (l1, l2) = CalculateL1L2();
                 NewTrajectoryPoint(q1, q2, l1, l2);
             }
         }
@@ -171,9 +169,7 @@ namespace DoublePendulum
             w2 = this.w20 = w20;
             a1 = a2 = 0;
 
-            var cos = Math.Cos(q1 - q2);
-            l10 = 2.0 * w1 + w2 * cos;
-            l20 = w2 + w1 * cos;
+            (l10, l20) = CalculateL1L2();
 
             e0 = CalculateEnergy();
             SetEnergy(e0);
@@ -286,7 +282,7 @@ namespace DoublePendulum
             NewPoincarePoint?.Invoke(this);
         }
 
-        private double Normalize(double angle)
+        private static double Normalize(double angle)
         {
             if (angle < -MathUtils.PI)
                 return angle + MathUtils.PIx2;
@@ -295,6 +291,14 @@ namespace DoublePendulum
                 return angle - MathUtils.PIx2;
 
             return angle;
+        }
+
+        private (double L1, double L2) CalculateL1L2()
+        {
+            var cos = Math.Cos(q1 - q2);
+            var l1 = 2.0 * w1 + w2 * cos;
+            var l2 = w2 + w1 * cos;
+            return (l1, l2);
         }
 
         private double CalculateL2(double cos, double b)
