@@ -372,18 +372,17 @@ namespace DoublePendulum
 
         private void AdaptTimeStep(Pendulum pendulum)
         {
-            var isShiftDown = WFUtils.IsShiftDown();
-            var isCtrlDown = WFUtils.IsCtrlDown();
-            var isAltDown = WFUtils.IsAltDown();
-
-            if (isCtrlDown && isShiftDown && isAltDown)
-                pendulum.dT *= 0.125;
-            else if (isCtrlDown && isShiftDown)
-                pendulum.dT *= 0.25;
-            else if (isCtrlDown)
-                pendulum.dT *= 0.5;
-            else if (isShiftDown)
+            if (WFUtils.IsCtrlDown())
+            {
+                if (WFUtils.IsShiftDown())
+                    pendulum.dT *= WFUtils.IsAltDown() ? 0.125 : 0.25;
+                else
+                    pendulum.dT *= 0.5;
+            }
+            else if (WFUtils.IsShiftDown())
+            {
                 pendulum.dT *= 2.0;
+            }
         }
 
         private bool PrepareNewSimulation()

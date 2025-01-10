@@ -153,7 +153,7 @@ namespace DoublePendulum
             set => SetFlag(HighFlag, value);
         }
 
-        public static bool IsFixed = true;
+        public static bool IsFixed = false;
 
         public void Init(double q10, double q20, double w10, double w20)
         {
