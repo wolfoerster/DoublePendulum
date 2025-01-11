@@ -245,7 +245,8 @@ namespace DoublePendulum
             {
                 if (isDoubleClick)
                 {
-                    App.SelectedPendulum.Init(0, 0, 0, 0);
+                    var q10 = WFUtils.IsCtrlDown() ? Math.PI : 0;
+                    App.SelectedPendulum.Init(q10, 0, 0, 0);
                     BeginDrag?.Invoke(this, new EventArgs());
                     Update();
                 }

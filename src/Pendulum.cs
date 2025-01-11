@@ -224,12 +224,8 @@ namespace DoublePendulum
             {
                 for (int i = 0; i < numSteps; i++)
                 {
-                    //--- first check for Poincare condition, i.e.
-                    //--- q2 changes sign when moving from quadrant 3 to 4, i.e. q2 is positive but far below PI / 2)
-                    if (q2old < 0 && q2 >= 0 && q2 < 1)
-                        PoincareConditionHappened();
-
-                    q2old = q2;
+                    //--- first check for the Poincare condition
+                    CheckForPoincareCondition();
 
                     //--- then move the pendulum
                     var q12 = q1 - q2;
@@ -258,6 +254,29 @@ namespace DoublePendulum
             time += numSteps * dt;
         }
 
+        private void CheckForPoincareCondition()
+        {
+#if false
+            //--- q2 changes sign when moving from quadrant 3 to 4, i.e. q2 is positive but far below PI / 2)
+            if (q2old < 0 && q2 >= 0 && q2 < 1)
+                PoincareConditionHappened();
+
+            q2old = q2;
+#else
+            if (q2old < 0 && q2 >= 0)
+            {
+                if (q2 >= 1)
+                {
+                    throw new Exception("wie kann das sein?");
+                }
+
+                PoincareCondition();
+            }
+
+            q2old = q2;
+#endif
+        }
+
         public double CalculateEnergy()
         {
             double eKin = w1 * w1 + w2 * w2 / 2.0 + w1 * w2 * Math.Cos(q1 - q2);
@@ -275,7 +294,7 @@ namespace DoublePendulum
             de = (e1 - e0) / e0 * 100.0;
         }
 
-        private void PoincareConditionHappened()
+        private void PoincareCondition()
         {
             //--- Poincare condition means: right now q2 is >= 0 and it has been < 0 one time step before.
             //--- So q2 must have been excatly 0 some time ago (or no time at all if q2 is exactly 0 right now).
