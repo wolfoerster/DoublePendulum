@@ -372,7 +372,11 @@ namespace DoublePendulum
 
         private void AdaptTimeStep(Pendulum pendulum)
         {
-            if (WFUtils.IsCtrlDown())
+            if (Keyboard.IsKeyDown(Key.RightAlt))
+            {
+                pendulum.dT = 2e-7;
+            }
+            else if (WFUtils.IsCtrlDown())
             {
                 if (WFUtils.IsShiftDown())
                     pendulum.dT *= WFUtils.IsAltDown() ? 0.125 : 0.25;
