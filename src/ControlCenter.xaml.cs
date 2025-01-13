@@ -223,7 +223,7 @@ namespace DoublePendulum
                 {
                     mirrorQ.Visibility = Visibility.Visible;
                     mirrorL.Visibility = Visibility.Visible;
-                    scene.Models.Add(new AxisModel(2, 0.01, 8));
+                    scene.Models.Add(CreateAxisModel(140));
                     scene.Models.Add(poincare3D);
                     poincare3D.Redraw();
                 }
@@ -235,7 +235,7 @@ namespace DoublePendulum
                 else
                 {
                     modePanel.Visibility = Visibility.Visible;
-                    scene.Models.Add(new AxisModel(2, 0.01, 8));
+                    scene.Models.Add(CreateAxisModel(200));
                     scene.Models.Add(trajectory3D);
                     scene.Models.Add(new XYGrid(2));
                     trajectory3D.Init();
@@ -243,6 +243,21 @@ namespace DoublePendulum
                 }
 
                 scene.Visibility = Visibility.Visible;
+            }
+        }
+
+        private static AxisModel CreateAxisModel(byte c)
+        {
+            var axisModel = new AxisModel(2, 0.01, 8);
+            SetColor(0, Color.FromRgb(c, 0, 0));
+            SetColor(1, Color.FromRgb(0, (byte)(c - 40), 0));
+            return axisModel;
+
+            void SetColor(int i, Color color)
+            {
+                var obj = axisModel.Children[i] as Primitive3D;
+                obj.DiffuseMaterial.Brush = new SolidColorBrush(color);
+                obj.DiffuseMaterial.Brush.Freeze();
             }
         }
 

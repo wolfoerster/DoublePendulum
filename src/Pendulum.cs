@@ -207,51 +207,53 @@ namespace DoublePendulum
         public void Move(int numSteps)
         {
             if (Pendulum.IsFixed)
-            {
-                var a0 = 3.0 / 5.0;
-                for (int i = 0; i < numSteps; i++)
-                {
-                    a1 = -a0 * Math.Sin(q1);
-                    w1 += a1 * dt;
-                    q1 = Normalize(q1 + w1 * dt);
-
-                    a2 = a1;
-                    w2 = w1;
-                    q2 = q1;
-                }
-            }
+                MoveFixed(numSteps);
             else
-            {
-                for (int i = 0; i < numSteps; i++)
-                {
-                    //--- first check for the Poincare condition
-                    CheckForPoincareCondition();
-
-                    //--- then move the pendulum
-                    var q12 = q1 - q2;
-                    var cos = Math.Cos(q12);
-                    var sin = Math.Sin(q12);
-                    var b = 2.0 - cos * cos;
-                    var b1 = -sin * w2 * w2;
-                    var b2 = sin * w1 * w1;
-
-                    if (gravity)
-                    {
-                        b1 -= 2 * Math.Sin(q1);
-                        b2 -= Math.Sin(q2);
-                    }
-
-                    a1 = (b1 - b2 * cos) / b;
-                    w1 += a1 * dt;
-                    q1 = Normalize(q1 + w1 * dt);
-
-                    a2 = (b2 * 2.0 - b1 * cos) / b;
-                    w2 += a2 * dt;
-                    q2 = Normalize(q2 + w2 * dt);
-                }
-            }
+                MoveUnfixed(numSteps);
 
             time += numSteps * dt;
+        }
+
+        private void MoveFixed(int numSteps)
+        {
+            var a0 = -3.0 / 5.0;
+            for (int i = 0; i < numSteps; i++)
+            {
+                a2 = a1 = a0 * Math.Sin(q1);
+                w2 = w1 += a1 * dt;
+                q2 = q1 = Normalize(q1 + w1 * dt);
+            }
+        }
+
+        private void MoveUnfixed(int numSteps)
+        {
+            for (int i = 0; i < numSteps; i++)
+            {
+                //--- first check for the Poincare condition
+                CheckForPoincareCondition();
+
+                //--- then move the pendulum
+                var q12 = q1 - q2;
+                var cos = Math.Cos(q12);
+                var sin = Math.Sin(q12);
+                var b = 2.0 - cos * cos;
+                var b1 = -sin * w2 * w2;
+                var b2 = sin * w1 * w1;
+
+                if (gravity)
+                {
+                    b1 -= 2 * Math.Sin(q1);
+                    b2 -= Math.Sin(q2);
+                }
+
+                a1 = (b1 - b2 * cos) / b;
+                w1 += a1 * dt;
+                q1 = Normalize(q1 + w1 * dt);
+
+                a2 = (b2 * 2.0 - b1 * cos) / b;
+                w2 += a2 * dt;
+                q2 = Normalize(q2 + w2 * dt);
+            }
         }
 
         private void CheckForPoincareCondition()
@@ -265,9 +267,9 @@ namespace DoublePendulum
 #else
             if (q2old < 0 && q2 >= 0)
             {
-                if (q2 >= 1)
+                if (q2 > 1)
                 {
-                    throw new Exception("wie kann das sein?");
+                    throw new Exception("How can that be?");
                 }
 
                 PoincareCondition();
