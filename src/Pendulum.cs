@@ -206,7 +206,7 @@ namespace DoublePendulum
 
         public void Move(int numSteps)
         {
-            if (Pendulum.IsFixed)
+            if (IsFixed)
                 MoveFixed(numSteps);
             else
                 MoveUnfixed(numSteps);
@@ -216,10 +216,10 @@ namespace DoublePendulum
 
         private void MoveFixed(int numSteps)
         {
-            var a0 = -3.0 / 5.0;
+            var a0 = 3.0 / 5.0;
             for (int i = 0; i < numSteps; i++)
             {
-                a2 = a1 = a0 * Math.Sin(q1);
+                a2 = a1 = -a0 * Math.Sin(q1);
                 w2 = w1 += a1 * dt;
                 q2 = q1 = Normalize(q1 + w1 * dt);
             }
@@ -249,10 +249,12 @@ namespace DoublePendulum
                 a1 = (b1 - b2 * cos) / b;
                 w1 += a1 * dt;
                 q1 = Normalize(q1 + w1 * dt);
+                //q1 += w1 * dt;
 
                 a2 = (b2 * 2.0 - b1 * cos) / b;
                 w2 += a2 * dt;
                 q2 = Normalize(q2 + w2 * dt);
+                //q2 += w2 * dt;
             }
         }
 
@@ -269,7 +271,7 @@ namespace DoublePendulum
             {
                 if (q2 > 1)
                 {
-                    throw new Exception("How can that be?");
+                    throw new Exception("How can it be?");
                 }
 
                 PoincareCondition();

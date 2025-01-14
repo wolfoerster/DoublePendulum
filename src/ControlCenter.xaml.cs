@@ -389,7 +389,11 @@ namespace DoublePendulum
         {
             if (Keyboard.IsKeyDown(Key.RightAlt))
             {
+#if DEBUG
                 pendulum.dT = 2e-7;
+#else
+                pendulum.dT = 1e-7;
+#endif
             }
             else if (WFUtils.IsCtrlDown())
             {
