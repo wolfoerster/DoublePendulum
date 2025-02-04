@@ -264,6 +264,13 @@ namespace DoublePendulum
             if (isDoubleClick)
             {
                 Pendulum.IsFixed = !Pendulum.IsFixed;
+                if (Pendulum.IsFixed)
+                {
+                    var p = App.SelectedPendulum;
+                    p.Init(p.Q1, 0, 0, 0);
+                    BeginDrag?.Invoke(this, new EventArgs());
+                    Update();
+                }
             }
         }
 

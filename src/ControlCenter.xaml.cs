@@ -387,7 +387,7 @@ namespace DoublePendulum
 
         private void AdaptTimeStep(Pendulum pendulum)
         {
-            if (Keyboard.IsKeyDown(Key.RightAlt))
+            if (Keyboard.IsKeyToggled(Key.CapsLock))
             {
 #if DEBUG
                 pendulum.dT = 2e-7;
