@@ -260,25 +260,16 @@ namespace DoublePendulum
 
         private void CheckForPoincareCondition()
         {
-#if false
-            //--- q2 changes sign when moving from quadrant 3 to 4, i.e. q2 is positive but far below PI / 2)
-            if (q2old < 0 && q2 >= 0 && q2 < 1)
-                PoincareConditionHappened();
-
-            q2old = q2;
-#else
-            if (q2old < 0 && q2 >= 0)
-            {
-                if (q2 > 1)
-                {
-                    throw new Exception("How can it be?");
-                }
-
+            //--- Poincare condition means: right now q2 is >= 0 and it has been < 0 one time step before.
+            //--- In other words: q2 is moving from quadrant III to quadrant IV.
+            //--- Since we normalize q2 between -π and +π, a change from negative to positive values also
+            //--- happens when q2 is moving from quadrant II to quadrant I.
+            //--- In this case q2 is close to π whereas in the Poincare case q2 is close to 0.
+            //--- So check for a change in the sign of q2 and check if q2 is in quadrant IV (q2 < π/2).
+            if (q2old < 0 && q2 >= 0 && q2 < 1.57)
                 PoincareCondition();
-            }
 
             q2old = q2;
-#endif
         }
 
         public double CalculateEnergy()
