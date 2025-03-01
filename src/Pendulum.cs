@@ -305,7 +305,7 @@ namespace DoublePendulum
             //--- bt = dt * q2 / (q2 - q2old) | which is surely >= 0
             var bt = -dt * q2 / (q2 - q2old); // so bt now is <= 0
 
-            //--- recalc q1, w1 and w2 to when q2 qas 0
+            //--- recalc q1, w1 and w2
             var q1t = q1 + w1 * bt;
             var w1t = w1 + a1 * bt;
             var w2t = w2 + a2 * bt;
@@ -435,66 +435,64 @@ namespace DoublePendulum
         {
             try
             {
-                using (var reader = new BinaryReader(File.OpenRead(fileName)))
+                using var reader = new BinaryReader(File.OpenRead(fileName));
+                byte version = reader.ReadByte();
+                if (version < 101 || version > 105)
+                    return false;
+
+                if (version < 105)
                 {
-                    byte version = reader.ReadByte();
-                    if (version < 101 || version > 105)
-                        return false;
+                    reader.ReadBytes(3);
+                    id = reader.ReadInt32();
+                    reader.ReadBytes(12);
+                }
+                else
+                {
+                    id = reader.ReadInt32();
+                }
 
-                    if (version < 105)
-                    {
-                        reader.ReadBytes(3);
-                        id = reader.ReadInt32();
-                        reader.ReadBytes(12);
-                    }
-                    else
-                    {
-                        id = reader.ReadInt32();
-                    }
+                q10 = reader.ReadDouble();
+                q20 = reader.ReadDouble();
+                w10 = reader.ReadDouble();
+                w20 = reader.ReadDouble();
+                l10 = reader.ReadDouble();
+                l20 = reader.ReadDouble();
+                q1 = reader.ReadDouble();
+                q2 = reader.ReadDouble();
+                w1 = reader.ReadDouble();
+                w2 = reader.ReadDouble();
+                a1 = reader.ReadDouble();
+                a2 = reader.ReadDouble();
+                time = reader.ReadDouble();
+                q2max = reader.ReadDouble();
+                e0 = reader.ReadDouble();
+                de = reader.ReadDouble();
+                dt = reader.ReadDouble();
+                q1max = reader.ReadDouble();
+                q2old = reader.ReadDouble();
+                l1max = reader.ReadDouble();
+                l2max = reader.ReadDouble();
+                byte red = reader.ReadByte();
+                byte green = reader.ReadByte();
+                byte blue = reader.ReadByte();
+                byte alpha = reader.ReadByte();
+                flags = (byte)(reader.ReadByte() & MuteFlag);
 
-                    q10 = reader.ReadDouble();
-                    q20 = reader.ReadDouble();
-                    w10 = reader.ReadDouble();
-                    w20 = reader.ReadDouble();
-                    l10 = reader.ReadDouble();
-                    l20 = reader.ReadDouble();
-                    q1 = reader.ReadDouble();
-                    q2 = reader.ReadDouble();
-                    w1 = reader.ReadDouble();
-                    w2 = reader.ReadDouble();
-                    a1 = reader.ReadDouble();
-                    a2 = reader.ReadDouble();
-                    time = reader.ReadDouble();
-                    q2max = reader.ReadDouble();
-                    e0 = reader.ReadDouble();
-                    de = reader.ReadDouble();
-                    dt = reader.ReadDouble();
-                    q1max = reader.ReadDouble();
-                    q2old = reader.ReadDouble();
-                    l1max = reader.ReadDouble();
-                    l2max = reader.ReadDouble();
-                    byte red = reader.ReadByte();
-                    byte green = reader.ReadByte();
-                    byte blue = reader.ReadByte();
-                    byte alpha = reader.ReadByte();
-                    flags = (byte)(reader.ReadByte() & MuteFlag);
+                if (version == 104)
+                {
+                    reader.ReadBytes(32);
+                }
 
-                    if (version == 104)
-                    {
-                        reader.ReadBytes(32);
-                    }
+                SetEnergy(e0);
+                PoincareColor = Color.FromRgb(red, green, blue);
+                PoincarePoints = new List<PoincarePoint>();
 
-                    SetEnergy(e0);
-                    PoincareColor = Color.FromRgb(red, green, blue);
-                    PoincarePoints = new List<PoincarePoint>();
-
-                    while (reader.BaseStream.Position < reader.BaseStream.Length)
-                    {
-                        double q = reader.ReadDouble();
-                        double w = reader.ReadDouble();
-                        double v = reader.ReadDouble();
-                        PoincarePoints.Add(new PoincarePoint(q, w, v));
-                    }
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
+                {
+                    double q = reader.ReadDouble();
+                    double w = reader.ReadDouble();
+                    double v = reader.ReadDouble();
+                    PoincarePoints.Add(new PoincarePoint(q, w, v));
                 }
 
                 return true;
@@ -511,44 +509,42 @@ namespace DoublePendulum
             try
             {
                 byte version = 105;
-                using (var stream = File.Create(fileName))
-                using (var writer = new BinaryWriter(stream))
-                {
-                    writer.Write(version);
-                    writer.Write(id);
-                    writer.Write(q10);
-                    writer.Write(q20);
-                    writer.Write(w10);
-                    writer.Write(w20);
-                    writer.Write(l10);
-                    writer.Write(l20);
-                    writer.Write(q1);
-                    writer.Write(q2);
-                    writer.Write(w1);
-                    writer.Write(w2);
-                    writer.Write(a1);
-                    writer.Write(a2);
-                    writer.Write(time);
-                    writer.Write(q2max);
-                    writer.Write(e0);
-                    writer.Write(de);
-                    writer.Write(dt);
-                    writer.Write(q1max);
-                    writer.Write(q2old);
-                    writer.Write(l1max);
-                    writer.Write(l2max);
-                    writer.Write(PoincareColor.R);
-                    writer.Write(PoincareColor.G);
-                    writer.Write(PoincareColor.B);
-                    writer.Write(PoincareColor.A);
-                    writer.Write(flags);
+                using var stream = File.Create(fileName);
+                using var writer = new BinaryWriter(stream);
+                writer.Write(version);
+                writer.Write(id);
+                writer.Write(q10);
+                writer.Write(q20);
+                writer.Write(w10);
+                writer.Write(w20);
+                writer.Write(l10);
+                writer.Write(l20);
+                writer.Write(q1);
+                writer.Write(q2);
+                writer.Write(w1);
+                writer.Write(w2);
+                writer.Write(a1);
+                writer.Write(a2);
+                writer.Write(time);
+                writer.Write(q2max);
+                writer.Write(e0);
+                writer.Write(de);
+                writer.Write(dt);
+                writer.Write(q1max);
+                writer.Write(q2old);
+                writer.Write(l1max);
+                writer.Write(l2max);
+                writer.Write(PoincareColor.R);
+                writer.Write(PoincareColor.G);
+                writer.Write(PoincareColor.B);
+                writer.Write(PoincareColor.A);
+                writer.Write(flags);
 
-                    foreach (var pp in PoincarePoints)
-                    {
-                        writer.Write(pp.Q1);
-                        writer.Write(pp.W1);
-                        writer.Write(pp.W2);
-                    }
+                foreach (var pp in PoincarePoints)
+                {
+                    writer.Write(pp.Q1);
+                    writer.Write(pp.W1);
+                    writer.Write(pp.W2);
                 }
 
                 return true;
