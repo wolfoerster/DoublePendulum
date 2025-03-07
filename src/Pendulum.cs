@@ -285,8 +285,13 @@ namespace DoublePendulum
 
         public void CheckEnergy()
         {
-            double e1 = CalculateEnergy();
-            de = (e1 - e0) / e0 * 100.0;
+            //de = (CalculateEnergy() - e0) / e0 * 100.0;
+            var diff = (CalculateEnergy() - e0) / e0 * 100.0;
+            if (Math.Abs(diff) > Math.Abs(de))
+            {
+                de = diff;
+                return;
+            }
         }
 
         private void PoincareCondition()
