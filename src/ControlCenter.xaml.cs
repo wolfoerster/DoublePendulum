@@ -337,9 +337,12 @@ namespace DoublePendulum
         private void Pendulum2D_StartSim(object sender, EventArgs e)
         {
             var pendulum = App.SelectedPendulum;
-            AdaptTimeStep(pendulum);
-            pendulum.PoincareColor = lastUsedColor;
             SelectedEnergy = AddEnergy(pendulum.E0.ToStringInv());
+            if (WFUtils.IsCtrlDown())
+                return;
+
+            pendulum.PoincareColor = lastUsedColor;
+            AdaptTimeStep(pendulum);
             StartPendulum(pendulum);
         }
 

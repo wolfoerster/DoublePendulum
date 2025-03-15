@@ -285,12 +285,11 @@ namespace DoublePendulum
 
         public void CheckEnergy()
         {
-            //de = (CalculateEnergy() - e0) / e0 * 100.0;
-            var diff = (CalculateEnergy() - e0) / e0 * 100.0;
-            if (Math.Abs(diff) > Math.Abs(de))
+            var e = CalculateEnergy();
+            var d = (e - e0) / e0 * 100.0;
+            if (Math.Abs(d) > Math.Abs(de))
             {
-                de = diff;
-                return;
+                de = d;
             }
         }
 
